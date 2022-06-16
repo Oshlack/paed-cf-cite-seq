@@ -1,0 +1,110 @@
+---
+title: "Multimodal single cell analysis of the paediatric lower airway reveals novel immune cell phenotypes in early life health and disease"
+description: |
+author:
+  - name: Jovana Maksimovic
+date: "`r Sys.Date()`"
+bibliography: ref.bib
+site: workflowr::wflow_site
+output:
+  html_document:
+    theme: cosmo
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, number_sections = FALSE)
+```
+
+
+This site contains the code and results of the analyses presented in 
+[*“Multimodal single cell analysis of the paediatric lower airway reveals novel immune cell phenotypes in early life health and disease”*](). 
+Follow the links below to view the different parts of the analysis. 
+
+
+# Abstract {-}
+
+Respiratory disease is a major cause of morbidity and mortality in children worldwide. Many childhood respiratory diseases are characterised by chronic inflammation, however, the immune landscape of the paediatric airway remains uncharacterized. This is due to difficulties obtaining tissue-specific samples in early life as well as limited application of technologies that permit deep profiling from small sample volumes. Here, we employ multiomic single-cell sequencing to generate the first immune cell atlas of the paediatric lower airway with more than 44,900 cells across 12 preschool aged children. By integrating transcriptome-wide gene expression, assessment of 154 surface proteins, and functional pathway analysis, we extensively characterised immune and epithelial cell populations present in the bronchoalveolar lavage of 11 children with cystic fibrosis and an age-matched healthy control. Paired spectral flow cytometry analysis of over 256,000 cells revealed high correlation in cell subset proportions and protein expression across the two techniques. We further revealed that paediatric alveolar macrophages consist of 12 functionally distinct sub populations, including previously undescribed populations enriched for IFN-α/β signalling, markers of vesicle production, and regulatory/repair function. Other novel immune cell populations not observed in previous studies of the adult lung include CD4 T cells expressing inflammatory signalling genes. Further, whilst we show no significant difference in overall cell proportions between CF and healthy lung, we observed significant differential gene expression in the alveolar macrophage population, including genes associated with lung inflammation (IL33, CCL15) and fibrosis (RBMS3, COL4A1, SPP1). Our work provides a comprehensive cellular analysis of the paediatric lower airway, reveals key immune signatures of early life lung disease, and provides a reference for investigations of respiratory immunity in children.
+
+
+# Authors {-}
+
+Jovana Maksimovic^1,2,9\*^, Shivanthan Shanthikumar^2,3,4\*^, George Howitt^1,9^, Peter Hickey^5,6^, William Ho^5^, Casey Anttila^5^, Daniel V. Brown^5^, Anne Senabouth^7,8^, Dominick Kaczorowski^7,8^, Daniela Amann-Zalcenstein^5^, Joseph E. Powell^7,8^, Sarath C. Ranganathan^2,3,4^, Alicia Oshlack^1,9,10^, Melanie R. Neeland^2,3,11+^
+
+^1^ Computational Biology Program, Peter MacCallum Cancer Centre, Parkville, VIC, Australia
+
+^2^ Respiratory Diseases, Murdoch Children’s Research Institute, Parkville, VIC, Australia
+
+^3^ Department of Paediatrics, University of Melbourne, Parkville, VIC, Australia
+
+^4^ Respiratory and Sleep Medicine, Royal Children’s Hospital, Parkville, VIC, Australia 
+
+^5^ Cellular Genomics Projects Team, Advanced Technology and Biology Division, WEHI, Parkville, VIC, Australia
+
+^6^ Department of Medical Biology, University of Melbourne, Parkville, VIC, Australia 
+
+^7^ Garvan-Weizmann Centre for Cellular Genomics, Garvan Institute of Medical Research, Sydney, NSW, Australia
+
+^8^ UNSW Cellular Genomics Futures Institute, University of New South Wales, Sydney, NSW, Australia
+
+^9^ Sir Peter MacCallum Department of Oncology, University of Melbourne, Parkville, VIC, Australia
+
+^10^ School of Bioscience, University of Melbourne, Parkville, VIC, Australia
+
+^11^ Molecular Immunity, Murdoch Children’s Research Institute, Parkville, VIC, Australia 
+
+    
+^+^ corresponding author
+
+^\*^ contributed equally
+ 
+ 
+# Analysis Overview {-}
+
+1. scRNA-seq data quality control
+    a) [Droplet selection](01_CF_BAL_Pilot.emptyDrops.html)
+    b) [Preprocessing](02_CF_BAL_Pilot.preprocess.html)
+
+2. CITE-seq data quality control and sample demultiplexing
+    a) [Droplet selection](03_C133_Neeland.emptyDrops.html)
+    b) [Demultiplexing](04_C133_Neeland.demultiplex.html)
+    c) [Preprocessing](05_C133_Neeland.preprocess.html)      
+
+3. Clustering, reference annotation and antibody derived tag (ADT) processing
+    a) [Clustering and annotation](06_COMBO.clustering_annotation.html)
+    b) [ADT processing](07_COMBO.transfer_proteins.html) 
+
+4. Sub-clustering of cell type groups     
+    a) [Sub-clustering of macrophages](08_COMBO.cluster_macrophages.html)
+    b) [Sub-clustering of T/NK cells](09_COMBO.cluster_tcells.html)
+    c) [Sub-clustering of "other" cells](10_COMBO.cluster_others.html)
+
+5. Manual annotation 
+    a) [Post-processing of macrophages](11_COMBO.postprocess_macrophages.html) 
+    b) [Post-processing of T/NK cells](12_COMBO.postprocess_tcells.html)
+    c) [Post-processing of "other" cells](13_COMBO.postprocess_others.html)
+    d) [Post-processing of all cells combined](14_COMBO.postprocess_all.html) 
+
+6. Differential gene expression analysis within cell types
+    a) [Analysis of gene expression](15_COMBO.expression_analysis.html)
+
+
+# Licenses {-}
+
+The code in this analysis is covered by the [MIT license][mit] and the written
+content on this website is covered by a [Creative Commons CC-BY][cc] license.
+
+
+# Citations {-}
+
+
+
+# Version Information  {-}
+
+**R version**: `r R.version.string`
+
+**Bioconductor version**: `r BiocManager::version()`
+
+
+[mit]: https://choosealicense.com/licenses/mit/ "MIT License"
+[cc]: https://choosealicense.com/licenses/cc-by-4.0/ "CC-BY License"
+[pp]: https://www.biorxiv.org/content/10.1101/2020.08.24.265702v1 "Pre-print"

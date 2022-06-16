@@ -1,0 +1,925 @@
+---
+title: "Analysis of scRNA-seq & CITE-seq Data Combined"
+subtitle: "Combine and Annotate Data"
+author: "Jovana Maksimovic"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+site: workflowr::wflow_site
+bibliography: ref.bib
+output:
+  bookdown::html_document2:
+    base_format: workflowr::wflow_html
+    toc: yes
+    toc_float: yes
+    theme: cosmo
+    highlight: textmate
+    number_sections: true
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+# Load libraries
+
+```{r, message=FALSE, echo=FALSE}
+suppressPackageStartupMessages(library(BiocStyle))
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(here))
+suppressPackageStartupMessages(library(glue))
+suppressPackageStartupMessages(library(DropletUtils))
+suppressPackageStartupMessages(library(scran))
+suppressPackageStartupMessages(library(scater))
+suppressPackageStartupMessages(library(scuttle))
+suppressPackageStartupMessages(library(Seurat))
+suppressPackageStartupMessages(library(scales))
+suppressPackageStartupMessages(library(patchwork))
+suppressPackageStartupMessages(library(clustree))
+suppressPackageStartupMessages(library(glmGamPoi))
+suppressPackageStartupMessages(library(BiocParallel))
+source(here("code/utility.R"))
+source(here("code/helper_functions.R"))
+
+set.seed(42)
+options(scipen=999)
+options(future.globals.maxSize = 6500 * 1024^2)
+```
+
+# Load Data
+
+Load the processed CF_BAL_Pilot and C133_Neeland data sets.
+
+```{r}
+# load preprocessed data
+sce1 <- readRDS(here("data", "SCEs", "04_CF_BAL_Pilot.preprocessed.SCE.rds"))
+sce2 <- readRDS(here("data", "SCEs", "03_C133_Neeland.preprocessed.SCE.rds"))
+
+# append letter to cell IDs to denote experiment & avoid duplicate IDs
+colnames(sce1) <- paste0("A-", colnames(sce1))
+colnames(sce2) <- paste0("B-", colnames(sce2))
+
+# identify shared genes
+shared_genes <- intersect(rowData(sce1)$ID, rowData(sce2)$ID)
+
+# sort & subset each SCE relative to shared genes
+m1 <- match(shared_genes, rowData(sce1)$ID)
+all(shared_genes == rowData(sce1)$ID[m1])
+sce1 <- sce1[m1,]
+# sort & subset each SCE relative to shared genes
+m2 <- match(shared_genes, rowData(sce2)$ID)
+all(shared_genes == rowData(sce2)$ID[m2])
+sce2 <- sce2[m2,]
+
+# create combined matrix of counts 
+combo_counts <- cbind(counts(sce1), counts(sce2))
+
+# combine cell metadata 
+combo_data <- DataFrame(
+  bind_rows(colData(sce1) %>% 
+                     data.frame %>% 
+                     dplyr::select(Barcode, capture, 
+                                   nuclear_fraction, cell_status), 
+                   colData(sce2) %>% 
+                     data.frame %>% 
+                     dplyr::select(Barcode, capture, 
+                                   nuclear_fraction, cell_status)))
+combo_data$HTO <- as.factor(c(as.character(sce1$capture), 
+                     as.character(sce2$HTO)))
+combo_data$donor <- as.factor(c(as.character(sce1$capture), 
+                     as.character(sce2$genetic_donor)))
+combo_data$experiment <- as.factor(c(rep(1, ncol(sce1)), 
+                              rep(2, ncol(sce2))))
+
+sce <- SingleCellExperiment(
+  list(counts = combo_counts),
+       colData = combo_data,
+  rowData = rowData(sce1))
+sce
+```
+
+# Quality controls
+## Identify uninformative genes
+
+Identify genes that are not informative for cell clustering or downstream marker gene identification. For example, genes without gene symbols or duplicated gene symbols, mitochondrial genes, ribosomal genes and sex chromosome genes are not considered informative.
+
+```{r, message=FALSE, warning=FALSE}
+# Some useful gene sets
+mito_set <- rownames(sce)[which(rowData(sce)$CHR == "MT")]
+ribo_set <- grep("^RP(S|L)", rownames(sce), value = TRUE)
+# NOTE: A more curated approach for identifying ribosomal protein genes
+#       (https://github.com/Bioconductor/OrchestratingSingleCellAnalysis-base/blob/ae201bf26e3e4fa82d9165d8abf4f4dc4b8e5a68/feature-selection.Rmd#L376-L380)
+library(msigdbr)
+c2_sets <- msigdbr(species = "Homo sapiens", category = "C2")
+ribo_set <- union(
+  ribo_set,
+  c2_sets[c2_sets$gs_name == "KEGG_RIBOSOME", ]$human_gene_symbol)
+is_ribo <- rownames(sce) %in% ribo_set
+sex_set <- rownames(sce)[any(rowData(sce)$ENSEMBL.SEQNAME %in% c("X", "Y"))]
+pseudogene_set <- rownames(sce)[
+  any(grepl("pseudogene", rowData(sce)$ENSEMBL.GENEBIOTYPE))]
+```
+
+## Calculate quality control metrics
+
+Calculate various quality control metrics for each cell.
+
+```{r, results = "hide"}
+is_mito <- rownames(sce) %in% mito_set
+is_ribo <- rownames(sce) %in% ribo_set
+sce <- addPerCellQC(
+  sce, 
+  subsets = list(Mito = which(is_mito), Ribo = which(is_ribo)))
+
+head(colData(sce)) %>% knitr::kable()
+```
+
+Calculate the percentage of zero counts for each cell.
+
+```{r}
+sce$zero_percent <- colSums(counts(sce) == 0)/nrow(sce)
+summary(sce$zero_percent)
+```
+
+## Visualise QC metrics
+
+Figure \@ref(fig:qcplot-by-capture-combo) shows that the vast majority of samples are good-quality:
+
+- The median library size is around `r number(median(sce$sum), accuracy = 100, big.mark = ",")`^[This is consistent with the use of UMI counts rather than read counts, as each transcript molecule can only produce one UMI count but can yield many reads after fragmentation.].
+- The median number of genes detected is around `r number(median(sce$detected), accuracy = 100, big.mark = ",")`.
+- The median percentage of UMIs that are mapped to mitochondrial RNA is around  `r percent(median(sce$subsets_Mito_percent), scale = 1)`
+- The percentage of UMIs that are mapped to ribosomal protein genes is `r percent(median(sce$subsets_Ribo_percent), scale = 1)`.
+
+```{r qcplot-by-capture-combo, fig.cap = "Distributions of various QC metrics for all cells in the dataset. This includes the library sizes, number of genes detected, and percentage of reads mapped to mitochondrial genes.", fig.asp = 1.1}
+p1 <- plotColData(
+  sce,
+  "sum",
+  x = "capture",
+  colour_by = "experiment",
+  point_size = 0.5) +
+  scale_y_log10() +
+  theme(axis.text.x = element_text(size = 6)) +
+  annotation_logticks(
+    sides = "l",
+    short = unit(0.03, "cm"),
+    mid = unit(0.06, "cm"),
+    long = unit(0.09, "cm"))
+p2 <- plotColData(
+  sce,
+  "detected",
+  x = "capture",
+  colour_by = "experiment",
+  point_size = 0.5) +
+  theme(axis.text.x = element_text(size = 6))
+p3 <- plotColData(
+  sce,
+  "subsets_Mito_percent",
+  x = "capture",
+  colour_by = "experiment",
+  point_size = 0.5) +
+  theme(axis.text.x = element_text(size = 6))
+p4 <- plotColData(
+  sce,
+  "subsets_Ribo_percent",
+  x = "capture",
+  colour_by = "experiment",
+  point_size = 0.5) +
+  theme(axis.text.x = element_text(size = 6))
+
+p5 <- plotColData(
+  sce, 
+  x = "capture", 
+  y = "zero_percent", 
+  colour_by = "experiment",
+  point_size = 0.5) +
+  theme(axis.text.x = element_text(size = 6))
+
+((p1 | p2) / (p3 | p4) / p5) + 
+  plot_layout(guides = "collect") &
+  theme(legend.position = "bottom")
+```
+
+```{r qcplot-by-experiment, fig.cap = "Distributions of various QC metrics for all cells in the dataset. This includes the library sizes, number of genes detected, and percentage of reads mapped to mitochondrial genes.", fig.asp = 1.1}
+p1 <- plotColData(
+  sce,
+  "sum",
+  x = "donor",
+  colour_by = "experiment",
+  point_size = 0.5) +
+  scale_y_log10() +
+  theme(axis.text.x = element_text(angle = 90)) +
+  annotation_logticks(
+    sides = "l",
+    short = unit(0.03, "cm"),
+    mid = unit(0.06, "cm"),
+    long = unit(0.09, "cm"))
+
+p2 <- plotColData(
+  sce,
+  "detected",
+  x = "donor",
+  colour_by = "experiment",
+  point_size = 0.5) +
+  theme(axis.text.x = element_text(angle = 90, 
+                                   hjust = 0.5, 
+                                   vjust = 1))
+p3 <- plotColData(
+  sce,
+  "subsets_Mito_percent",
+  x = "donor",
+  colour_by = "experiment",
+  point_size = 0.5) +
+  theme(axis.text.x = element_text(angle = 90))
+p4 <- plotColData(
+  sce,
+  "subsets_Ribo_percent",
+  x = "donor",
+  colour_by = "experiment",
+  point_size = 0.5) +
+  theme(axis.text.x = element_text(angle = 90))
+
+p5 <- plotColData(
+  sce, 
+  x = "donor", 
+  y = "zero_percent", 
+  colour_by = "experiment",
+  point_size = 0.5) +
+  theme(axis.text.x = element_text(angle = 90))
+
+((p1 | p2) / (p3 | p4) / p5) + 
+  plot_layout(guides = "collect") &
+  theme(legend.position = "bottom")
+```
+
+```{r, fig.asp=1.1}
+plotColData(
+  sce, 
+  x = "sum", 
+  y = "detected",
+  other_fields = "capture",
+  colour_by = "zero_percent",
+  point_size = 0.25, 
+  point_alpha = 0.25) +
+  facet_wrap(vars(capture), ncol = 2)
+```
+
+```{r, fig.asp=1.1}
+plotColData(
+  sce, 
+  x = "detected", 
+  y = "subsets_Mito_percent",
+  other_fields = "capture",
+  colour_by = "zero_percent",
+  point_size = 0.25, 
+  point_alpha = 0.25) +
+  facet_wrap(vars(capture), ncol = 2)
+```
+
+```{r, fig.asp=1.1}
+plotColData(
+  sce, 
+  x = "sum", 
+  y = "subsets_Ribo_percent",
+  other_fields = "capture",
+  colour_by = "zero_percent",
+  point_size = 0.25, 
+  point_alpha = 0.25) +
+  scale_x_log10() +
+  facet_wrap(vars(capture), ncol = 2)
+```
+
+```{r, fig.asp=1.1}
+plotColData(
+  sce, 
+  x = "sum", 
+  y = "subsets_Mito_percent",
+  other_fields = "capture",
+  colour_by = "cell_status",
+  point_size = 0.25, 
+  point_alpha = 0.25) +
+  scale_x_log10() +
+  facet_wrap(vars(capture), ncol = 2)
+```
+
+```{r}
+colData(sce) %>%
+  data.frame %>%
+ggplot(aes(x = cell_status, y = sum, fill = cell_status)) +
+  geom_violin(scale = "count", size = 0.25) +
+  scale_y_log10() +
+  facet_wrap(~ capture, scales = "free_y")
+```
+
+## Discard uninformative genes & cells
+
+Remove uninformative genes and filter out low quality cells: 
+  (1) cells that are called *doublets* or *unassigned* based on genetic assignment, 
+  (2) cells that are called *doublets* based on HTO assignment and, 
+  (3) cells that were called *empty droplets* by `DropletQC` in the scRNA-seq data only.
+
+```{r}
+uninformative <- is_mito | is_ribo | rownames(sce) %in% sex_set | rownames(sce) %in% pseudogene_set
+sum(uninformative)
+
+junk <- sce$donor %in% c("doublet", "unassigned") | sce$HTO %in% "Doublet" | (sce$cell_status == "empty_droplet" & sce$experiment == 1)
+  
+sceFlt <- sce[!uninformative, !junk]
+sceFlt
+```
+
+## Remove low-abundance genes
+
+Keep only genes that are expressed in at least 20 cells. On average, this means that we will only be able to identify clusters with >20 cells.
+
+```{r}
+numCells <- nexprs(sceFlt, byrow = TRUE)
+keep <- numCells > 20
+sum(keep)
+```
+
+Keep the genes that meet the criteria.
+
+```{r}
+sceFlt <- sceFlt[keep,]
+sceFlt
+```
+
+## Convert to `Seurat` object
+
+Convert `SingleCellExperiment` object to a `SeuratObject`.
+
+```{r, message=FALSE}
+counts <- counts(sceFlt)
+rownames(counts) <- rowData(sceFlt)$Symbol
+
+seu <- CreateSeuratObject(counts = counts, 
+                          meta.data = data.frame(colData(sceFlt)))
+seu
+```
+
+```{r, echo=FALSE}
+# remove obsolete objects
+rm(sce1, sce2, sce, sceFlt)
+gc()
+```
+
+## Visualise combined, filtered data
+
+```{r}
+DefaultAssay(seu) <- "RNA"
+seu <- NormalizeData(seu) %>% 
+  FindVariableFeatures() %>% 
+  ScaleData() %>% 
+  RunPCA(verbose = FALSE, dims = 1:30) %>%
+  RunUMAP(verbose = FALSE, dims = 1:30)
+```
+
+```{r}
+DimPlot(seu, group.by = "experiment", combine = FALSE)
+DimPlot(seu, split.by = "experiment", combine = FALSE)
+```
+
+# Integrate data
+
+Normalise the data using `SCTransform` and integrate across batches/individuals.
+
+```{r, warning=FALSE, message=FALSE}
+out <- here("data/SCEs/04_COMBO.integrated.SEU.rds")
+
+if(!file.exists(out)) {
+  seuInt <- intDat(seu, split = "donor", type = "RNA", 
+                   reference = unique(as.character(seu$capture[seu$experiment == 1])))
+  saveRDS(seuInt, file = out)
+  
+} else {
+  seuInt <- readRDS(out)
+  
+}
+```
+
+```{r, echo=FALSE}
+# cleanup obsolete objects
+rm(seu)
+gc()
+```
+
+## Visualise integrated data
+
+```{r}
+seuInt <- RunPCA(seuInt, npcs = 30, verbose = FALSE)
+seuInt <- RunUMAP(seuInt, verbose = FALSE, dims = 1:30)
+DimPlot(seuInt, group.by = "experiment", combine = FALSE)
+```
+
+# Cluster data
+## Perform linear dimensional reduction
+
+```{r}
+p1 <- DimPlot(seuInt, reduction = "pca", group.by = "donor")
+p2 <- DimPlot(seuInt, reduction = "pca", dims = c(1,3), group.by = "donor")
+p3 <- DimPlot(seuInt, reduction = "pca", dims = c(2,3), group.by = "donor")
+p4 <- DimPlot(seuInt, reduction = "pca", dims = c(3,4), group.by = "donor")
+
+((p1 | p2) / (p3 | p4)) + plot_layout(guides = "collect") &
+  theme(legend.text = element_text(size = 8),
+        plot.title = element_text(size = 10),
+        axis.title = element_text(size = 9),
+        axis.text = element_text(size = 8))
+```
+
+```{r, fig.width=9, fig.height=27}
+DimHeatmap(seuInt, dims = 1:30, cells = 500, balanced = TRUE)
+```
+
+## Determine the *dimensionality* of the dataset
+
+```{r}
+ElbowPlot(seuInt, ndims = 30)
+```
+
+## Cluster the cells
+
+```{r, warning=FALSE, message=FALSE}
+out <- here("data/SCEs/04_COMBO.clustered.SEU.rds")
+
+if(!file.exists(out)) {
+  seuInt <- FindNeighbors(seuInt, reduction = "pca", dims = 1:30)
+  seuInt <- FindClusters(seuInt, algorithm = 3, 
+                         resolution = seq(0.1, 1, by = 0.1))
+  seuInt <- RunUMAP(seuInt, dims = 1:30)
+  saveRDS(seuInt, file = out)
+  
+} else {
+  seuInt <- readRDS(out)
+  
+}
+```
+
+## Visualise clustering at default resolution
+
+```{r}
+DimPlot(seuInt, reduction = 'umap', label = TRUE, repel = TRUE,
+        label.size = 2.5) + NoLegend()
+```
+
+## `Clustree` resolution visualisation 
+
+```{r, fig.asp=1.25}
+clustree(seuInt, prefix = "integrated_snn_res.")
+```
+
+# Annotate data using *Zilionis* reference
+## Load *Zilionis* reference data
+
+```{r}
+Sys.setenv("VROOM_CONNECTION_SIZE" = 1000000)
+files <- list.files(here::here("data/GSE127465_RAW"), 
+                    full.names = TRUE,
+                    pattern = "raw_counts")
+library <- limma::strsplit2(limma::strsplit2(files, "human_")[,2], 
+                            "_raw")[,1]
+out <- here::here("data/GSE127465_RAW/raw_dgCMatrix.rds")
+
+if(!file.exists(out)){
+  raw <- lapply(files, function(f){
+    message(f)
+    vroom::vroom(f) %>% 
+      tibble::column_to_rownames("barcode") %>%
+      t() %>%
+      as("dgCMatrix")
+  })
+  rawCmp <- purrr::reduce(raw, cbind)
+  times <- sapply(raw, ncol)
+  libTagged <- paste0(rep(library, times), "_", colnames(rawCmp))
+  colnames(rawCmp) <- libTagged
+  saveRDS(rawCmp, out)
+  
+} else {
+  rawCmp <- readRDS(out)
+  
+}
+
+metadata <- vroom::vroom(here::here("data",
+                                    "GSE127465_RAW",
+                                    "GSE127465_human_cell_metadata_54773x25.tsv.gz")) %>%
+  dplyr::filter(Library %in% library) %>%
+  dplyr::mutate(ID = paste0(Library, "_", Barcode))
+
+m <- match(metadata$ID, colnames(rawCmp))
+subRaw <- rawCmp[, m]
+all(colnames(subRaw) == metadata$ID)
+
+zilionisRaw <- CreateSeuratObject(counts = subRaw, 
+                                  meta.data = data.frame(metadata, 
+                                                         row.names = metadata$ID))
+zilionisRaw <- zilionisRaw[, !grepl("specific", zilionisRaw$Major.cell.type)]
+zilionisRaw
+```
+
+## Normalise *Zilionis* reference data using `SCTranscorm`
+
+```{r}
+out <- here("data/SCEs/02_ZILIONIS.sct_normalised.SEU.rds")
+
+if(!file.exists(out)) {
+  zilSct <- SCTransform(zilionisRaw, method = "glmGamPoi")
+  zilSct <- RunPCA(zilSct, verbose = FALSE, dims = 1:30) 
+  zilSct <- FindNeighbors(zilSct, reduction = "pca", dims = 1:20)
+  zilSct <- FindClusters(zilSct, algorithm = 3)
+  zilSct <- RunUMAP(zilSct, dims = 1:30, reduction = "pca", 
+                    return.model = TRUE)
+  saveRDS(zilSct, file = out)
+  
+} else {
+  zilSct <- readRDS(out)
+  
+}
+```
+
+```{r, echo=FALSE}
+# cleanup obsolete objects
+rm(zilionisRaw)
+gc()
+```
+
+## Map data to *Zilionis* reference
+
+```{r}
+out <- here("data/SCEs/04_COMBO.zilionis_mapped.SEU.rds")
+
+if(!file.exists(out)) {
+  anchors <- FindTransferAnchors(reference = zilSct, query = seuInt,
+                                 dims = 1:30, reference.reduction = "pca",
+                                 normalization.method = "SCT")
+  seuInt <- MapQuery(anchorset = anchors, reference = zilSct, 
+                     query = seuInt, 
+                     refdata = list(celltype = "Major.cell.type"), 
+                     reference.reduction = "pca", 
+                     reduction.model = "umap")
+  saveRDS(seuInt, file = out)
+  
+} else {
+  seuInt <- readRDS(out)
+  
+}
+```
+
+## Visualise reference mapping
+
+```{r, fig.width=10, fig.height=5}
+p1 <- DimPlot(zilSct, reduction = "umap", group.by = "Major.cell.type", 
+              label = TRUE, label.size = 2.5, repel = TRUE) + 
+  NoLegend() + 
+  ggtitle("Reference annotations") +
+  theme(axis.text = element_text(size = 8),
+        axis.title = element_text(size = 8),
+        title = element_text(size = 9))
+
+p2 <- DimPlot(seuInt, reduction = "ref.umap", 
+              group.by = "predicted.celltype", label = TRUE,
+              label.size = 2.5, repel = TRUE) + 
+  NoLegend() + 
+  ggtitle("Query transferred labels")  +
+  theme(axis.text = element_text(size = 8),
+        axis.title = element_text(size = 8),
+        title = element_text(size = 9))
+
+p1 + p2
+```
+
+## Explore reference annotations
+### Plot QC metrics by label 
+
+```{r, fig.asp=1.25}
+options(scipen=1)
+seuInt@meta.data %>%
+  ggplot(aes(y = predicted.celltype.score,
+             x = predicted.celltype,
+             fill = predicted.celltype)) +
+  geom_violin(scale = "width") +
+  theme(text = element_text(size = 8),
+        axis.text.x = element_text(angle = 90,
+                            vjust = 0.5,
+                            hjust = 1)) +
+  NoLegend() -> p1
+
+seuInt@meta.data %>%
+  ggplot(aes(y = nCount_RNA,
+             x = predicted.celltype,
+             fill = predicted.celltype)) +
+  geom_violin(scale = "area") +
+  scale_y_log10() +
+  theme(text = element_text(size = 8),
+        axis.text.x = element_text(angle = 90,
+                            vjust = 0.5,
+                            hjust = 1)) +
+  NoLegend() -> p2
+
+seuInt@meta.data %>%
+  ggplot(aes(y = nFeature_RNA,
+             x = predicted.celltype,
+             fill = predicted.celltype)) +
+  geom_violin(scale = "area") +
+  scale_y_log10() +
+  theme(text = element_text(size = 8),
+        axis.text.x = element_text(angle = 90,
+                            vjust = 0.5,
+                            hjust = 1)) +
+  NoLegend() -> p3
+
+(p1 / p2 / p3)
+```
+
+### Visualise labels on clustering UMAP
+
+```{r}
+DimPlot(seuInt, reduction = 'umap', 
+            label = TRUE, repel = TRUE,
+            label.size = 2.5, 
+            group.by = "predicted.celltype") + NoLegend()
+```
+
+# Annotate data using Azimuth & *Human Lung Cell Reference v1.0*
+## Add Azimuth labels
+
+Save filtered data and upload to Azimuth for annotation with Human Lung Cell reference. 
+Add Azimuth labels to data.
+
+```{r}
+out <- here("data/SCEs/04_COMBO.clustered_diet.SEU.rds")
+
+if(!file.exists(out)){
+  DefaultAssay(seuInt) <- "RNA"
+  seuDiet <- DietSeurat(seuInt, assays = "RNA")
+  saveRDS(seuDiet, out)
+  
+} else {
+  seuInt <- AddAzimuthResults(seuInt,
+                              filename = here("data/SCEs/03_COMBO.clustered_azimuth.SEU.rds"))
+  seuInt$predicted.annotation.l1 <- fct_drop(seuInt$predicted.annotation.l1)
+  
+}
+
+if(any(grepl("predicted.annotation.l1",
+         colnames(seuInt@meta.data)))) table(seuInt$predicted.annotation.l1)
+```
+
+## Visualise reference mapping
+
+```{r}
+DimPlot(seuInt, reduction = 'umap.proj', 
+        label = TRUE, repel = TRUE, label.size = 2.5, 
+        group.by = "predicted.annotation.l1") + NoLegend()
+
+DimPlot(seuInt, reduction = 'umap', 
+        label = TRUE, repel = TRUE, label.size = 2.5, 
+        group.by = "predicted.annotation.l1") + NoLegend()
+```
+
+## Explore reference annotations
+### Plot QC metrics by label 
+
+```{r, fig.asp=1.25}
+options(scipen=1)
+seuInt@meta.data %>%
+  ggplot(aes(y = predicted.annotation.l1.score,
+             x = predicted.annotation.l1,
+             fill = predicted.annotation.l1)) +
+  geom_violin(scale = "width") +
+  theme(text = element_text(size = 8),
+        axis.text.x = element_text(angle = 90,
+                            vjust = 0.5,
+                            hjust = 1)) +
+  NoLegend() -> p1
+
+seuInt@meta.data %>%
+  ggplot(aes(y = nCount_RNA,
+             x = predicted.annotation.l1,
+             fill = predicted.annotation.l1)) +
+  geom_violin(scale = "area") +
+  scale_y_log10() +
+  theme(text = element_text(size = 8),
+        axis.text.x = element_text(angle = 90,
+                            vjust = 0.5,
+                            hjust = 1)) +
+  NoLegend() -> p2
+
+seuInt@meta.data %>%
+  ggplot(aes(y = nFeature_RNA,
+             x = predicted.annotation.l1,
+             fill = predicted.annotation.l1)) +
+  geom_violin(scale = "area") +
+  scale_y_log10() +
+  theme(text = element_text(size = 8),
+        axis.text.x = element_text(angle = 90,
+                            vjust = 0.5,
+                            hjust = 1)) +
+  NoLegend() -> p3
+
+(p1 / p2 / p3)
+```
+
+# Annotate data using Azimuth & *Human Lung Cell Reference v2.0*
+## Add Azimuth labels
+
+Upload previously saved filtered data to Azimuth for annotation with Human Lung Cell reference version 2.0. 
+Add Azimuth labels to data.
+
+```{r}
+seuInt <- AddAzimuthResults(seuInt,
+                            filename = here("data/SCEs/03_COMBO.clustered_azimuth_v2.SEU.rds"))
+seuInt$predicted.ann_level_1 <- fct_drop(seuInt$predicted.ann_level_1)
+seuInt$predicted.ann_level_2 <- fct_drop(seuInt$predicted.ann_level_2)
+seuInt$predicted.ann_level_3 <- fct_drop(seuInt$predicted.ann_level_3)
+seuInt$predicted.ann_level_4 <- fct_drop(seuInt$predicted.ann_level_4)
+seuInt$predicted.ann_finest_level <- fct_drop(seuInt$predicted.ann_finest_level)
+
+table(seuInt$predicted.ann_level_1) %>% knitr::kable()
+table(seuInt$predicted.ann_level_2) %>% knitr::kable()
+table(seuInt$predicted.ann_level_3) %>% knitr::kable()
+table(seuInt$predicted.ann_level_4) %>% knitr::kable()
+table(seuInt$predicted.ann_finest_level) %>% knitr::kable()
+```
+
+## Visualise reference mapping
+
+```{r}
+azimuth_results <- readRDS(here("data/SCEs/03_COMBO.clustered_azimuth.SEU.rds"))
+seuInt[["umap.proj.v1"]] <- azimuth_results$umap
+
+DimPlot(seuInt, reduction = 'umap.proj.v1', 
+        label = TRUE, repel = TRUE, label.size = 2.5, 
+        group.by = "predicted.annotation.l1") + NoLegend()
+
+DimPlot(seuInt, reduction = 'umap.proj', 
+        label = TRUE, repel = TRUE, label.size = 2.5, 
+        group.by = "predicted.ann_level_1") + NoLegend()
+
+DimPlot(seuInt, reduction = 'umap.proj', 
+        label = TRUE, repel = TRUE, label.size = 2.5, 
+        group.by = "predicted.ann_level_2") + NoLegend()
+
+DimPlot(seuInt, reduction = 'umap.proj', 
+        label = TRUE, repel = TRUE, label.size = 2.5, 
+        group.by = "predicted.ann_level_3") + NoLegend()
+
+DimPlot(seuInt, reduction = 'umap.proj', 
+        label = TRUE, repel = TRUE, label.size = 2.5, 
+        group.by = "predicted.ann_level_4") + NoLegend()
+
+DimPlot(seuInt, reduction = 'umap.proj', 
+        label = TRUE, repel = TRUE, label.size = 2.5, 
+        group.by = "predicted.ann_finest_level") + NoLegend()
+```
+## Visualise cell type abundance
+
+```{r, fig.asp=0.7, fig.width=9}
+labels <- colnames(seuInt@meta.data)[grepl("(?!.*score$)predicted.ann",
+                                           colnames(seuInt@meta.data), 
+                                           perl = TRUE)]
+p <- vector("list",length(labels))
+
+for(label in labels){
+  seuInt@meta.data %>%
+    ggplot(aes(x = !!sym(label), fill = !!sym(label))) +
+    geom_bar() +
+    geom_text(aes(label = ..count..), stat = "count",
+              vjust = -0.5, colour = "black", size = 2) +
+    scale_y_log10() +
+    theme(axis.text.x = element_blank(),
+          axis.title.x = element_blank(),
+          axis.ticks.x = element_blank()) +
+    NoLegend() +
+    labs(y = "No. Cells (log scale)") -> p1
+  
+  seuInt@meta.data %>%
+    dplyr::select(!!sym(label), experiment) %>%
+    group_by(!!sym(label), experiment) %>%
+    summarise(num = n()) %>%
+    mutate(prop = num / sum(num)) %>%
+  ggplot(aes(x = !!sym(label), y = prop * 100, 
+             fill = experiment)) + 
+    geom_bar(stat = "identity") +
+    theme(axis.text.x = element_text(angle = 90, 
+                                     vjust = 0.5, 
+                                     hjust = 1)) +
+    labs(y = "% Cells", fill = "Experiment") -> p2
+  
+  p1 / p2 -> p[[label]]
+}
+
+p
+```
+## Visualise annotation relasionships and quality
+
+```{r, fig.asp=1.4, fig.width=8}
+check <- levels(seuInt$predicted.annotation.l1)
+p <- vector("list", length(check))
+
+for(i in 1:length(p)){
+  
+  seuInt@meta.data %>%
+    dplyr::filter(predicted.annotation.l1 == check[i]) %>%
+    ggplot(aes(x = predicted.ann_level_3.score,
+               colour = predicted.ann_level_3)) +
+    geom_density() +
+    ggtitle(paste0("Cluster ", check[i])) +
+    theme(legend.key.size = unit(4, "pt")) -> p1
+  
+  seuInt@meta.data %>%
+    dplyr::filter(predicted.annotation.l1 == check[i]) %>%
+    ggplot(aes(x = predicted.ann_level_3,
+               fill = predicted.ann_level_3)) +
+    geom_bar() +
+    geom_text(aes(label = ..count..), stat = "count", 
+              vjust = -0.5, colour = "black", size = 2) +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+    NoLegend() -> p2  
+  
+  seuInt@meta.data %>%
+    dplyr::filter(predicted.annotation.l1 == check[i]) %>%
+    ggplot(aes(x = predicted.ann_finest_level.score,
+               colour = predicted.ann_finest_level)) +
+    geom_density() +
+    ggtitle(paste0("Cluster ", check[i])) +
+    theme(legend.key.size = unit(4, "pt")) -> p3
+  
+  seuInt@meta.data %>%
+    dplyr::filter(predicted.annotation.l1 == check[i]) %>%
+    
+    ggplot(aes(x = predicted.ann_finest_level,
+               fill = predicted.ann_finest_level)) +
+    geom_bar() +
+    geom_text(aes(label = ..count..), stat = "count", 
+              vjust = -0.5, colour = "black", size = 2) +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+    NoLegend() -> p4 
+  
+  seuInt@meta.data %>%
+    dplyr::filter(predicted.annotation.l1 == check[i]) %>%
+    ggplot(aes(x = predicted.ann_level_4.score,
+               colour = predicted.ann_level_4)) +
+    geom_density() +
+    ggtitle(paste0("Cluster ", check[i])) +
+    theme(legend.key.size = unit(4, "pt")) -> p5
+  
+  seuInt@meta.data %>%
+    dplyr::filter(predicted.annotation.l1 == check[i]) %>%
+    
+    ggplot(aes(x = predicted.ann_level_4,
+               fill = predicted.ann_level_4)) +
+    geom_bar() +
+    geom_text(aes(label = ..count..), stat = "count", 
+              vjust = -0.5, colour = "black", size = 2) +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+    NoLegend() -> p6  
+  
+  ((p1 | p2) / (p5 | p6) / (p3 | p4)) + 
+    plot_annotation(title = check[i]) & 
+    theme(text = element_text(size = 8)) -> p[[i]]
+}
+
+p
+```
+
+# Save data
+
+```{r}
+labels <- levels(factor(seuInt$predicted.ann_level_3))
+macrophages <- c("Macrophages")
+tcells <- c("T cell lineage", "Innate lymphoid cell NK")
+lung <- c("AT1", "EC arterial", "Rare", "Secretory", "Basal",
+          "EC venous", "Multiciliated lineage", "EC capillary", 
+          "Lymphatic EC mature", "AT2")
+
+subList <- list(macrophages = macrophages,
+                tcells = tcells, 
+                lung = lung,
+                others = labels[!labels %in% c(macrophages, tcells, lung)])
+
+Idents(seuInt) <- "predicted.ann_level_3"
+
+for(sub in names(subList)){
+  out <- here(glue("data/SCEs/05_COMBO.clustered_annotated_{sub}_diet.SEU.rds"))
+  message(sub)
+  if(!file.exists(out)){
+    saveRDS(DietSeurat(subset(seuInt,
+                              idents = subList[[sub]]),
+                       assays = "RNA",
+                       dimreducs = NULL,
+                       graphs = NULL), out)
+
+  }
+}
+
+```
+
+
+# Session info {.appendix}
+
+<summary>The analysis and this document were prepared using the following software (click triangle to expand)</summary>
+<details>
+
+```{r}
+sessioninfo::session_info()
+```
+
+</details>

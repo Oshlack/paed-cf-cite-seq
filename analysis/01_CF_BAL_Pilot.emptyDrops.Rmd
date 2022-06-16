@@ -1,0 +1,127 @@
+---
+title: "Analysis of scRNA-seq Data"
+subtitle: "Droplet Selection"
+author: "Jovana Maksimovic (modified from code by Peter Hickey & William Ho)"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+site: workflowr::wflow_site
+bibliography: ref.bib
+output:
+  bookdown::html_document2:
+    base_format: workflowr::wflow_html
+    toc: yes
+    toc_float: yes
+    theme: cosmo
+    highlight: textmate
+    number_sections: true
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+Bronchoalveolar lavage (BAL) samples were collected from 4 individuals: 1 control sample and 3 cystic fibrosis (CF) samples. The samples were run on teh 10X Chromium and sequenced at the [Garvan-Weizmann Centre for Cellular Genomics (GWCCG)](https://www.garvan.org.au/research/garvan-weizmann). The multiplexed samples were sequenced on an Illumina NovaSeq 6000 (NovaSeq Control Software v1.3.1 / Real Time Analysis v3.3.3) ) using a NovaSeq S1 200 cycle kit (Illumina, 20012864). The `cellranger count` pipeline (version 6.0.2) was used for alignment, filtering, barcode counting, and UMI counting from FASTQ files. The GRCh38 reference was used for the alignment. The number of cells from the pipeline was forced to 10,000. 
+View the **CellRanger** capture-specific web summaries: [A](A_web_summary.html), [B](B_web_summary.html), [C](C_web_summary.html), [D](D_web_summary.html).
+
+# Load libraries
+
+```{r, message=FALSE, warning=FALSE}
+suppressPackageStartupMessages(library(BiocStyle))
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(here))
+suppressPackageStartupMessages(library(glue))
+suppressPackageStartupMessages(library(DropletUtils))
+suppressPackageStartupMessages(library(scran))
+suppressPackageStartupMessages(library(scater))
+suppressPackageStartupMessages(library(scuttle))
+set.seed(42)
+options(scipen=999)
+options(future.globals.maxSize = 6500 * 1024^2)
+```
+
+# Load data
+
+```{r}
+sce <- readRDS(here("data/SCEs/04_CF_BAL_Pilot.CellRanger_v6.SCE.rds"))
+dim(sce)
+```
+
+# Identify empty droplets
+
+We use the `emptyDrops()` function from the `r Biocpkg("DropletUtils")` package to test whether the expression profile for each cell barcode is significantly different from the ambient RNA pool [@lun2018distinguishing]. A significant deviation indicates that the barcode corresponds to a cell-containing droplet. Cells are called at a false discovery rate (FDR) of 0.1%.
+
+```{r}
+sce$capture <- factor(sce$Sample)
+capture_names <- levels(sce$capture)
+capture_names <- setNames(capture_names, capture_names)
+
+empties <- do.call(rbind, lapply(capture_names, function(cn) {
+  message(cn)
+  empties <- readRDS(
+    here("data", "emptyDrops", paste0(cn, ".emptyDrops.rds")))
+  empties$capture <- cn
+  empties
+}))
+
+tapply(
+  empties$FDR,
+  empties$capture,
+  function(x) sum(x <= 0.001, na.rm = TRUE)) %>%
+  knitr::kable(
+    caption = "Number of non-empty droplets")
+```
+
+## Examine results
+
+```{r rankplot2, fig.asp = 1}
+par(mfrow = c(2, 2))
+lapply(levels(sce$capture), function(s) {
+  sce <- sce[, sce$capture == s]
+  bcrank <- barcodeRanks(counts(sce))
+  
+  # Only showing unique points for plotting speed.
+  uniq <- !duplicated(bcrank$rank)
+  plot(
+    x = bcrank$rank[uniq],
+    y = bcrank$total[uniq],
+    log = "xy",
+    xlab = "Rank",
+    ylab = "Total UMI count",
+    main = s,
+    cex.lab = 1.2,
+    xlim = c(1, 500000),
+    ylim = c(1, 200000))
+  abline(h = metadata(bcrank)$inflection, col = "darkgreen", lty = 2)
+  abline(h = metadata(bcrank)$knee, col = "dodgerblue", lty = 2)
+})
+``` 
+
+# Remove empty droplets
+
+Remove empty droplets.
+
+```{r}
+sce <- sce[, which(empties$FDR <= 0.001)]
+sce
+```
+
+# Save data
+
+Save the object.
+
+```{r}
+out <- here("data/SCEs/04_CF_BAL_Pilot.emptyDrops.SCE.rds")
+if (!file.exists(out)) saveRDS(sce, file = out)
+```
+
+# Session info {.appendix}
+
+<summary>The analysis and this document were prepared using the following software (click triangle to expand)</summary>
+<details>
+
+```{r}
+sessioninfo::session_info()
+```
+
+</details>
+
+# References

@@ -1,0 +1,3168 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Jovana Maksimovic (modified from code by Peter Hickey &amp; William Ho)" />
+
+<meta name="date" content="2022-06-16" />
+
+<title>Analysis of CITE-seq Data</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">paed-cf-cite-seq</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Analysis of CITE-seq Data</h1>
+<h3 class="subtitle">Preprocessing</h3>
+<h4 class="author">Jovana Maksimovic (modified from code by Peter Hickey &amp; William Ho)</h4>
+<h4 class="date">2022-06-16</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks">
+Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2022-06-16
+</p>
+<p>
+<strong>Checks:</strong>
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+7
+<span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span>
+0
+</p>
+<p>
+<strong>Knit directory:</strong>
+<code>paed-cf-cite-seq/</code>
+<span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.0). The <em>Checks</em> tab describes the
+reproducibility checks that were applied when the results were created.
+The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you
+know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Environment:</strong> empty
+</a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global
+environment can affect the analysis in your R Markdown file in unknown ways.
+For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20210524code">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Seed:</strong> <code>set.seed(20210524)</code>
+</a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20210524code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20210524)</code> was run prior to running the code in the R Markdown file.
+Setting a seed ensures that any results that rely on randomness, e.g.
+subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Session information:</strong> recorded
+</a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is
+critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Cache:</strong> none
+</a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident
+that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>File paths:</strong> relative
+</a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project
+makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree44a4d9f98e1a3ae5432ebf9798547b04c9c63f92targetblank44a4d9fa">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Repository version:</strong> <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/44a4d9f98e1a3ae5432ebf9798547b04c9c63f92" target="_blank">44a4d9f</a>
+</a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree44a4d9f98e1a3ae5432ebf9798547b04c9c63f92targetblank44a4d9fa" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and
+connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/44a4d9f98e1a3ae5432ebf9798547b04c9c63f92" target="_blank">44a4d9f</a>.
+See the <em>Past versions</em> tab to see a history of the changes made to the
+R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the
+analysis have been committed to Git prior to generating the results (you can
+use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only
+checks the R Markdown file, but you know if there are other scripts or data
+files that it depends on. Below is the status of the Git repository when the
+results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/obsolete/
+    Ignored:    code/obsolete/
+    Ignored:    data/190930_A00152_0150_BHTYCMDSXX/
+    Ignored:    data/CellRanger/
+    Ignored:    data/GSE127465_RAW/
+    Ignored:    data/SCEs/02_ZILIONIS.sct_normalised.SEU.rds
+    Ignored:    data/SCEs/03_C133_Neeland.demultiplexed.SCE.rds
+    Ignored:    data/SCEs/03_C133_Neeland.emptyDrops.SCE.rds
+    Ignored:    data/SCEs/03_C133_Neeland.nuclear_fraction_calls.rds
+    Ignored:    data/SCEs/03_C133_Neeland.preprocessed.SCE.rds
+    Ignored:    data/SCEs/03_CF_BAL_Pilot.CellRanger_v6.SCE.rds
+    Ignored:    data/SCEs/03_CF_BAL_Pilot.emptyDrops.SCE.rds
+    Ignored:    data/SCEs/03_CF_BAL_Pilot.nuclear_fraction_calls.rds
+    Ignored:    data/SCEs/03_CF_BAL_Pilot.preprocessed.SCE.rds
+    Ignored:    data/SCEs/03_COMBO.clustered.SEU.rds
+    Ignored:    data/SCEs/03_COMBO.clustered_annotated_macrophages_diet.SEU.rds
+    Ignored:    data/SCEs/03_COMBO.clustered_annotated_others_diet.SEU.rds
+    Ignored:    data/SCEs/03_COMBO.clustered_annotated_tcells_diet.SEU.rds
+    Ignored:    data/SCEs/03_COMBO.clustered_azimuth.SEU.rds
+    Ignored:    data/SCEs/03_COMBO.clustered_azimuth_v2.SEU.rds
+    Ignored:    data/SCEs/03_COMBO.clustered_diet.SEU.rds
+    Ignored:    data/SCEs/03_COMBO.integrated.SEU.rds
+    Ignored:    data/SCEs/03_COMBO.zilionis_mapped.SEU.rds
+    Ignored:    data/SCEs/04_C133_Neeland.adt_dsb_normalised.rds
+    Ignored:    data/SCEs/04_C133_Neeland.adt_integrated.rds
+    Ignored:    data/SCEs/04_C133_Neeland.all_integrated.SEU.rds
+    Ignored:    data/SCEs/04_CF_BAL_Pilot.CellRanger_v6.SCE.rds
+    Ignored:    data/SCEs/04_CF_BAL_Pilot.emptyDrops.SCE.rds
+    Ignored:    data/SCEs/04_CF_BAL_Pilot.preprocessed.SCE.rds
+    Ignored:    data/SCEs/04_CF_BAL_Pilot.transfer_adt.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clean_clustered.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clean_clustered.SEU_bk.rds
+    Ignored:    data/SCEs/04_COMBO.clean_integrated.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clean_integrated.SEU_bk.rds
+    Ignored:    data/SCEs/04_COMBO.clean_macrophages_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clean_others_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clean_tcells_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clustered.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clustered_annotated_adt_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clustered_annotated_lung_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clustered_annotated_macrophages_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clustered_annotated_others_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clustered_annotated_tcells_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clustered_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.integrated.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.macrophages_clustered.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.macrophages_integrated.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.others_clustered.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.others_integrated.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.tcells_clustered.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.tcells_integrated.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.zilionis_mapped.SEU.rds
+    Ignored:    data/SCEs/05_CF_BAL_Pilot.transfer_adt.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clean_clustered.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clean_integrated.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clean_macrophages_diet.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clean_others_diet.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clean_tcells_diet.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clustered_annotated_adt_diet.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clustered_annotated_lung_diet.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clustered_annotated_macrophages_diet.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clustered_annotated_others_diet.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clustered_annotated_tcells_diet.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.macrophages_clustered.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.macrophages_integrated.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.others_clustered.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.others_integrated.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.tcells_clustered.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.tcells_integrated.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.clean_clustered.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.clean_integrated.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.clean_macrophages_diet.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.clean_others_diet.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.clean_tcells_diet.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.macrophages_clustered.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.macrophages_integrated.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.others_clustered.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.others_integrated.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.tcells_clustered.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.tcells_integrated.SEU.rds
+    Ignored:    data/SCEs/C133_Neeland.CellRanger.SCE.rds
+    Ignored:    data/SCEs/obsolete/
+    Ignored:    data/emptyDrops/
+    Ignored:    data/obsolete/
+    Ignored:    data/sample_sheets/obsolete/
+    Ignored:    output/marker-analysis/obsolete/
+    Ignored:    output/obsolete/
+    Ignored:    rename_captures.R
+    Ignored:    renv/library/
+    Ignored:    renv/staging/
+    Ignored:    wflow_background.R
+
+Unstaged changes:
+    Modified:   .gitignore
+    Modified:   .renvignore
+    Modified:   renv/.gitignore
+    Modified:   renv/settings.dcf
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in
+this status report because it is ok for generated content to have uncommitted
+changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made
+to the R Markdown (<code>analysis/03_C133_Neeland.preprocess.Rmd</code>) and HTML (<code>docs/03_C133_Neeland.preprocess.html</code>)
+files. If you’ve configured a remote Git repository (see
+<code>?wflow_git_remote</code>), click on the hyperlinks in the table below to
+view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/44a4d9f98e1a3ae5432ebf9798547b04c9c63f92/analysis/03_C133_Neeland.preprocess.Rmd" target="_blank">44a4d9f</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-16
+</td>
+<td>
+wflow_publish(c("analysis/03_C133_Neeland.preprocess.Rmd", "analysis/04_CF_BAL_Pilot.preprocess.Rmd"))
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/92cb12d6b31b27deda190cf575c56c170c3d9f87/docs/03_C133_Neeland.preprocess.html" target="_blank">92cb12d</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f6c4e9683fb779953273fe913cdae6542f456be0/analysis/03_C133_Neeland.preprocess.Rmd" target="_blank">f6c4e96</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-16
+</td>
+<td>
+wflow_publish(c("analysis/03_C133_Neeland.emptyDrops.Rmd", "analysis/03_C133_Neeland.preprocess.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/350e4b0b4b43fedba70e4a407de651c91b8fafc8/docs/03_C133_Neeland.preprocess.html" target="_blank">350e4b0</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-15
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/07fd1a8c4d8d7e4a4e9aea61492b3101632675eb/analysis/03_C133_Neeland.preprocess.Rmd" target="_blank">07fd1a8</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-15
+</td>
+<td>
+wflow_publish(c("analysis/index.Rmd", "analysis/03_C133_Neeland.preprocess.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/152e801cd9aa54f2ee13d28cbdc19961fc12b4c7/docs/03_C133_Neeland.preprocess.html" target="_blank">152e801</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-03
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/712a0527a82afe8ad7f77baf963d0001d49cb198/analysis/03_C133_Neeland.preprocess.Rmd" target="_blank">712a052</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-03
+</td>
+<td>
+wflow_publish("analysis/03_C133_Neeland.preprocess.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/d74b3f9fcd66ca6fcb0f5fbc1e46db59d47e9fdc/docs/03_C133_Neeland.preprocess.html" target="_blank">d74b3f9</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-08
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/240f755e1c42b0404248d3f0031ced3a9d649794/analysis/03_C133_Neeland.preprocess.Rmd" target="_blank">240f755</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-08
+</td>
+<td>
+wflow_publish(c("analysis/03_CF_BAL_Pilot.preprocess.Rmd", "analysis/03_C133_Neeland.preprocess.Rmd"))
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/5920bcf4d3d73f04256737c159466d815d4d6bb4/docs/03_C133_Neeland.preprocess.html" target="_blank">5920bcf</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-07
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/806214b80b537c79b14d075caad8850a8b0e06ff/analysis/03_C133_Neeland.preprocess.Rmd" target="_blank">806214b</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-07
+</td>
+<td>
+wflow_publish(c("analysis/03_CF_BAL_Pilot.preprocess.Rmd", "analysis/03_C133_Neeland.preprocess.Rmd"))
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="load-libraries" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Load libraries</h1>
+<pre class="r"><code>suppressPackageStartupMessages(library(BiocStyle))
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(here))
+suppressPackageStartupMessages(library(glue))
+suppressPackageStartupMessages(library(DropletUtils))
+suppressPackageStartupMessages(library(scran))
+suppressPackageStartupMessages(library(scater))
+suppressPackageStartupMessages(library(scuttle))
+suppressPackageStartupMessages(library(janitor))
+suppressPackageStartupMessages(library(cowplot))
+suppressPackageStartupMessages(library(patchwork))
+suppressPackageStartupMessages(library(scales))
+suppressPackageStartupMessages(library(DropletQC))
+suppressPackageStartupMessages(library(EnsDb.Hsapiens.v86))
+suppressPackageStartupMessages(library(ensembldb))</code></pre>
+</div>
+<div id="load-data" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Load data</h1>
+<pre class="r"><code>sce &lt;- readRDS(
+  here(&quot;data&quot;, &quot;SCEs&quot;, &quot;03_C133_Neeland.demultiplexed.SCE.rds&quot;))</code></pre>
+<div id="incorporate-cell-based-annotation" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Incorporate cell-based annotation</h2>
+<p>Cell-based annotations are included in the <em>colData</em> of the <em>SingleCellExperiment</em>.
+We store the counts from the hashtag features as an ‘alternative experiment’.</p>
+<pre class="r"><code># Some useful colours
+hto_colours &lt;- setNames(
+  unique(sce$colours$hto_colours),
+  unique(names(sce$colours$hto_colours)))
+genetic_donor_colours &lt;- setNames(
+  unique(sce$colours$genetic_donor_colours),
+  unique(names(sce$colours$genetic_donor_colours)))
+capture_colours &lt;- setNames(
+  unique(sce$colours$capture_colours),
+  unique(names(sce$colours$capture_colours)))</code></pre>
+<div id="summary" class="section level3" number="2.1.1">
+<h3><span class="header-section-number">2.1.1</span> Summary</h3>
+<pre class="r"><code>p1 &lt;- ggcells(sce) + 
+  geom_bar(
+    aes(x = genetic_donor, fill = HTO),
+    position = position_fill(reverse = TRUE)) +
+  coord_flip() +
+  ylab(&quot;Frequency&quot;) +
+  theme_cowplot(font_size = 10) + 
+  scale_fill_manual(values = hto_colours)
+
+p2 &lt;- ggcells(sce) + 
+  geom_bar(
+    aes(x = genetic_donor, fill = capture),
+    position = position_fill(reverse = TRUE)) +
+  coord_flip() +
+  ylab(&quot;Frequency&quot;) +
+  theme_cowplot(font_size = 10) + 
+  scale_fill_manual(values = capture_colours)
+
+p3 &lt;- ggcells(sce) + 
+  geom_bar(aes(x = genetic_donor, fill = genetic_donor)) + 
+  coord_flip() + 
+  ylab(&quot;Number of droplets&quot;) + 
+  theme_cowplot(font_size = 10) + 
+  scale_fill_manual(values = genetic_donor_colours) +
+  geom_text(stat=&#39;count&#39;, aes(x = genetic_donor, label=..count..), hjust=1.5, size=2) +
+  guides(fill = FALSE)
+
+p1 / p2 / p3 </code></pre>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:experiment-by-genetic-donor"></span>
+<img src="figure/03_C133_Neeland.preprocess.Rmd/experiment-by-genetic-donor-1.png" alt="Breakdown of the samples by `genetic_donor` and `capture`." width="672" />
+<p class="caption">
+Figure 2.1: Breakdown of the samples by <code>genetic_donor</code> and <code>capture</code>.
+</p>
+</div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-experiment-by-genetic-donor-1">
+Past versions of experiment-by-genetic-donor-1.png
+</button>
+</p>
+<div id="fig-experiment-by-genetic-donor-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/152e801cd9aa54f2ee13d28cbdc19961fc12b4c7/docs/figure/03_C133_Neeland.preprocess.Rmd/experiment-by-genetic-donor-1.png" target="_blank">152e801</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-03
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/309b0c1eebb598aaa54b9d67e485ebe5381a233d/docs/figure/03_C133_Neeland.preprocess.Rmd/experiment-by-genetic-donor-1.png" target="_blank">309b0c1</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-26
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/5920bcf4d3d73f04256737c159466d815d4d6bb4/docs/figure/03_C133_Neeland.preprocess.Rmd/experiment-by-genetic-donor-1.png" target="_blank">5920bcf</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="incorporating-gene-based-annotation" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Incorporating gene-based annotation</h2>
+<p>Having quantified gene expression against the Ensembl gene annotation, we have Ensembl-style identifiers for the genes.
+These identifiers are used as they are unambiguous and highly stable.
+However, they are difficult to interpret compared to the gene symbols which are more commonly used in the literature.
+Given the Ensembl identifiers, we obtain the corresponding gene symbols using annotation packages available through Bioconductor.
+Henceforth, we will use gene symbols (where available) to refer to genes in our analysis and otherwise use the Ensembl-style gene identifiers<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>.</p>
+<pre class="r"><code>rownames(sce) &lt;- uniquifyFeatureNames(rowData(sce)$ID, rowData(sce)$Symbol)
+# Add chromosome location so we can filter on mitochondrial genes.
+location &lt;- mapIds(
+  x = EnsDb.Hsapiens.v86,
+  # NOTE: Need to remove gene version number prior to lookup.
+  keys = rowData(sce)$ID,
+  keytype = &quot;GENEID&quot;,
+  column = &quot;SEQNAME&quot;)
+rowData(sce)$CHR &lt;- location
+# Additional gene metadata from ENSEMBL and NCBI
+# NOTE: These columns were customised for this project.
+ensdb_columns &lt;- c(
+  &quot;GENEBIOTYPE&quot;, &quot;GENENAME&quot;, &quot;GENESEQSTART&quot;, &quot;GENESEQEND&quot;, &quot;SEQNAME&quot;, &quot;SYMBOL&quot;)
+names(ensdb_columns) &lt;- paste0(&quot;ENSEMBL.&quot;, ensdb_columns)
+stopifnot(all(ensdb_columns %in% columns(EnsDb.Hsapiens.v86)))
+ensdb_df &lt;- DataFrame(
+  lapply(ensdb_columns, function(column) {
+    mapIds(
+      x = EnsDb.Hsapiens.v86,
+      keys = rowData(sce)$ID,
+      keytype = &quot;GENEID&quot;,
+      column = column,
+      multiVals = &quot;CharacterList&quot;)
+  }),
+  row.names = rowData(sce)$ID)
+# NOTE: Can&#39;t look up GENEID column with GENEID key, so have to add manually.
+ensdb_df$ENSEMBL.GENEID &lt;- rowData(sce)$ID
+# NOTE: Homo.sapiens combines org.Hs.eg.db and
+#       TxDb.Hsapiens.UCSC.hg19.knownGene (as well as others) and therefore
+#       uses entrez gene and RefSeq based data.
+library(Homo.sapiens)
+# NOTE: These columns were customised for this project.
+ncbi_columns &lt;- c(
+  # From TxDB: None required
+  # From OrgDB
+  &quot;ALIAS&quot;, &quot;ENTREZID&quot;, &quot;GENENAME&quot;, &quot;REFSEQ&quot;, &quot;SYMBOL&quot;)
+names(ncbi_columns) &lt;- paste0(&quot;NCBI.&quot;, ncbi_columns)
+stopifnot(all(ncbi_columns %in% columns(Homo.sapiens)))
+ncbi_df &lt;- DataFrame(
+  lapply(ncbi_columns, function(column) {
+    mapIds(
+      x = Homo.sapiens,
+      keys = rowData(sce)$ID,
+      keytype = &quot;ENSEMBL&quot;,
+      column = column,
+      multiVals = &quot;CharacterList&quot;)
+  }),
+  row.names = rowData(sce)$ID)
+rowData(sce) &lt;- cbind(rowData(sce), ensdb_df, ncbi_df)
+# Some useful gene sets
+mito_set &lt;- rownames(sce)[which(rowData(sce)$CHR == &quot;MT&quot;)]
+ribo_set &lt;- grep(&quot;^RP(S|L)&quot;, rownames(sce), value = TRUE)
+# NOTE: A more curated approach for identifying ribosomal protein genes
+#       (https://github.com/Bioconductor/OrchestratingSingleCellAnalysis-base/blob/ae201bf26e3e4fa82d9165d8abf4f4dc4b8e5a68/feature-selection.Rmd#L376-L380)
+library(msigdbr)
+c2_sets &lt;- msigdbr(species = &quot;Homo sapiens&quot;, category = &quot;C2&quot;)
+ribo_set &lt;- union(
+  ribo_set,
+  c2_sets[c2_sets$gs_name == &quot;KEGG_RIBOSOME&quot;, ]$human_gene_symbol)
+is_ribo &lt;- rownames(sce) %in% ribo_set
+sex_set &lt;- rownames(sce)[any(rowData(sce)$ENSEMBL.SEQNAME %in% c(&quot;X&quot;, &quot;Y&quot;))]
+pseudogene_set &lt;- rownames(sce)[
+  any(grepl(&quot;pseudogene&quot;, rowData(sce)$ENSEMBL.GENEBIOTYPE))]
+
+head(rowData(sce)) %&gt;%
+  knitr::kable()</code></pre>
+<table style="width:100%;">
+<colgroup>
+<col width="4%" />
+<col width="6%" />
+<col width="4%" />
+<col width="6%" />
+<col width="1%" />
+<col width="7%" />
+<col width="6%" />
+<col width="8%" />
+<col width="7%" />
+<col width="6%" />
+<col width="5%" />
+<col width="6%" />
+<col width="5%" />
+<col width="5%" />
+<col width="5%" />
+<col width="5%" />
+<col width="5%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">ID</th>
+<th align="left">Symbol</th>
+<th align="left">Type</th>
+<th align="left">CHR</th>
+<th align="left">ENSEMBL.GENEBIOTYPE</th>
+<th align="left">ENSEMBL.GENENAME</th>
+<th align="left">ENSEMBL.GENESEQSTART</th>
+<th align="left">ENSEMBL.GENESEQEND</th>
+<th align="left">ENSEMBL.SEQNAME</th>
+<th align="left">ENSEMBL.SYMBOL</th>
+<th align="left">ENSEMBL.GENEID</th>
+<th align="left">NCBI.ALIAS</th>
+<th align="left">NCBI.ENTREZID</th>
+<th align="left">NCBI.GENENAME</th>
+<th align="left">NCBI.REFSEQ</th>
+<th align="left">NCBI.SYMBOL</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">MIR1302-2HG</td>
+<td align="left">ENSG00000243485</td>
+<td align="left">MIR1302-2HG</td>
+<td align="left">Gene Expression</td>
+<td align="left">1</td>
+<td align="left">lincRNA</td>
+<td align="left">MIR1302-2</td>
+<td align="left">29554</td>
+<td align="left">31109</td>
+<td align="left">1</td>
+<td align="left">MIR1302-2</td>
+<td align="left">ENSG00000243485</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">FAM138A</td>
+<td align="left">ENSG00000237613</td>
+<td align="left">FAM138A</td>
+<td align="left">Gene Expression</td>
+<td align="left">1</td>
+<td align="left">lincRNA</td>
+<td align="left">FAM138A</td>
+<td align="left">34554</td>
+<td align="left">36081</td>
+<td align="left">1</td>
+<td align="left">FAM138A</td>
+<td align="left">ENSG00000237613</td>
+<td align="left">F379, FA….</td>
+<td align="left">645520</td>
+<td align="left">family w….</td>
+<td align="left">NR_026818</td>
+<td align="left">FAM138A</td>
+</tr>
+<tr class="odd">
+<td align="left">OR4F5</td>
+<td align="left">ENSG00000186092</td>
+<td align="left">OR4F5</td>
+<td align="left">Gene Expression</td>
+<td align="left">1</td>
+<td align="left">protein_….</td>
+<td align="left">OR4F5</td>
+<td align="left">69091</td>
+<td align="left">70008</td>
+<td align="left">1</td>
+<td align="left">OR4F5</td>
+<td align="left">ENSG00000186092</td>
+<td align="left">OR4F5</td>
+<td align="left">79501</td>
+<td align="left">olfactor….</td>
+<td align="left">NM_00100….</td>
+<td align="left">OR4F5</td>
+</tr>
+<tr class="even">
+<td align="left">AL627309.1</td>
+<td align="left">ENSG00000238009</td>
+<td align="left">AL627309.1</td>
+<td align="left">Gene Expression</td>
+<td align="left">1</td>
+<td align="left">lincRNA</td>
+<td align="left">RP11-34P13.7</td>
+<td align="left">89295</td>
+<td align="left">133723</td>
+<td align="left">1</td>
+<td align="left">RP11-34P13.7</td>
+<td align="left">ENSG00000238009</td>
+<td align="left">LOC100996442</td>
+<td align="left">100996442</td>
+<td align="left">uncharac….</td>
+<td align="left">XR_00173….</td>
+<td align="left">LOC100996442</td>
+</tr>
+<tr class="odd">
+<td align="left">AL627309.3</td>
+<td align="left">ENSG00000239945</td>
+<td align="left">AL627309.3</td>
+<td align="left">Gene Expression</td>
+<td align="left">1</td>
+<td align="left">lincRNA</td>
+<td align="left">RP11-34P13.8</td>
+<td align="left">89551</td>
+<td align="left">91105</td>
+<td align="left">1</td>
+<td align="left">RP11-34P13.8</td>
+<td align="left">ENSG00000239945</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">AL627309.2</td>
+<td align="left">ENSG00000239906</td>
+<td align="left">AL627309.2</td>
+<td align="left">Gene Expression</td>
+<td align="left">1</td>
+<td align="left">antisense</td>
+<td align="left">RP11-34P….</td>
+<td align="left">139790</td>
+<td align="left">140339</td>
+<td align="left">1</td>
+<td align="left">RP11-34P….</td>
+<td align="left">ENSG00000239906</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="quality-control" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Quality control</h1>
+<div id="define-the-quality-control-metrics" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Define the quality control metrics</h2>
+<p>Low-quality cells need to be removed to ensure that technical effects do not distort downstream analysis results.
+We use several quality control (QC) metrics to measure the quality of the cells:</p>
+<ul>
+<li><code>sum</code>: This measures the library size of the cells, which is the total sum of counts across both genes and spike-in transcripts. We want cells to have high library sizes as this means more RNA has been successfully captured during library preparation.</li>
+<li><code>detected</code>: This is the number of expressed features<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> in each cell. Cells with few expressed features are likely to be of poor quality, as the diverse transcript population has not been successful captured.</li>
+<li><code>subsets_Mito_percent</code>: This measures the proportion of UMIs which are mapped to mitochondrial RNA. If there is a higher than expected proportion of mitochondrial RNA this is often symptomatic of a cell which is under stress and is therefore of low quality and will not be used for the analysis.</li>
+<li><code>subsets_Ribo_percent</code>: This measures the proportion of UMIs which are mapped to ribosomal protein genes. If there is a higher than expected proportion of ribosomal protein gene expression this is often symptomatic of a cell which is of compromised quality and we may want to exclude it from the analysis.</li>
+</ul>
+<p>In summary, we aim to identify cells with low library sizes, few expressed genes, and very high percentages of mitochondrial and ribosomal protein gene expression.</p>
+<pre class="r"><code>is_mito &lt;- rownames(sce) %in% mito_set
+summary(is_mito)
+is_ribo &lt;- rownames(sce) %in% ribo_set
+summary(is_ribo)
+sce &lt;- addPerCellQC(
+  sce, 
+  subsets = list(Mito = which(is_mito), Ribo = which(is_ribo)))</code></pre>
+</div>
+<div id="visualise-the-qc-metrics" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Visualise the QC metrics</h2>
+<p>Figure <a href="#fig:qcplot-by-genetic-donor">3.1</a> shows that the vast majority of samples are good-quality:</p>
+<ul>
+<li>The median library size is around 15,800<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a>.</li>
+<li>The median number of genes detected is around 3,600.</li>
+<li>The median percentage of UMIs that are mapped to mitochondrial RNA is around 3%</li>
+</ul>
+<p>However, the percentage of UMIs that are mapped to ribosomal protein genes is perhaps higher than we would like at 13%.</p>
+<p>As we would expect, the <code>doublet</code> droplets have larger library sizes and more genes detected.
+The <code>unassigned</code> droplets generally have smaller library sizes and fewer genes detected.</p>
+<pre class="r"><code>p1 &lt;- plotColData(
+  sce,
+  &quot;sum&quot;,
+  x = &quot;genetic_donor&quot;,
+  other_fields = c(&quot;capture&quot;, &quot;HTO&quot;),
+  colour_by = &quot;genetic_donor&quot;,
+  point_size = 0.5) +
+  scale_y_log10() +
+  scale_colour_manual(values = genetic_donor_colours, name = &quot;genetic_donor&quot;) +
+  theme(axis.text.x = element_blank()) +
+  annotation_logticks(
+    sides = &quot;l&quot;,
+    short = unit(0.03, &quot;cm&quot;),
+    mid = unit(0.06, &quot;cm&quot;),
+    long = unit(0.09, &quot;cm&quot;))
+p2 &lt;- plotColData(
+  sce,
+  &quot;detected&quot;,
+  x = &quot;genetic_donor&quot;,
+  other_fields = c(&quot;capture&quot;, &quot;HTO&quot;),
+  colour_by = &quot;genetic_donor&quot;,
+  point_size = 0.5) +
+  scale_colour_manual(values = genetic_donor_colours, name = &quot;genetic_donor&quot;) +
+  theme(axis.text.x = element_blank())
+p3 &lt;- plotColData(
+  sce,
+  &quot;subsets_Mito_percent&quot;,
+  x = &quot;genetic_donor&quot;,
+  other_fields = c(&quot;capture&quot;, &quot;HTO&quot;),
+  colour_by = &quot;genetic_donor&quot;,
+  point_size = 0.5) +
+  scale_colour_manual(values = genetic_donor_colours, name = &quot;genetic_donor&quot;) +
+  theme(axis.text.x = element_blank())
+p4 &lt;- plotColData(
+  sce,
+  &quot;subsets_Ribo_percent&quot;,
+  x = &quot;genetic_donor&quot;,
+  other_fields = c(&quot;capture&quot;, &quot;HTO&quot;),
+  colour_by = &quot;genetic_donor&quot;,
+  point_size = 0.5) +
+  scale_colour_manual(values = genetic_donor_colours, name = &quot;genetic_donor&quot;) +
+  theme(axis.text.x = element_blank())
+p1 + p2 + p3 + p4 + plot_layout(guides = &quot;collect&quot;, ncol = 2)</code></pre>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:qcplot-by-genetic-donor"></span>
+<img src="figure/03_C133_Neeland.preprocess.Rmd/qcplot-by-genetic-donor-1.png" alt="Distributions of various QC metrics for all cells in the dataset. This includes the library sizes, number of genes detected, and percentage of reads mapped to mitochondrial genes." width="672" />
+<p class="caption">
+Figure 3.1: Distributions of various QC metrics for all cells in the dataset. This includes the library sizes, number of genes detected, and percentage of reads mapped to mitochondrial genes.
+</p>
+</div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qcplot-by-genetic-donor-1">
+Past versions of qcplot-by-genetic-donor-1.png
+</button>
+</p>
+<div id="fig-qcplot-by-genetic-donor-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/152e801cd9aa54f2ee13d28cbdc19961fc12b4c7/docs/figure/03_C133_Neeland.preprocess.Rmd/qcplot-by-genetic-donor-1.png" target="_blank">152e801</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-03
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/309b0c1eebb598aaa54b9d67e485ebe5381a233d/docs/figure/03_C133_Neeland.preprocess.Rmd/qcplot-by-genetic-donor-1.png" target="_blank">309b0c1</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-26
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/5920bcf4d3d73f04256737c159466d815d4d6bb4/docs/figure/03_C133_Neeland.preprocess.Rmd/qcplot-by-genetic-donor-1.png" target="_blank">5920bcf</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Figures <a href="#fig:sum-faceted-genetic-donor">3.2</a> - <a href="#fig:ribo-faceted-genetic-donor">3.5</a> stratify each of the panels in <a href="#fig:qcplot-by-genetic-donor">3.1</a> by <code>capture</code> and <code>genetic_donor</code>.</p>
+<pre class="r"><code>p1 + facet_grid(capture ~ HTO) + 
+  theme(legend.position=&quot;bottom&quot;, text = element_text(size=6), axis.text.y = element_text(size=6)) </code></pre>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:sum-faceted-genetic-donor"></span>
+<img src="figure/03_C133_Neeland.preprocess.Rmd/sum-faceted-genetic-donor-1.png" alt="Library size per droplet stratified by `capture` and `HTO`" width="672" />
+<p class="caption">
+Figure 3.2: Library size per droplet stratified by <code>capture</code> and <code>HTO</code>
+</p>
+</div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-sum-faceted-genetic-donor-1">
+Past versions of sum-faceted-genetic-donor-1.png
+</button>
+</p>
+<div id="fig-sum-faceted-genetic-donor-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/152e801cd9aa54f2ee13d28cbdc19961fc12b4c7/docs/figure/03_C133_Neeland.preprocess.Rmd/sum-faceted-genetic-donor-1.png" target="_blank">152e801</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-03
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/309b0c1eebb598aaa54b9d67e485ebe5381a233d/docs/figure/03_C133_Neeland.preprocess.Rmd/sum-faceted-genetic-donor-1.png" target="_blank">309b0c1</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-26
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/5920bcf4d3d73f04256737c159466d815d4d6bb4/docs/figure/03_C133_Neeland.preprocess.Rmd/sum-faceted-genetic-donor-1.png" target="_blank">5920bcf</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>p2 + facet_grid(capture ~ HTO) + 
+  theme(legend.position=&quot;bottom&quot;, text = element_text(size=6), axis.text.y = element_text(size=6)) </code></pre>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:detected-faceted-genetic-donor"></span>
+<img src="figure/03_C133_Neeland.preprocess.Rmd/detected-faceted-genetic-donor-1.png" alt="Number of genes detected per droplet stratified by `capture` and `HTO`" width="672" />
+<p class="caption">
+Figure 3.3: Number of genes detected per droplet stratified by <code>capture</code> and <code>HTO</code>
+</p>
+</div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-detected-faceted-genetic-donor-1">
+Past versions of detected-faceted-genetic-donor-1.png
+</button>
+</p>
+<div id="fig-detected-faceted-genetic-donor-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/152e801cd9aa54f2ee13d28cbdc19961fc12b4c7/docs/figure/03_C133_Neeland.preprocess.Rmd/detected-faceted-genetic-donor-1.png" target="_blank">152e801</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-03
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/309b0c1eebb598aaa54b9d67e485ebe5381a233d/docs/figure/03_C133_Neeland.preprocess.Rmd/detected-faceted-genetic-donor-1.png" target="_blank">309b0c1</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-26
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/5920bcf4d3d73f04256737c159466d815d4d6bb4/docs/figure/03_C133_Neeland.preprocess.Rmd/detected-faceted-genetic-donor-1.png" target="_blank">5920bcf</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>p3 + facet_grid(capture ~ HTO) + 
+  theme(legend.position=&quot;bottom&quot;, text = element_text(size=6), axis.text.y = element_text(size=6)) </code></pre>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:mito-faceted-genetic-donor"></span>
+<img src="figure/03_C133_Neeland.preprocess.Rmd/mito-faceted-genetic-donor-1.png" alt="Percentage of UMIs that are mapped to mitochondrial RNA per droplet stratified by `capture` and `HTO`" width="672" />
+<p class="caption">
+Figure 3.4: Percentage of UMIs that are mapped to mitochondrial RNA per droplet stratified by <code>capture</code> and <code>HTO</code>
+</p>
+</div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-mito-faceted-genetic-donor-1">
+Past versions of mito-faceted-genetic-donor-1.png
+</button>
+</p>
+<div id="fig-mito-faceted-genetic-donor-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/152e801cd9aa54f2ee13d28cbdc19961fc12b4c7/docs/figure/03_C133_Neeland.preprocess.Rmd/mito-faceted-genetic-donor-1.png" target="_blank">152e801</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-03
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/309b0c1eebb598aaa54b9d67e485ebe5381a233d/docs/figure/03_C133_Neeland.preprocess.Rmd/mito-faceted-genetic-donor-1.png" target="_blank">309b0c1</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-26
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/5920bcf4d3d73f04256737c159466d815d4d6bb4/docs/figure/03_C133_Neeland.preprocess.Rmd/mito-faceted-genetic-donor-1.png" target="_blank">5920bcf</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>p4 + facet_grid(capture ~ HTO) + 
+  theme(legend.position=&quot;bottom&quot;, text = element_text(size=6), axis.text.y = element_text(size=6)) </code></pre>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:ribo-faceted-genetic-donor"></span>
+<img src="figure/03_C133_Neeland.preprocess.Rmd/ribo-faceted-genetic-donor-1.png" alt="Percentage of UMIs that are mapped to ribosomal protein genes per droplet stratified by `capture` and `HTO`" width="672" />
+<p class="caption">
+Figure 3.5: Percentage of UMIs that are mapped to ribosomal protein genes per droplet stratified by <code>capture</code> and <code>HTO</code>
+</p>
+</div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-ribo-faceted-genetic-donor-1">
+Past versions of ribo-faceted-genetic-donor-1.png
+</button>
+</p>
+<div id="fig-ribo-faceted-genetic-donor-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/152e801cd9aa54f2ee13d28cbdc19961fc12b4c7/docs/figure/03_C133_Neeland.preprocess.Rmd/ribo-faceted-genetic-donor-1.png" target="_blank">152e801</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-03
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/309b0c1eebb598aaa54b9d67e485ebe5381a233d/docs/figure/03_C133_Neeland.preprocess.Rmd/ribo-faceted-genetic-donor-1.png" target="_blank">309b0c1</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-26
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/5920bcf4d3d73f04256737c159466d815d4d6bb4/docs/figure/03_C133_Neeland.preprocess.Rmd/ribo-faceted-genetic-donor-1.png" target="_blank">5920bcf</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="identify-outliers-by-each-metric" class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> Identify outliers by each metric</h2>
+<p>Filtering on the mitochondrial proportion can identify stressed/damaged cells and so we seek to identify droplets with unusually large mitochondrial proportions (i.e. outliers). Outlier thresholds are defined based on the median absolute deviation (MADs) from the median value of the metric across all cells. Here, we opt to use <code>donor</code>-specific thresholds to account for <code>donor</code>-specific differences<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a>.</p>
+<pre class="r"><code>sce$batch &lt;- sce$genetic_donor
+
+mito_drop &lt;- isOutlier(
+  metric = sce$subsets_Mito_percent, 
+  nmads = 3, 
+  type = &quot;higher&quot;,
+  batch = sce$batch,
+  subset = !grepl(&quot;unassigned&quot;, sce$genetic_donor))
+mito_drop_df &lt;- data.frame(
+  sample = factor(
+    colnames(attributes(mito_drop)$thresholds),
+    levels(sce$batch)),
+  lower = attributes(mito_drop)$thresholds[&quot;higher&quot;, ])
+ribo_drop &lt;- isOutlier(
+  metric = sce$subsets_Ribo_percent, 
+  nmads = 3, 
+  type = &quot;higher&quot;,
+  batch = sce$batch,
+  subset = !grepl(&quot;unassigned&quot;, sce$genetic_donor))
+ribo_drop_df &lt;- data.frame(
+  sample = factor(
+    colnames(attributes(ribo_drop)$thresholds),
+    levels(sce$batch)),
+  lower = attributes(ribo_drop)$thresholds[&quot;higher&quot;, ])</code></pre>
+<p>The following table summarises the QC cutoffs:</p>
+<pre class="r"><code>qc_cutoffs_df &lt;- dplyr::inner_join(mito_drop_df, ribo_drop_df, by = &quot;sample&quot;)
+colnames(qc_cutoffs_df) &lt;- c(&quot;batch&quot;, &quot;%mito&quot;, &quot;%ribo&quot;)
+inner_join(
+  qc_cutoffs_df,
+  distinct(as.data.frame(colData(sce)[, c(&quot;batch&quot;), drop = FALSE])),
+  by = &quot;batch&quot;) %&gt;%
+  dplyr::select(batch, everything()) %&gt;%
+  arrange(batch) %&gt;%
+  knitr::kable(caption = &quot;Sample-specific QC metric cutoffs&quot;, digits = 1)</code></pre>
+<table>
+<caption><span id="tab:unnamed-chunk-7">Table 3.1: </span>Sample-specific QC metric cutoffs</caption>
+<thead>
+<tr class="header">
+<th align="left">batch</th>
+<th align="right">%mito</th>
+<th align="right">%ribo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">donor_A</td>
+<td align="right">13.3</td>
+<td align="right">48.1</td>
+</tr>
+<tr class="even">
+<td align="left">donor_B</td>
+<td align="right">14.5</td>
+<td align="right">32.5</td>
+</tr>
+<tr class="odd">
+<td align="left">donor_C</td>
+<td align="right">11.4</td>
+<td align="right">26.0</td>
+</tr>
+<tr class="even">
+<td align="left">donor_D</td>
+<td align="right">14.6</td>
+<td align="right">22.9</td>
+</tr>
+<tr class="odd">
+<td align="left">donor_E</td>
+<td align="right">6.9</td>
+<td align="right">22.6</td>
+</tr>
+<tr class="even">
+<td align="left">donor_F</td>
+<td align="right">11.1</td>
+<td align="right">21.8</td>
+</tr>
+<tr class="odd">
+<td align="left">donor_G</td>
+<td align="right">12.6</td>
+<td align="right">38.5</td>
+</tr>
+<tr class="even">
+<td align="left">donor_H</td>
+<td align="right">13.1</td>
+<td align="right">19.8</td>
+</tr>
+<tr class="odd">
+<td align="left">doublet</td>
+<td align="right">12.1</td>
+<td align="right">20.6</td>
+</tr>
+<tr class="even">
+<td align="left">unassigned</td>
+<td align="right">11.3</td>
+<td align="right">25.4</td>
+</tr>
+</tbody>
+</table>
+<p>The vast majority of cells are retained for all samples.</p>
+<pre class="r"><code>sce_pre_QC_outlier_removal &lt;- sce
+# TODO: Decide if excluding based on ribo
+keep &lt;- !mito_drop
+sce_pre_QC_outlier_removal$keep &lt;- keep
+sce &lt;- sce[, keep]
+data.frame(
+  ByMito = tapply(
+    mito_drop, 
+    sce_pre_QC_outlier_removal$batch, 
+    sum,
+    na.rm = TRUE),
+  Remaining = as.vector(unname(table(sce$batch))),
+  PercRemaining = round(
+    100 * as.vector(unname(table(sce$batch))) /
+      as.vector(
+        unname(
+          table(sce_pre_QC_outlier_removal$batch))), 1)) %&gt;%
+  tibble::rownames_to_column(&quot;batch&quot;) %&gt;%
+  dplyr::arrange(dplyr::desc(PercRemaining)) %&gt;%
+  knitr::kable(
+    caption = &quot;Number of samples removed by each QC step and the number of samples remaining.&quot;)</code></pre>
+<table>
+<caption><span id="tab:unnamed-chunk-8">Table 3.2: </span>Number of samples removed by each QC step and the number of samples remaining.</caption>
+<thead>
+<tr class="header">
+<th align="left">batch</th>
+<th align="right">ByMito</th>
+<th align="right">Remaining</th>
+<th align="right">PercRemaining</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">donor_F</td>
+<td align="right">179</td>
+<td align="right">3113</td>
+<td align="right">94.6</td>
+</tr>
+<tr class="even">
+<td align="left">donor_H</td>
+<td align="right">168</td>
+<td align="right">2586</td>
+<td align="right">93.9</td>
+</tr>
+<tr class="odd">
+<td align="left">doublet</td>
+<td align="right">149</td>
+<td align="right">1987</td>
+<td align="right">93.0</td>
+</tr>
+<tr class="even">
+<td align="left">donor_C</td>
+<td align="right">178</td>
+<td align="right">2225</td>
+<td align="right">92.6</td>
+</tr>
+<tr class="odd">
+<td align="left">donor_G</td>
+<td align="right">235</td>
+<td align="right">2877</td>
+<td align="right">92.4</td>
+</tr>
+<tr class="even">
+<td align="left">donor_D</td>
+<td align="right">203</td>
+<td align="right">2110</td>
+<td align="right">91.2</td>
+</tr>
+<tr class="odd">
+<td align="left">donor_E</td>
+<td align="right">356</td>
+<td align="right">3475</td>
+<td align="right">90.7</td>
+</tr>
+<tr class="even">
+<td align="left">donor_B</td>
+<td align="right">228</td>
+<td align="right">1646</td>
+<td align="right">87.8</td>
+</tr>
+<tr class="odd">
+<td align="left">donor_A</td>
+<td align="right">330</td>
+<td align="right">2260</td>
+<td align="right">87.3</td>
+</tr>
+<tr class="even">
+<td align="left">unassigned</td>
+<td align="right">131</td>
+<td align="right">392</td>
+<td align="right">75.0</td>
+</tr>
+</tbody>
+</table>
+<div id="checking-for-removal-of-biologically-relevant-subpopulations" class="section level3" number="3.3.1">
+<h3><span class="header-section-number">3.3.1</span> Checking for removal of biologically relevant subpopulations</h3>
+<p>The biggest practical concern during QC is whether an entire cell type is inadvertently discarded.
+There is always some risk of this occurring as the QC metrics are never fully independent of biological state.
+We can diagnose cell type loss by looking for systematic differences in gene expression between the discarded and retained cells.</p>
+<pre class="r"><code>lost &lt;- calculateAverage(counts(sce_pre_QC_outlier_removal)[, !keep])
+kept &lt;- calculateAverage(counts(sce_pre_QC_outlier_removal)[, keep])
+library(edgeR)
+logged &lt;- cpm(cbind(lost, kept), log = TRUE, prior.count = 2)
+logFC &lt;- logged[, 1] - logged[, 2]
+abundance &lt;- rowMeans(logged)</code></pre>
+<p>If the discarded pool is enriched for a certain cell type, we should observe increased expression of the corresponding marker genes.
+Figure <a href="#fig:qc-md-plot-C133-Neeland">3.6</a> shows the result of this analysis, highlighting that the systematically upregulated genes are mitochondrial transcripts and that those systematically downregulated genes are largely ribosomal protein genes.
+This suggests that the QC step did not inadvertently filter out an entire biologically relevant subpopulation.</p>
+<pre class="r"><code>is_mito &lt;- rownames(sce) %in% mito_set
+is_ribo &lt;- rownames(sce) %in% ribo_set
+par(mfrow = c(1, 1))
+plot(
+  abundance,
+  logFC,
+  xlab = &quot;Average count&quot;,
+  ylab = &quot;Log-FC (lost/kept)&quot;,
+  pch = 16)
+points(
+  abundance[is_mito],
+  logFC[is_mito],
+  col = &quot;dodgerblue&quot;,
+  pch = 16,
+  cex = 1)
+points(
+  abundance[is_ribo],
+  logFC[is_ribo],
+  col = &quot;orange&quot;,
+  pch = 16,
+  cex = 1)
+abline(h = c(-1, 1), col = &quot;red&quot;, lty = 2)</code></pre>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:qc-md-plot-C133-Neeland"></span>
+<img src="figure/03_C133_Neeland.preprocess.Rmd/qc-md-plot-C133-Neeland-1.png" alt="Log-fold change in expression in the discarded cells compared to the retained cells. Each point represents a gene with mitochondrial transcripts in blue and ribosomal protein genes in orange. Dashed red lines indicate $|logFC| = 1" width="672" />
+<p class="caption">
+Figure 3.6: Log-fold change in expression in the discarded cells compared to the retained cells. Each point represents a gene with mitochondrial transcripts in blue and ribosomal protein genes in orange. Dashed red lines indicate $|logFC| = 1
+</p>
+</div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qc-md-plot-C133-Neeland-1">
+Past versions of qc-md-plot-C133-Neeland-1.png
+</button>
+</p>
+<div id="fig-qc-md-plot-C133-Neeland-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/92cb12d6b31b27deda190cf575c56c170c3d9f87/docs/figure/03_C133_Neeland.preprocess.Rmd/qc-md-plot-C133-Neeland-1.png" target="_blank">92cb12d</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Another concern is whether the cells removed during QC preferentially derive from particular experimental groups.
+Reassuringly, Figure <a href="#fig:barplot-highlighting-outliers">3.7</a> shows that this is not the case.</p>
+<pre class="r"><code>ggcells(sce_pre_QC_outlier_removal) +
+  geom_bar(aes(x = genetic_donor, fill = keep)) + 
+  ylab(&quot;Number of droplets&quot;) + 
+  theme_cowplot(font_size = 7) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  facet_grid(genetic_donor ~ ., scales = &quot;free_y&quot;)</code></pre>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:barplot-highlighting-outliers"></span>
+<img src="figure/03_C133_Neeland.preprocess.Rmd/barplot-highlighting-outliers-1.png" alt="Droplets removed during QC, stratified by `Sample`. " width="672" />
+<p class="caption">
+Figure 3.7: Droplets removed during QC, stratified by <code>Sample</code>.
+</p>
+</div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-barplot-highlighting-outliers-1">
+Past versions of barplot-highlighting-outliers-1.png
+</button>
+</p>
+<div id="fig-barplot-highlighting-outliers-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/152e801cd9aa54f2ee13d28cbdc19961fc12b4c7/docs/figure/03_C133_Neeland.preprocess.Rmd/barplot-highlighting-outliers-1.png" target="_blank">152e801</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-03
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/309b0c1eebb598aaa54b9d67e485ebe5381a233d/docs/figure/03_C133_Neeland.preprocess.Rmd/barplot-highlighting-outliers-1.png" target="_blank">309b0c1</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-26
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/5920bcf4d3d73f04256737c159466d815d4d6bb4/docs/figure/03_C133_Neeland.preprocess.Rmd/barplot-highlighting-outliers-1.png" target="_blank">5920bcf</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Finally, Figure <a href="#fig:qcplot-highlighting-outliers">3.8</a> compares the QC metrics of the discarded and retained droplets.</p>
+<pre class="r"><code>p1 &lt;- plotColData(
+  sce_pre_QC_outlier_removal,
+  &quot;sum&quot;,
+  x = &quot;genetic_donor&quot;,
+  colour_by = &quot;keep&quot;,
+  point_size = 0.5) +
+  scale_y_log10() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  annotation_logticks(
+    sides = &quot;l&quot;,
+    short = unit(0.03, &quot;cm&quot;),
+    mid = unit(0.06, &quot;cm&quot;),
+    long = unit(0.09, &quot;cm&quot;))
+p2 &lt;- plotColData(
+  sce_pre_QC_outlier_removal,
+  &quot;detected&quot;,
+  x = &quot;genetic_donor&quot;,
+  colour_by = &quot;keep&quot;,
+  point_size = 0.5) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+p3 &lt;- plotColData(
+  sce_pre_QC_outlier_removal,
+  &quot;subsets_Mito_percent&quot;,
+  x = &quot;genetic_donor&quot;,
+  colour_by = &quot;keep&quot;,
+  point_size = 0.5) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+p4 &lt;- plotColData(
+  sce_pre_QC_outlier_removal,
+  &quot;subsets_Ribo_percent&quot;,
+  x = &quot;genetic_donor&quot;,
+  colour_by = &quot;keep&quot;,
+  point_size = 0.5) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+p1 + p2 + p3 + p4 + plot_layout(guides = &quot;collect&quot;)</code></pre>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:qcplot-highlighting-outliers"></span>
+<img src="figure/03_C133_Neeland.preprocess.Rmd/qcplot-highlighting-outliers-1.png" alt="Distribution of QC metrics for each plate in the dataset. Each point represents a cell and is colored according to whether it was discarded during the QC process. Note that a cell will only be kept if it passes the relevant threshold for all QC metrics." width="672" />
+<p class="caption">
+Figure 3.8: Distribution of QC metrics for each plate in the dataset. Each point represents a cell and is colored according to whether it was discarded during the QC process. Note that a cell will only be kept if it passes the relevant threshold for all QC metrics.
+</p>
+</div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qcplot-highlighting-outliers-1">
+Past versions of qcplot-highlighting-outliers-1.png
+</button>
+</p>
+<div id="fig-qcplot-highlighting-outliers-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/152e801cd9aa54f2ee13d28cbdc19961fc12b4c7/docs/figure/03_C133_Neeland.preprocess.Rmd/qcplot-highlighting-outliers-1.png" target="_blank">152e801</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-03
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/309b0c1eebb598aaa54b9d67e485ebe5381a233d/docs/figure/03_C133_Neeland.preprocess.Rmd/qcplot-highlighting-outliers-1.png" target="_blank">309b0c1</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-26
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/5920bcf4d3d73f04256737c159466d815d4d6bb4/docs/figure/03_C133_Neeland.preprocess.Rmd/qcplot-highlighting-outliers-1.png" target="_blank">5920bcf</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="qc-summary" class="section level2" number="3.4">
+<h2><span class="header-section-number">3.4</span> QC summary</h2>
+<p>We had already removed droplets that have unusually small library sizes or number of genes detected by the process of identifying empty droplets.
+We have now further removed droplets whose mitochondrial proportions we deem to be an outlier.</p>
+<p>For the time being, we opt to retain the <code>Unknown</code> and <code>unassigned</code> droplets because these may allow us to identify a subpopulation of cells that are not captured by hashing or genetic demultiplexing.</p>
+<p>To conclude, Figure <a href="#fig:qcplot-post-outlier-removal">3.9</a> shows that following QC that most samples have similar QC metrics, as is to be expected, and Figure<a href="#fig:experiment-by-donor-postqc">3.10</a> summarises the experimental design following QC.</p>
+<pre class="r"><code>p1 &lt;- plotColData(
+  sce,
+  &quot;sum&quot;,
+  x = &quot;genetic_donor&quot;,
+  other_fields = c(&quot;capture&quot;, &quot;genetic_donor&quot;),
+  colour_by = &quot;genetic_donor&quot;,
+  point_size = 0.5) +
+  scale_y_log10() +
+  scale_colour_manual(values = genetic_donor_colours, name = &quot;genetic_donor&quot;) +
+  theme(axis.text.x = element_blank()) +
+  annotation_logticks(
+    sides = &quot;l&quot;,
+    short = unit(0.03, &quot;cm&quot;),
+    mid = unit(0.06, &quot;cm&quot;),
+    long = unit(0.09, &quot;cm&quot;))
+p2 &lt;- plotColData(
+  sce,
+  &quot;detected&quot;,
+  x = &quot;genetic_donor&quot;,
+  other_fields = c(&quot;capture&quot;, &quot;genetic_donor&quot;),
+  colour_by = &quot;genetic_donor&quot;,
+  point_size = 0.5) +
+  scale_colour_manual(values = genetic_donor_colours, name = &quot;genetic_donor&quot;) +
+  theme(axis.text.x = element_blank())
+p3 &lt;- plotColData(
+  sce,
+  &quot;subsets_Mito_percent&quot;,
+  x = &quot;genetic_donor&quot;,
+  other_fields = c(&quot;capture&quot;, &quot;genetic_donor&quot;),
+  colour_by = &quot;genetic_donor&quot;,
+  point_size = 0.5) +
+  scale_colour_manual(values = genetic_donor_colours, name = &quot;genetic_donor&quot;) +
+  theme(axis.text.x = element_blank())
+p4 &lt;- plotColData(
+  sce,
+  &quot;subsets_Ribo_percent&quot;,
+  x = &quot;genetic_donor&quot;,
+  other_fields = c(&quot;capture&quot;, &quot;genetic_donor&quot;),
+  colour_by = &quot;genetic_donor&quot;,
+  point_size = 0.5) +
+  scale_colour_manual(values = genetic_donor_colours, name = &quot;genetic_donor&quot;) +
+  theme(axis.text.x = element_blank())
+p1 + p2 + p3 + p4 + plot_layout(guides = &quot;collect&quot;, ncol = 2)</code></pre>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:qcplot-post-outlier-removal"></span>
+<img src="figure/03_C133_Neeland.preprocess.Rmd/qcplot-post-outlier-removal-1.png" alt="Distributions of various QC metrics for all cells in the dataset passing QC. This includes the library sizes and proportion of reads mapped to mitochondrial genes." width="672" />
+<p class="caption">
+Figure 3.9: Distributions of various QC metrics for all cells in the dataset passing QC. This includes the library sizes and proportion of reads mapped to mitochondrial genes.
+</p>
+</div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-qcplot-post-outlier-removal-1">
+Past versions of qcplot-post-outlier-removal-1.png
+</button>
+</p>
+<div id="fig-qcplot-post-outlier-removal-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/152e801cd9aa54f2ee13d28cbdc19961fc12b4c7/docs/figure/03_C133_Neeland.preprocess.Rmd/qcplot-post-outlier-removal-1.png" target="_blank">152e801</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-03
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/309b0c1eebb598aaa54b9d67e485ebe5381a233d/docs/figure/03_C133_Neeland.preprocess.Rmd/qcplot-post-outlier-removal-1.png" target="_blank">309b0c1</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-26
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/5920bcf4d3d73f04256737c159466d815d4d6bb4/docs/figure/03_C133_Neeland.preprocess.Rmd/qcplot-post-outlier-removal-1.png" target="_blank">5920bcf</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>p1 &lt;- ggcells(sce) + 
+  geom_bar(
+    aes(x = genetic_donor, fill = HTO),
+    position = position_fill(reverse = TRUE)) +
+  coord_flip() +
+  ylab(&quot;Frequency&quot;) +
+  theme_cowplot(font_size = 10) + 
+  scale_fill_manual(values = hto_colours)
+p2 &lt;- ggcells(sce) + 
+  geom_bar(
+    aes(x = genetic_donor, fill = capture),
+    position = position_fill(reverse = TRUE)) +
+  coord_flip() +
+  ylab(&quot;Frequency&quot;) +
+  theme_cowplot(font_size = 10) + 
+  scale_fill_manual(values = capture_colours)
+p3 &lt;- ggcells(sce) + 
+  geom_bar(aes(x = genetic_donor, fill = genetic_donor)) + 
+  coord_flip() + 
+  ylab(&quot;Number of droplets&quot;) + 
+  theme_cowplot(font_size = 10) + 
+  scale_fill_manual(values = genetic_donor_colours) +
+  geom_text(stat=&#39;count&#39;, aes(x = genetic_donor, label=..count..), hjust=1.5, size=2) +
+  guides(fill = FALSE)
+p1 / p2 / p3 + plot_layout(guides = &quot;collect&quot;)</code></pre>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:experiment-by-donor-postqc"></span>
+<img src="figure/03_C133_Neeland.preprocess.Rmd/experiment-by-donor-postqc-1.png" alt="Breakdown of the samples following QC." width="672" />
+<p class="caption">
+Figure 3.10: Breakdown of the samples following QC.
+</p>
+</div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-experiment-by-donor-postqc-1">
+Past versions of experiment-by-donor-postqc-1.png
+</button>
+</p>
+<div id="fig-experiment-by-donor-postqc-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/152e801cd9aa54f2ee13d28cbdc19961fc12b4c7/docs/figure/03_C133_Neeland.preprocess.Rmd/experiment-by-donor-postqc-1.png" target="_blank">152e801</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-03
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/309b0c1eebb598aaa54b9d67e485ebe5381a233d/docs/figure/03_C133_Neeland.preprocess.Rmd/experiment-by-donor-postqc-1.png" target="_blank">309b0c1</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-26
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/5920bcf4d3d73f04256737c159466d815d4d6bb4/docs/figure/03_C133_Neeland.preprocess.Rmd/experiment-by-donor-postqc-1.png" target="_blank">5920bcf</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="identify-further-empty-droplets-using-dropletqc" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Identify further empty droplets using <code>DropletQC</code></h1>
+<p><code>DropletQC</code> calculates, for every requested cell barcode in a provided scRNA-seq BAM file, the nuclear fraction score:</p>
+<p><code>nuclear fraction = intronic reads / (intronic  reads  +  exonic  reads)</code></p>
+<p>The score captures the proportion of reads from intronic regions. These RNA fragments originate from unspliced (nuclear) pre-mRNA, hence the name “nuclear fraction”. This score can be used to help identify:</p>
+<ol style="list-style-type: decimal">
+<li>“Empty” droplets containing ambient RNA: low nuclear fraction score and low UMI count</li>
+<li>Droplets containing damaged cells: high nuclear fraction score and low UMI count</li>
+</ol>
+<pre class="r"><code>out &lt;- here(&quot;data/SCEs/03_C133_Neeland.nuclear_fraction_calls.rds&quot;)
+capture_names &lt;- levels(sce$capture)
+
+if(!file.exists(out)){
+folder &lt;- here()
+
+nf &lt;- lapply(capture_names, function(cn){
+  message(cn)
+  
+  bam &lt;- file.path(folder, 
+                   &quot;data/CellRanger&quot;,
+                   cn,
+                   &quot;possorted_genome_bam.bam&quot;)
+  bai &lt;- file.path(folder, 
+                   &quot;data/CellRanger&quot;,
+                   cn,
+                   &quot;possorted_genome_bam.bam.bai&quot;)
+  
+  nuclear_fraction_tags(bam = bam,
+                        bam_index = bai,
+                        verbose = FALSE,
+                        barcodes = sce[[&quot;Barcode&quot;]][sce$Sample == cn])
+})
+names(nf) &lt;- capture_names
+
+dplyr::bind_rows(lapply(nf, 
+                        tibble::rownames_to_column, 
+                        var = &quot;barcode&quot;)) %&gt;%
+  dplyr::mutate(cell = paste(rep(seq_along(nf), 
+                                 vapply(nf, nrow, 1L)),
+                             barcode, sep = &quot;_&quot;)) -&gt; nf_dat
+  saveRDS(nf_dat, file = out)
+          
+} else {
+  nf_dat &lt;- readRDS(out)
+  
+}</code></pre>
+<div id="visualise-the-results" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Visualise the results</h2>
+<p>Figure <a href="#fig:dropletqc-results-C133-Neeland">4.1</a> shows that a distinct population of additional empty droplets has not been identified by <code>DropletQC</code>. All potential empty droplets will be tagged but downstream removal is unlikely.</p>
+<pre class="r"><code>colData(sce) %&gt;% 
+  data.frame %&gt;% 
+  rownames_to_column(var = &quot;cell&quot;) %&gt;%
+  inner_join(nf_dat %&gt;% 
+               dplyr::select(cell, nuclear_fraction)) %&gt;%
+  column_to_rownames(var = &quot;cell&quot;) %&gt;%
+  DataFrame -&gt; colData(sce)
+
+ed &lt;- lapply(capture_names, function(cn){
+  identify_empty_drops(nf_umi = colData(sce) %&gt;% data.frame %&gt;%
+                         dplyr::filter(Sample == cn) %&gt;%
+                         dplyr::select(nuclear_fraction, sum),
+                       include_plot = TRUE,
+                       umi_rescue = 10^2.5,
+                       nf_rescue = 0.02)
+})</code></pre>
+<p><img src="figure/03_C133_Neeland.preprocess.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-1">
+Past versions of unnamed-chunk-11-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/92cb12d6b31b27deda190cf575c56c170c3d9f87/docs/figure/03_C133_Neeland.preprocess.Rmd/unnamed-chunk-11-1.png" target="_blank">92cb12d</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-16
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/152e801cd9aa54f2ee13d28cbdc19961fc12b4c7/docs/figure/03_C133_Neeland.preprocess.Rmd/unnamed-chunk-11-1.png" target="_blank">152e801</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-03
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/309b0c1eebb598aaa54b9d67e485ebe5381a233d/docs/figure/03_C133_Neeland.preprocess.Rmd/unnamed-chunk-11-1.png" target="_blank">309b0c1</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-26
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/d74b3f9fcd66ca6fcb0f5fbc1e46db59d47e9fdc/docs/figure/03_C133_Neeland.preprocess.Rmd/unnamed-chunk-11-1.png" target="_blank">d74b3f9</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/5920bcf4d3d73f04256737c159466d815d4d6bb4/docs/figure/03_C133_Neeland.preprocess.Rmd/unnamed-chunk-11-1.png" target="_blank">5920bcf</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/03_C133_Neeland.preprocess.Rmd/unnamed-chunk-11-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-2">
+Past versions of unnamed-chunk-11-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/92cb12d6b31b27deda190cf575c56c170c3d9f87/docs/figure/03_C133_Neeland.preprocess.Rmd/unnamed-chunk-11-2.png" target="_blank">92cb12d</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-16
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/309b0c1eebb598aaa54b9d67e485ebe5381a233d/docs/figure/03_C133_Neeland.preprocess.Rmd/unnamed-chunk-11-2.png" target="_blank">309b0c1</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-26
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/d74b3f9fcd66ca6fcb0f5fbc1e46db59d47e9fdc/docs/figure/03_C133_Neeland.preprocess.Rmd/unnamed-chunk-11-2.png" target="_blank">d74b3f9</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/5920bcf4d3d73f04256737c159466d815d4d6bb4/docs/figure/03_C133_Neeland.preprocess.Rmd/unnamed-chunk-11-2.png" target="_blank">5920bcf</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Add <code>DropletQC</code> calls to <code>colData</code>.</p>
+<pre class="r"><code>colData(sce) %&gt;% 
+  data.frame %&gt;% 
+  rownames_to_column(var = &quot;cell&quot;) %&gt;%
+  inner_join(ed %&gt;% bind_rows %&gt;%
+               rownames_to_column(var = &quot;cell&quot;)) %&gt;%
+  column_to_rownames(var = &quot;cell&quot;) %&gt;%
+  DataFrame -&gt; colData(sce)
+
+p &lt;- ggcells(sce, aes(x = nuclear_fraction, y = sum)) +
+  aes(colour = cell_status) +
+  geom_point(size = 1, alpha = 0.25) +
+  scale_y_log10() +
+  facet_wrap(~Sample) +
+  theme(legend.position = &quot;bottom&quot;)
+p</code></pre>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:dropletqc-results-C133-Neeland"></span>
+<img src="figure/03_C133_Neeland.preprocess.Rmd/dropletqc-results-C133-Neeland-1.png" alt="DropletQC results across all captures." width="672" />
+<p class="caption">
+Figure 4.1: DropletQC results across all captures.
+</p>
+</div>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-dropletqc-results-C133-Neeland-1">
+Past versions of dropletqc-results-C133-Neeland-1.png
+</button>
+</p>
+<div id="fig-dropletqc-results-C133-Neeland-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/92cb12d6b31b27deda190cf575c56c170c3d9f87/docs/figure/03_C133_Neeland.preprocess.Rmd/dropletqc-results-C133-Neeland-1.png" target="_blank">92cb12d</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plotColData(sce, x = &quot;Sample&quot;, 
+            y = &quot;sum&quot;,
+            colour_by = &quot;cell_status&quot;) +
+  scale_y_log10()</code></pre>
+<p><img src="figure/03_C133_Neeland.preprocess.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-1">
+Past versions of unnamed-chunk-12-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/152e801cd9aa54f2ee13d28cbdc19961fc12b4c7/docs/figure/03_C133_Neeland.preprocess.Rmd/unnamed-chunk-12-1.png" target="_blank">152e801</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-03
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/309b0c1eebb598aaa54b9d67e485ebe5381a233d/docs/figure/03_C133_Neeland.preprocess.Rmd/unnamed-chunk-12-1.png" target="_blank">309b0c1</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-26
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/d74b3f9fcd66ca6fcb0f5fbc1e46db59d47e9fdc/docs/figure/03_C133_Neeland.preprocess.Rmd/unnamed-chunk-12-1.png" target="_blank">d74b3f9</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-08
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/5920bcf4d3d73f04256737c159466d815d4d6bb4/docs/figure/03_C133_Neeland.preprocess.Rmd/unnamed-chunk-12-1.png" target="_blank">5920bcf</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="save-data" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Save data</h1>
+<pre class="r"><code>out &lt;- here(&quot;data&quot;, &quot;SCEs&quot;, &quot;03_C133_Neeland.preprocessed.SCE.rds&quot;) 
+
+if(!file.exists(out)) saveRDS(sce, out)</code></pre>
+</div>
+<div id="session-info" class="section level1 appendix" number="6">
+<h1><span class="header-section-number">6</span> Session info</h1>
+<summary>
+The analysis and this document were prepared using the following software (click triangle to expand)
+</summary>
+<details>
+<pre class="r"><code>sessioninfo::session_info()</code></pre>
+<pre><code>─ Session info ───────────────────────────────────────────────────────────────
+ setting  value
+ version  R version 4.1.0 (2021-05-18)
+ os       CentOS Linux 7 (Core)
+ system   x86_64, linux-gnu
+ ui       X11
+ language (EN)
+ collate  en_AU.UTF-8
+ ctype    en_AU.UTF-8
+ tz       Australia/Melbourne
+ date     2022-06-16
+ pandoc   2.17.1.1 @ /usr/lib/rstudio-server/bin/quarto/bin/ (via rmarkdown)
+
+─ Packages ───────────────────────────────────────────────────────────────────
+ ! package                           * version    date (UTC) lib source
+ P abind                               1.4-5      2016-07-21 [?] CRAN (R 4.1.0)
+ P AnnotationDbi                     * 1.56.2     2021-11-09 [?] Bioconductor
+ P AnnotationFilter                  * 1.18.0     2021-10-26 [?] Bioconductor
+ P assertthat                          0.2.1      2019-03-21 [?] CRAN (R 4.1.0)
+ P babelgene                           21.4       2021-04-26 [?] CRAN (R 4.1.0)
+ P backports                           1.4.1      2021-12-13 [?] CRAN (R 4.1.0)
+ P beachmat                            2.10.0     2021-10-26 [?] Bioconductor
+ P beeswarm                            0.4.0      2021-06-01 [?] CRAN (R 4.1.0)
+ P Biobase                           * 2.54.0     2021-10-26 [?] Bioconductor
+ P BiocFileCache                       2.2.0      2021-10-26 [?] Bioconductor
+ P BiocGenerics                      * 0.40.0     2021-10-26 [?] Bioconductor
+ P BiocIO                              1.4.0      2021-10-26 [?] Bioconductor
+ P BiocManager                         1.30.16    2021-06-15 [?] CRAN (R 4.1.0)
+ P BiocNeighbors                       1.12.0     2021-10-26 [?] Bioconductor
+ P BiocParallel                        1.28.3     2021-12-09 [?] Bioconductor
+ P BiocSingular                        1.10.0     2021-10-26 [?] Bioconductor
+ P BiocStyle                         * 2.22.0     2021-10-26 [?] Bioconductor
+ P biomaRt                             2.50.1     2021-11-21 [?] Bioconductor
+ P Biostrings                          2.62.0     2021-10-26 [?] Bioconductor
+ P bit                                 4.0.4      2020-08-04 [?] CRAN (R 4.1.0)
+ P bit64                               4.0.5      2020-08-30 [?] CRAN (R 4.0.2)
+ P bitops                              1.0-7      2021-04-24 [?] CRAN (R 4.0.2)
+ P blob                                1.2.2      2021-07-23 [?] CRAN (R 4.1.0)
+ P bluster                             1.4.0      2021-10-26 [?] Bioconductor
+ P bookdown                            0.24       2021-09-02 [?] CRAN (R 4.1.0)
+ P broom                               0.7.11     2022-01-03 [?] CRAN (R 4.1.0)
+ P bslib                               0.3.1      2021-10-06 [?] CRAN (R 4.1.0)
+ P cachem                              1.0.6      2021-08-19 [?] CRAN (R 4.1.0)
+ P callr                               3.7.0      2021-04-20 [?] CRAN (R 4.1.0)
+ P car                                 3.0-12     2021-11-06 [?] CRAN (R 4.1.0)
+ P carData                             3.0-5      2022-01-06 [?] CRAN (R 4.1.0)
+ P cellranger                          1.1.0      2016-07-27 [?] CRAN (R 4.1.0)
+ P cli                                 3.1.0      2021-10-27 [?] CRAN (R 4.1.0)
+ P cluster                             2.1.2      2021-04-17 [?] CRAN (R 4.1.0)
+ P colorspace                          2.0-2      2021-06-24 [?] CRAN (R 4.0.2)
+ P cowplot                           * 1.1.1      2020-12-30 [?] CRAN (R 4.0.2)
+ P crayon                              1.4.2      2021-10-29 [?] CRAN (R 4.1.0)
+ P curl                                4.3.2      2021-06-23 [?] CRAN (R 4.1.0)
+ P DBI                                 1.1.2      2021-12-20 [?] CRAN (R 4.1.0)
+ P dbplyr                              2.1.1      2021-04-06 [?] CRAN (R 4.1.0)
+ P DelayedArray                        0.20.0     2021-10-26 [?] Bioconductor
+ P DelayedMatrixStats                  1.16.0     2021-10-26 [?] Bioconductor
+ P digest                              0.6.29     2021-12-01 [?] CRAN (R 4.1.0)
+ P dplyr                             * 1.0.7      2021-06-18 [?] CRAN (R 4.1.0)
+ P dqrng                               0.3.0      2021-05-01 [?] CRAN (R 4.1.0)
+ P DropletQC                         * 0.0.0.9000 2021-08-06 [?] Github (powellgenomicslab/DropletQC@4409c95)
+ P DropletUtils                      * 1.14.1     2021-11-08 [?] Bioconductor
+ P edgeR                             * 3.36.0     2021-10-26 [?] Bioconductor
+ P ellipsis                            0.3.2      2021-04-29 [?] CRAN (R 4.0.2)
+ P EnsDb.Hsapiens.v86                * 2.99.0     2022-01-24 [?] Bioconductor
+ P ensembldb                         * 2.18.2     2021-11-08 [?] Bioconductor
+ P evaluate                            0.14       2019-05-28 [?] CRAN (R 4.0.2)
+ P fansi                               1.0.0      2022-01-10 [?] CRAN (R 4.1.0)
+ P farver                              2.1.0      2021-02-28 [?] CRAN (R 4.0.2)
+ P fastmap                             1.1.0      2021-01-25 [?] CRAN (R 4.1.0)
+ P filelock                            1.0.2      2018-10-05 [?] CRAN (R 4.1.0)
+ P forcats                           * 0.5.1      2021-01-27 [?] CRAN (R 4.1.0)
+ P fs                                  1.5.2      2021-12-08 [?] CRAN (R 4.1.0)
+ P generics                            0.1.1      2021-10-25 [?] CRAN (R 4.1.0)
+   GenomeInfoDb                      * 1.30.1     2022-01-30 [1] Bioconductor
+ P GenomeInfoDbData                    1.2.7      2021-12-21 [?] Bioconductor
+ P GenomicAlignments                   1.30.0     2021-10-26 [?] Bioconductor
+ P GenomicFeatures                   * 1.46.3     2021-12-30 [?] Bioconductor
+ P GenomicRanges                     * 1.46.1     2021-11-18 [?] Bioconductor
+ P getPass                             0.2-2      2017-07-21 [?] CRAN (R 4.0.2)
+ P ggbeeswarm                          0.6.0      2017-08-07 [?] CRAN (R 4.1.0)
+ P ggplot2                           * 3.3.5      2021-06-25 [?] CRAN (R 4.0.2)
+ P ggpubr                              0.4.0      2020-06-27 [?] CRAN (R 4.1.0)
+ P ggrepel                             0.9.1      2021-01-15 [?] CRAN (R 4.1.0)
+ P ggsignif                            0.6.3      2021-09-09 [?] CRAN (R 4.1.0)
+ P git2r                               0.29.0     2021-11-22 [?] CRAN (R 4.1.0)
+ P glue                              * 1.6.0      2021-12-17 [?] CRAN (R 4.1.0)
+ P GO.db                             * 3.14.0     2021-12-21 [?] Bioconductor
+ P graph                               1.72.0     2021-10-26 [?] Bioconductor
+ P gridExtra                           2.3        2017-09-09 [?] CRAN (R 4.1.0)
+ P gtable                              0.3.0      2019-03-25 [?] CRAN (R 4.1.0)
+ P haven                               2.4.3      2021-08-04 [?] CRAN (R 4.1.0)
+ P HDF5Array                           1.22.1     2021-11-14 [?] Bioconductor
+ P here                              * 1.0.1      2020-12-13 [?] CRAN (R 4.0.2)
+ P highr                               0.9        2021-04-16 [?] CRAN (R 4.1.0)
+ P hms                                 1.1.1      2021-09-26 [?] CRAN (R 4.1.0)
+ P Homo.sapiens                      * 1.3.1      2021-12-21 [?] Bioconductor
+ P htmltools                           0.5.2      2021-08-25 [?] CRAN (R 4.1.0)
+ P httpuv                              1.6.5      2022-01-05 [?] CRAN (R 4.1.0)
+ P httr                                1.4.2      2020-07-20 [?] CRAN (R 4.1.0)
+ P igraph                              1.2.11     2022-01-04 [?] CRAN (R 4.1.0)
+ P IRanges                           * 2.28.0     2021-10-26 [?] Bioconductor
+ P irlba                               2.3.5      2021-12-06 [?] CRAN (R 4.1.0)
+ P janitor                           * 2.1.0      2021-01-05 [?] CRAN (R 4.0.2)
+ P jquerylib                           0.1.4      2021-04-26 [?] CRAN (R 4.1.0)
+ P jsonlite                            1.7.2      2020-12-09 [?] CRAN (R 4.0.2)
+ P KEGGREST                            1.34.0     2021-10-26 [?] Bioconductor
+ P KernSmooth                          2.23-20    2021-05-03 [?] CRAN (R 4.1.0)
+ P knitr                               1.37       2021-12-16 [?] CRAN (R 4.1.0)
+ P ks                                  1.13.3     2021-12-17 [?] CRAN (R 4.1.0)
+ P labeling                            0.4.2      2020-10-20 [?] CRAN (R 4.0.2)
+ P later                               1.3.0      2021-08-18 [?] CRAN (R 4.1.0)
+ P lattice                             0.20-45    2021-09-22 [?] CRAN (R 4.1.0)
+ P lazyeval                            0.2.2      2019-03-15 [?] CRAN (R 4.1.0)
+ P lifecycle                           1.0.1      2021-09-24 [?] CRAN (R 4.1.0)
+ P limma                             * 3.50.0     2021-10-26 [?] Bioconductor
+ P locfit                              1.5-9.4    2020-03-25 [?] CRAN (R 4.1.0)
+ P lubridate                           1.8.0      2021-10-07 [?] CRAN (R 4.1.0)
+ P magrittr                            2.0.1      2020-11-17 [?] CRAN (R 4.0.2)
+ P Matrix                              1.4-0      2021-12-08 [?] CRAN (R 4.1.0)
+ P MatrixGenerics                    * 1.6.0      2021-10-26 [?] Bioconductor
+ P matrixStats                       * 0.61.0     2021-09-17 [?] CRAN (R 4.1.0)
+ P mclust                              5.4.9      2021-12-17 [?] CRAN (R 4.1.0)
+ P memoise                             2.0.1      2021-11-26 [?] CRAN (R 4.1.0)
+ P metapod                             1.2.0      2021-10-26 [?] Bioconductor
+ P modelr                              0.1.8      2020-05-19 [?] CRAN (R 4.0.2)
+ P msigdbr                           * 7.4.1      2021-05-05 [?] CRAN (R 4.1.0)
+ P munsell                             0.5.0      2018-06-12 [?] CRAN (R 4.1.0)
+ P mvtnorm                             1.1-3      2021-10-08 [?] CRAN (R 4.1.0)
+ P org.Hs.eg.db                      * 3.14.0     2021-12-21 [?] Bioconductor
+ P OrganismDbi                       * 1.36.0     2021-10-26 [?] Bioconductor
+ P patchwork                         * 1.1.1      2020-12-17 [?] CRAN (R 4.0.2)
+ P pillar                              1.6.4      2021-10-18 [?] CRAN (R 4.1.0)
+ P pkgconfig                           2.0.3      2019-09-22 [?] CRAN (R 4.1.0)
+ P png                                 0.1-7      2013-12-03 [?] CRAN (R 4.1.0)
+ P pracma                              2.3.6      2021-12-07 [?] CRAN (R 4.1.0)
+ P prettyunits                         1.1.1      2020-01-24 [?] CRAN (R 4.0.2)
+ P processx                            3.5.2      2021-04-30 [?] CRAN (R 4.1.0)
+ P progress                            1.2.2      2019-05-16 [?] CRAN (R 4.1.0)
+ P promises                            1.2.0.1    2021-02-11 [?] CRAN (R 4.0.2)
+ P ProtGenerics                        1.26.0     2021-10-26 [?] Bioconductor
+ P ps                                  1.6.0      2021-02-28 [?] CRAN (R 4.1.0)
+ P purrr                             * 0.3.4      2020-04-17 [?] CRAN (R 4.0.2)
+ P R.methodsS3                         1.8.1      2020-08-26 [?] CRAN (R 4.0.2)
+ P R.oo                                1.24.0     2020-08-26 [?] CRAN (R 4.0.2)
+ P R.utils                             2.11.0     2021-09-26 [?] CRAN (R 4.1.0)
+ P R6                                  2.5.1      2021-08-19 [?] CRAN (R 4.1.0)
+ P rappdirs                            0.3.3      2021-01-31 [?] CRAN (R 4.0.2)
+ P RBGL                                1.70.0     2021-10-26 [?] Bioconductor
+ P Rcpp                                1.0.7      2021-07-07 [?] CRAN (R 4.1.0)
+   RCurl                               1.98-1.6   2022-02-08 [1] CRAN (R 4.1.0)
+ P readr                             * 2.1.1      2021-11-30 [?] CRAN (R 4.1.0)
+ P readxl                              1.3.1      2019-03-13 [?] CRAN (R 4.1.0)
+ P renv                                0.15.0-14  2022-01-10 [?] Github (rstudio/renv@a3b90eb)
+ P reprex                              2.0.1      2021-08-05 [?] CRAN (R 4.1.0)
+ P restfulr                            0.0.13     2017-08-06 [?] CRAN (R 4.1.0)
+ P rhdf5                               2.38.0     2021-10-26 [?] Bioconductor
+ P rhdf5filters                        1.6.0      2021-10-26 [?] Bioconductor
+ P Rhdf5lib                            1.16.0     2021-10-26 [?] Bioconductor
+ P rjson                               0.2.21     2022-01-09 [?] CRAN (R 4.1.0)
+ P rlang                               0.4.12     2021-10-18 [?] CRAN (R 4.1.0)
+ P rmarkdown                           2.11       2021-09-14 [?] CRAN (R 4.1.0)
+ P rprojroot                           2.0.2      2020-11-15 [?] CRAN (R 4.0.2)
+ P Rsamtools                           2.10.0     2021-10-26 [?] Bioconductor
+ P RSQLite                             2.2.9      2021-12-06 [?] CRAN (R 4.1.0)
+ P rstatix                             0.7.0      2021-02-13 [?] CRAN (R 4.0.2)
+ P rstudioapi                          0.13       2020-11-12 [?] CRAN (R 4.0.2)
+ P rsvd                                1.0.5      2021-04-16 [?] CRAN (R 4.1.0)
+ P rtracklayer                         1.54.0     2021-10-26 [?] Bioconductor
+ P rvest                               1.0.2      2021-10-16 [?] CRAN (R 4.1.0)
+ P S4Vectors                         * 0.32.3     2021-11-21 [?] Bioconductor
+ P sass                                0.4.0      2021-05-12 [?] CRAN (R 4.1.0)
+ P ScaledMatrix                        1.2.0      2021-10-26 [?] Bioconductor
+ P scales                            * 1.1.1      2020-05-11 [?] CRAN (R 4.0.2)
+ P scater                            * 1.22.0     2021-10-26 [?] Bioconductor
+ P scran                             * 1.22.1     2021-11-14 [?] Bioconductor
+ P scuttle                           * 1.4.0      2021-10-26 [?] Bioconductor
+ P sessioninfo                         1.2.2      2021-12-06 [?] CRAN (R 4.1.0)
+ P SingleCellExperiment              * 1.16.0     2021-10-26 [?] Bioconductor
+ P snakecase                           0.11.0     2019-05-25 [?] CRAN (R 4.0.2)
+ P sparseMatrixStats                   1.6.0      2021-10-26 [?] Bioconductor
+ P statmod                             1.4.36     2021-05-10 [?] CRAN (R 4.1.0)
+ P stringi                             1.7.6      2021-11-29 [?] CRAN (R 4.1.0)
+ P stringr                           * 1.4.0      2019-02-10 [?] CRAN (R 4.0.2)
+ P SummarizedExperiment              * 1.24.0     2021-10-26 [?] Bioconductor
+ P tibble                            * 3.1.6      2021-11-07 [?] CRAN (R 4.1.0)
+ P tidyr                             * 1.1.4      2021-09-27 [?] CRAN (R 4.1.0)
+ P tidyselect                          1.1.1      2021-04-30 [?] CRAN (R 4.1.0)
+ P tidyverse                         * 1.3.1      2021-04-15 [?] CRAN (R 4.1.0)
+ P TxDb.Hsapiens.UCSC.hg19.knownGene * 3.2.2      2022-01-10 [?] Bioconductor
+ P tzdb                                0.2.0      2021-10-27 [?] CRAN (R 4.1.0)
+ P utf8                                1.2.2      2021-07-24 [?] CRAN (R 4.1.0)
+ P vctrs                               0.3.8      2021-04-29 [?] CRAN (R 4.0.2)
+ P vipor                               0.4.5      2017-03-22 [?] CRAN (R 4.1.0)
+ P viridis                             0.6.2      2021-10-13 [?] CRAN (R 4.1.0)
+ P viridisLite                         0.4.0      2021-04-13 [?] CRAN (R 4.0.2)
+ P whisker                             0.4        2019-08-28 [?] CRAN (R 4.0.2)
+ P withr                               2.4.3      2021-11-30 [?] CRAN (R 4.1.0)
+ P workflowr                         * 1.7.0      2021-12-21 [?] CRAN (R 4.1.0)
+ P xfun                                0.29       2021-12-14 [?] CRAN (R 4.1.0)
+ P XML                                 3.99-0.8   2021-09-17 [?] CRAN (R 4.1.0)
+ P xml2                                1.3.3      2021-11-30 [?] CRAN (R 4.1.0)
+ P XVector                             0.34.0     2021-10-26 [?] Bioconductor
+ P yaml                                2.2.1      2020-02-01 [?] CRAN (R 4.0.2)
+ P zlibbioc                            1.40.0     2021-10-26 [?] Bioconductor
+
+ [1] /oshlack_lab/jovana.maksimovic/projects/MCRI/melanie.neeland/paed-cf-cite-seq/renv/library/R-4.1/x86_64-pc-linux-gnu
+ [2] /config/binaries/R/4.1.0/lib64/R/library
+
+ P ── Loaded and on-disk path mismatch.
+
+──────────────────────────────────────────────────────────────────────────────</code></pre>
+</details>
+<div id="refs">
+
+</div>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.1.0 (2021-05-18)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: CentOS Linux 7 (Core)
+
+Matrix products: default
+BLAS:   /config/binaries/R/4.1.0/lib64/R/lib/libRblas.so
+LAPACK: /config/binaries/R/4.1.0/lib64/R/lib/libRlapack.so
+
+locale:
+ [1] LC_CTYPE=en_AU.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_AU.UTF-8        LC_COLLATE=en_AU.UTF-8    
+ [5] LC_MONETARY=en_AU.UTF-8    LC_MESSAGES=en_AU.UTF-8   
+ [7] LC_PAPER=en_AU.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_AU.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] edgeR_3.36.0                           
+ [2] limma_3.50.0                           
+ [3] msigdbr_7.4.1                          
+ [4] Homo.sapiens_1.3.1                     
+ [5] TxDb.Hsapiens.UCSC.hg19.knownGene_3.2.2
+ [6] org.Hs.eg.db_3.14.0                    
+ [7] GO.db_3.14.0                           
+ [8] OrganismDbi_1.36.0                     
+ [9] EnsDb.Hsapiens.v86_2.99.0              
+[10] ensembldb_2.18.2                       
+[11] AnnotationFilter_1.18.0                
+[12] GenomicFeatures_1.46.3                 
+[13] AnnotationDbi_1.56.2                   
+[14] DropletQC_0.0.0.9000                   
+[15] scales_1.1.1                           
+[16] patchwork_1.1.1                        
+[17] cowplot_1.1.1                          
+[18] janitor_2.1.0                          
+[19] scater_1.22.0                          
+[20] scran_1.22.1                           
+[21] scuttle_1.4.0                          
+[22] DropletUtils_1.14.1                    
+[23] SingleCellExperiment_1.16.0            
+[24] SummarizedExperiment_1.24.0            
+[25] Biobase_2.54.0                         
+[26] GenomicRanges_1.46.1                   
+[27] GenomeInfoDb_1.30.1                    
+[28] IRanges_2.28.0                         
+[29] S4Vectors_0.32.3                       
+[30] BiocGenerics_0.40.0                    
+[31] MatrixGenerics_1.6.0                   
+[32] matrixStats_0.61.0                     
+[33] glue_1.6.0                             
+[34] here_1.0.1                             
+[35] forcats_0.5.1                          
+[36] stringr_1.4.0                          
+[37] dplyr_1.0.7                            
+[38] purrr_0.3.4                            
+[39] readr_2.1.1                            
+[40] tidyr_1.1.4                            
+[41] tibble_3.1.6                           
+[42] ggplot2_3.3.5                          
+[43] tidyverse_1.3.1                        
+[44] BiocStyle_2.22.0                       
+[45] workflowr_1.7.0                        
+
+loaded via a namespace (and not attached):
+  [1] utf8_1.2.2                ks_1.13.3                
+  [3] R.utils_2.11.0            tidyselect_1.1.1         
+  [5] RSQLite_2.2.9             grid_4.1.0               
+  [7] BiocParallel_1.28.3       munsell_0.5.0            
+  [9] ScaledMatrix_1.2.0        statmod_1.4.36           
+ [11] withr_2.4.3               colorspace_2.0-2         
+ [13] filelock_1.0.2            highr_0.9                
+ [15] knitr_1.37                rstudioapi_0.13          
+ [17] ggsignif_0.6.3            labeling_0.4.2           
+ [19] git2r_0.29.0              GenomeInfoDbData_1.2.7   
+ [21] farver_2.1.0              bit64_4.0.5              
+ [23] rhdf5_2.38.0              rprojroot_2.0.2          
+ [25] vctrs_0.3.8               generics_0.1.1           
+ [27] xfun_0.29                 BiocFileCache_2.2.0      
+ [29] R6_2.5.1                  ggbeeswarm_0.6.0         
+ [31] rsvd_1.0.5                locfit_1.5-9.4           
+ [33] bitops_1.0-7              rhdf5filters_1.6.0       
+ [35] cachem_1.0.6              DelayedArray_0.20.0      
+ [37] assertthat_0.2.1          promises_1.2.0.1         
+ [39] BiocIO_1.4.0              beeswarm_0.4.0           
+ [41] gtable_0.3.0              beachmat_2.10.0          
+ [43] processx_3.5.2            rlang_0.4.12             
+ [45] rstatix_0.7.0             lazyeval_0.2.2           
+ [47] rtracklayer_1.54.0        broom_0.7.11             
+ [49] abind_1.4-5               BiocManager_1.30.16      
+ [51] yaml_2.2.1                modelr_0.1.8             
+ [53] backports_1.4.1           httpuv_1.6.5             
+ [55] RBGL_1.70.0               tools_4.1.0              
+ [57] bookdown_0.24             ellipsis_0.3.2           
+ [59] jquerylib_0.1.4           sessioninfo_1.2.2        
+ [61] Rcpp_1.0.7                sparseMatrixStats_1.6.0  
+ [63] progress_1.2.2            zlibbioc_1.40.0          
+ [65] RCurl_1.98-1.6            ps_1.6.0                 
+ [67] prettyunits_1.1.1         ggpubr_0.4.0             
+ [69] viridis_0.6.2             haven_2.4.3              
+ [71] ggrepel_0.9.1             cluster_2.1.2            
+ [73] fs_1.5.2                  magrittr_2.0.1           
+ [75] reprex_2.0.1              mvtnorm_1.1-3            
+ [77] whisker_0.4               ProtGenerics_1.26.0      
+ [79] hms_1.1.1                 evaluate_0.14            
+ [81] XML_3.99-0.8              mclust_5.4.9             
+ [83] readxl_1.3.1              gridExtra_2.3            
+ [85] compiler_4.1.0            biomaRt_2.50.1           
+ [87] KernSmooth_2.23-20        crayon_1.4.2             
+ [89] R.oo_1.24.0               htmltools_0.5.2          
+ [91] later_1.3.0               tzdb_0.2.0               
+ [93] lubridate_1.8.0           DBI_1.1.2                
+ [95] dbplyr_2.1.1              rappdirs_0.3.3           
+ [97] babelgene_21.4            car_3.0-12               
+ [99] Matrix_1.4-0              cli_3.1.0                
+[101] R.methodsS3_1.8.1         parallel_4.1.0           
+[103] metapod_1.2.0             igraph_1.2.11            
+[105] pkgconfig_2.0.3           getPass_0.2-2            
+[107] GenomicAlignments_1.30.0  xml2_1.3.3               
+[109] vipor_0.4.5               bslib_0.3.1              
+[111] dqrng_0.3.0               XVector_0.34.0           
+[113] rvest_1.0.2               snakecase_0.11.0         
+[115] callr_3.7.0               digest_0.6.29            
+[117] pracma_2.3.6              graph_1.72.0             
+[119] Biostrings_2.62.0         rmarkdown_2.11           
+[121] cellranger_1.1.0          DelayedMatrixStats_1.16.0
+[123] restfulr_0.0.13           curl_4.3.2               
+[125] Rsamtools_2.10.0          rjson_0.2.21             
+[127] lifecycle_1.0.1           jsonlite_1.7.2           
+[129] Rhdf5lib_1.16.0           carData_3.0-5            
+[131] BiocNeighbors_1.12.0      viridisLite_0.4.0        
+[133] fansi_1.0.0               pillar_1.6.4             
+[135] lattice_0.20-45           KEGGREST_1.34.0          
+[137] fastmap_1.1.0             httr_1.4.2               
+[139] png_0.1-7                 bluster_1.4.0            
+[141] bit_4.0.4                 stringi_1.7.6            
+[143] sass_0.4.0                HDF5Array_1.22.1         
+[145] blob_1.2.2                BiocSingular_1.10.0      
+[147] memoise_2.0.1             renv_0.15.0-14           
+[149] irlba_2.3.5              </code></pre>
+</div>
+</div>
+<div class="footnotes footnotes-end-of-document">
+<hr />
+<ol>
+<li id="fn1"><p>Some care is taken to account for missing and duplicate gene symbols; missing symbols are replaced with the Ensembl identifier and duplicated symbols are concatenated with the (unique) Ensembl identifiers.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>The number of expressed features refers to the number of genes which have non-zero counts (i.e. they have been identified in the cell at least once)<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p>This is consistent with the use of UMI counts rather than read counts, as each transcript molecule can only produce one UMI count but can yield many reads after fragmentation.<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+<li id="fn4"><p>It is important to note that we only using droplets assigned to a sample (i.e. we ignore <code>unassigned</code> droplets) for the calculation of these thresholds.<a href="#fnref4" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

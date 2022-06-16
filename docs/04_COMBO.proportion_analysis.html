@@ -1,0 +1,3078 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Jovana Maksimovic" />
+
+<meta name="date" content="2022-04-26" />
+
+<title>Analysis of CF_BAL_Pilot &amp; C133_Neeland Data Combined</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">paed-cf-cite-seq</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Analysis of CF_BAL_Pilot &amp; C133_Neeland Data Combined</h1>
+<h3 class="subtitle">Cell Markers &amp; proportions</h3>
+<h4 class="author">Jovana Maksimovic</h4>
+<h4 class="date">April 26, 2022</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2022-04-26
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>paed-cf-cite-seq/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version 1.7.0). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20210524code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20210524)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20210524code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20210524)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree51eeb40673545a88eaaf7a05886aac9c8db22be2targetblank51eeb40a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/51eeb40673545a88eaaf7a05886aac9c8db22be2" target="_blank">51eeb40</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree51eeb40673545a88eaaf7a05886aac9c8db22be2targetblank51eeb40a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/51eeb40673545a88eaaf7a05886aac9c8db22be2" target="_blank">51eeb40</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    data/CellRanger/
+    Ignored:    data/emptyDrops/bin/
+    Ignored:    renv/library/
+    Ignored:    renv/staging/
+
+Untracked files:
+    Untracked:  Rplots.pdf
+    Untracked:  analysis/03_COMBO.annotation_markers.Rmd
+    Untracked:  analysis/03_COMBO.protein_analysis.Rmd
+    Untracked:  analysis/04_COMBO.compare_annotations.Rmd
+    Untracked:  analysis/04_COMBO.expression_analysis.Rmd
+    Untracked:  analysis/04_COMBO_expression_analysis.Rmd
+    Untracked:  analysis/scGateDB/
+    Untracked:  code/03_C133_Neeland-dropletutils.R
+    Untracked:  code/03_COMBO.proteins_geneBasis.R
+    Untracked:  data/190930_A00152_0150_BHTYCMDSXX/
+    Untracked:  data/Flow_data_CITEseq_2-8.csv
+    Untracked:  data/GSE127465_RAW/
+    Untracked:  data/GSE130148_barcodes_cell_types.txt
+    Untracked:  data/GSE130148_raw_counts.RData
+    Untracked:  data/Macrophage_subcluster_annotation_110322.csv
+    Untracked:  data/Other_subcluster_annotation_110322.csv
+    Untracked:  data/T-NK_subcluster_annotation_110322.csv
+    Untracked:  data/T-NK_subcluster_proteins.csv
+    Untracked:  data/T-NK_subcluster_proteins_110322.csv
+    Untracked:  data/T-NK_subclusters_cytokines.csv
+    Untracked:  data/T-NK_subclusters_markergenes_110322.csv
+    Untracked:  data/TNK_subcluster_annotation_09.04.22.csv
+    Untracked:  data/all_azimuth_cluster_cytokines.csv
+    Untracked:  data/all_azimuth_clusters_proteins.csv
+    Untracked:  data/cell_type_category_rna_Granulocytes_Cell.tsv
+    Untracked:  data/consolidated_markers.rds
+    Untracked:  data/gb-genes-50.rds
+    Untracked:  data/genome1K.phase3.SNP_AF5e4.chr1toX.hg38.vcf.gz
+    Untracked:  data/macrophage_subcluster_annotation_09.04.22.csv
+    Untracked:  data/macrophage_subcluster_cytokines.csv
+    Untracked:  data/macrophage_subcluster_markergenes_110322.csv
+    Untracked:  data/macrophage_subcluster_markergenes_160322.csv
+    Untracked:  data/macrophage_subcluster_proteins.csv
+    Untracked:  data/macrophage_subcluster_proteins_110322.csv
+    Untracked:  data/nCoV.all.cell.annotation.meta.txt
+    Untracked:  data/nCoV.rds
+    Untracked:  data/neutrophil.tsv
+    Untracked:  data/other_subcluster_proteins.csv
+    Untracked:  data/other_subcluster_proteins_110322.csv
+    Untracked:  data/other_subclusters_cytokines.csv
+    Untracked:  data/other_subclusters_markergenes_110322.csv
+    Untracked:  data/others_subcluster_annotation_09.04.22.csv
+    Untracked:  data/proteins_ranked.rds
+    Untracked:  data/sample_sheets/Hashtag_Feature_Ref_With_Clin.csv
+    Untracked:  data/sample_sheets/TotalSeq_A_Human_Universal_Cocktail_Proteins of interest_29.09.21.csv
+    Untracked:  data/sample_sheets/TotalSeq_A_Human_Universal_Cocktail_Proteins_of_interest_28.06.21.csv
+    Untracked:  output/ADT-counts.csv
+    Untracked:  output/C133_Neeland.azimuth.individual_cell_type_proportions.csv
+    Untracked:  output/C133_Neeland.azimuth.phenotype_information.csv
+    Untracked:  output/C133_Neeland.individual_cell_type_proportions.csv
+    Untracked:  output/C133_Neeland.phenotype_information.csv
+    Untracked:  output/DEGs-New/
+    Untracked:  output/DEGs/
+    Untracked:  output/glimma-plots/js/labelled-singlets-md-plot.js
+    Untracked:  output/glimma-plots/js/qc-md-plot_03_C133_Neeland.js
+    Untracked:  output/glimma-plots/js/qc-md-plot_C133_Neeland.js
+    Untracked:  output/glimma-plots/js/qc-md-plot_CF-BAL-Pilot.js
+    Untracked:  output/glimma-plots/labelled-singlets-md-plot.html
+    Untracked:  output/glimma-plots/qc-md-plot_03_C133_Neeland.html
+    Untracked:  output/glimma-plots/qc-md-plot_C133_Neeland.html
+    Untracked:  output/glimma-plots/qc-md-plot_CF-BAL-Pilot.html
+    Untracked:  output/marker-analysis-mod/
+    Untracked:  output/marker-analysis/
+    Untracked:  output/metadata.csv
+    Untracked:  output/protein_labels.pdf
+    Untracked:  scGateDB/
+    Untracked:  wflow_background.R
+
+Unstaged changes:
+    Modified:   analysis/01_C133_Neeland.azimuth.expression_differences.Rmd
+    Modified:   analysis/03_COMBO.cluster_macrophages.Rmd
+    Modified:   analysis/03_COMBO.compare_annotations.Rmd
+    Modified:   analysis/03_COMBO.proportion_analysis.Rmd
+    Modified:   code/utility.R
+    Modified:   data/SCEs/C133_Neeland.CellRanger.SCE.rds
+    Modified:   data/SCEs/C133_Neeland.demultiplexed.SCE.rds
+    Deleted:    data/SCEs/C133_Neeland.preprocessed.SCE.hto.rds
+    Deleted:    data/SCEs/C133_Neeland.preprocessed.SCE_hto.rds
+    Deleted:    data/SCEs/C133_Neeland.preprocessed.SCE_snp.rds
+    Modified:   data/sample_sheets/TotalSeq-A_Universal_Cocktail_v1.0.csv
+    Modified:   data/vireo/C133_1/GT_donors.vireo.vcf.gz
+    Modified:   data/vireo/C133_1/_log.txt
+    Modified:   data/vireo/C133_1/donor_ids.tsv
+    Modified:   data/vireo/C133_1/fig_GT_distance_estimated.pdf
+    Modified:   data/vireo/C133_1/prob_doublet.tsv.gz
+    Modified:   data/vireo/C133_1/prob_singlet.tsv.gz
+    Modified:   data/vireo/C133_1/summary.tsv
+    Modified:   data/vireo/C133_2/GT_donors.vireo.vcf.gz
+    Modified:   data/vireo/C133_2/_log.txt
+    Modified:   data/vireo/C133_2/donor_ids.tsv
+    Modified:   data/vireo/C133_2/fig_GT_distance_estimated.pdf
+    Modified:   data/vireo/C133_2/prob_doublet.tsv.gz
+    Modified:   data/vireo/C133_2/prob_singlet.tsv.gz
+    Modified:   data/vireo/C133_2/summary.tsv
+    Modified:   output/glimma-plots/js/qc-md-plot.js
+    Modified:   output/glimma-plots/js/stripped-nuclei-md-plot.js
+    Modified:   renv/.gitignore
+    Modified:   renv/activate.R
+    Modified:   renv/settings.dcf
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/04_COMBO.proportion_analysis.Rmd</code>) and HTML (<code>docs/04_COMBO.proportion_analysis.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/51eeb40673545a88eaaf7a05886aac9c8db22be2/analysis/04_COMBO.proportion_analysis.Rmd" target="_blank">51eeb40</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-04-26
+</td>
+<td>
+wflow_publish(c("analysis/index.Rmd", "analysis/04_COMBO.proportion_analysis.Rmd"))
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="load-libraries" class="section level1">
+<h1>Load libraries</h1>
+<pre class="r"><code>library(Seurat)
+library(tidyverse)
+library(here)
+library(glue)
+library(DropletUtils)
+library(scran)
+library(scater)
+library(scuttle)
+library(Matrix)
+library(edgeR)
+library(patchwork)
+library(AnnotationHub)
+library(ensembldb)
+library(org.Hs.eg.db)
+library(glmGamPoi)
+library(BiocParallel)
+library(janitor)
+library(scales)
+library(speckle)
+source(here(&quot;code/utility.R&quot;))
+source(here(&quot;code/helper_functions.R&quot;))
+
+set.seed(42)
+options(scipen=999)
+options(future.globals.maxSize = 6500 * 1024^2)</code></pre>
+</div>
+<div id="analyse-cell-proportions" class="section level1">
+<h1>Analyse cell proportions</h1>
+<div id="load-data" class="section level2">
+<h2>Load Data</h2>
+<pre class="r"><code>seu1 &lt;- readRDS(here(&quot;data/SCEs/04_COMBO.clean_macrophages_diet.SEU.rds&quot;))
+seu2 &lt;- readRDS(here(&quot;data/SCEs/04_COMBO.clean_tcells_diet.SEU.rds&quot;))
+seu3 &lt;- readRDS(here(&quot;data/SCEs/04_COMBO.clean_others_diet.SEU.rds&quot;))
+seu &lt;- merge(seu1, y = c(seu2, seu3))</code></pre>
+<pre><code>            used   (Mb) gc trigger    (Mb)   max used   (Mb)
+Ncells  11523439  615.5   17397001   929.2   12923653  690.2
+Vcells 495347655 3779.3 1404895673 10718.6 1249470528 9532.8</code></pre>
+<!-- ## Visualise combined, filtered data -->
+<!-- ```{r} -->
+<!-- DefaultAssay(seu) <- "RNA" -->
+<!-- seu <- NormalizeData(seu) %>%  -->
+<!--   FindVariableFeatures() %>%  -->
+<!--   ScaleData() %>%  -->
+<!--   RunPCA(verbose = FALSE, dims = 1:30) %>% -->
+<!--   RunUMAP(verbose = FALSE, dims = 1:30) -->
+<!-- ``` -->
+<!-- ```{r} -->
+<!-- DimPlot(seu, group.by = "experiment", combine = FALSE) -->
+<!-- ``` -->
+<!-- # Map to nCoV BAL data -->
+<!-- ```{r} -->
+<!-- nCoV <- readRDS(here("data/nCoV.rds")) -->
+<!-- ann <- read.delim(here("data/nCoV.all.cell.annotation.meta.txt")) -->
+<!-- all(ann$ID %in% nCoV$ID) -->
+<!-- rownames(ann) <- ann$ID -->
+<!-- AddMetaData(nCoV, ann) -> nCoV -->
+<!-- nCoV <- RunUMAP(nCoV, verbose = FALSE, dims = 1:30, return.model = TRUE) -->
+<!-- out <- here("data/SCEs/04_COMBO.clean_nCoV_mapped.SEU.rds") -->
+<!-- if(!file.exists(out)) { -->
+<!--   anchors <- FindTransferAnchors(reference = nCoV, query = seu, -->
+<!--                                  dims = 1:30, reference.reduction = "pca") -->
+<!--   seu <- MapQuery(anchorset = anchors, reference = nCoV,  -->
+<!--                      query = seu,  -->
+<!--                       refdata = list(celltype = "celltype"), -->
+<!--                      reference.reduction = "pca",  -->
+<!--                      reduction.model = "umap") -->
+<!--   #saveRDS(seu, file = out) -->
+<!-- } else { -->
+<!--   seu <- readRDS(out) -->
+<!-- } -->
+<!-- DimPlot(nCoV, reduction = "umap", group.by = "celltype",  -->
+<!--         label.size = 2.5, label = TRUE, repel = TRUE) + paletteer::scale_color_paletteer_d("LaCroixColoR::paired") -->
+<!-- DimPlot(seu, reduction = "ref.umap", group.by = "predicted.celltype",  -->
+<!--         label.size = 2.5, label = TRUE, repel = TRUE) + paletteer::scale_color_paletteer_d("LaCroixColoR::paired") -->
+<!-- ``` -->
+<!-- # Integrate data -->
+<!-- Normalise the data using `SCTransform` and integrate across batches/individuals. -->
+<!-- ```{r, warning=FALSE, message=FALSE} -->
+<!-- out <- here("data/SCEs/04_COMBO.clean_integrated.SEU.rds") -->
+<!-- if(!file.exists(out)) { -->
+<!--   seuInt <- intDat(seu, split = "donor", type = "RNA",  -->
+<!--                    reference = unique(as.character(seu$capture[seu$experiment == 1]))) -->
+<!--   saveRDS(seuInt, file = out) -->
+<!-- } else { -->
+<!--   seuInt <- readRDS(out) -->
+<!-- } -->
+<!-- ``` -->
+<!-- ```{r, echo=FALSE} -->
+<!-- # cleanup obsolete objects -->
+<!-- rm(seu) -->
+<!-- gc() -->
+<!-- ``` -->
+<!-- ## Visualise integrated data -->
+<!-- ```{r} -->
+<!-- seuInt <- RunPCA(seuInt, npcs = 30, verbose = FALSE) -->
+<!-- seuInt <- RunUMAP(seuInt, verbose = FALSE, dims = 1:30) -->
+<!-- DimPlot(seuInt, group.by = "experiment", combine = FALSE) -->
+<!-- ``` -->
+<!-- # Cluster data -->
+<!-- ## Perform linear dimensional reduction -->
+<!-- ```{r} -->
+<!-- p1 <- DimPlot(seuInt, reduction = "pca", group.by = "donor") -->
+<!-- p2 <- DimPlot(seuInt, reduction = "pca", dims = c(1,3), group.by = "donor") -->
+<!-- p3 <- DimPlot(seuInt, reduction = "pca", dims = c(2,3), group.by = "donor") -->
+<!-- p4 <- DimPlot(seuInt, reduction = "pca", dims = c(3,4), group.by = "donor") -->
+<!-- ((p1 | p2) / (p3 | p4)) + plot_layout(guides = "collect") & -->
+<!--   theme(legend.text = element_text(size = 8), -->
+<!--         plot.title = element_text(size = 10), -->
+<!--         axis.title = element_text(size = 9), -->
+<!--         axis.text = element_text(size = 8)) -->
+<!-- ``` -->
+<!-- ```{r, fig.width=9, fig.height=27} -->
+<!-- DimHeatmap(seuInt, dims = 1:30, cells = 500, balanced = TRUE) -->
+<!-- ``` -->
+<!-- ## Determine the *dimensionality* of the dataset -->
+<!-- ```{r} -->
+<!-- ElbowPlot(seuInt, ndims = 30) -->
+<!-- ``` -->
+<!-- ## Cluster the cells -->
+<!-- ```{r, warning=FALSE, message=FALSE} -->
+<!-- out <- here("data/SCEs/04_COMBO.clean_clustered.SEU.rds") -->
+<!-- if(!file.exists(out)) { -->
+<!--   seuInt <- FindNeighbors(seuInt, reduction = "pca", dims = 1:30) -->
+<!--   seuInt <- FindClusters(seuInt, algorithm = 3,  -->
+<!--                          resolution = 1) -->
+<!--   seuInt <- RunUMAP(seuInt, dims = 1:30) -->
+<!--   saveRDS(seuInt, file = out) -->
+<!-- } else { -->
+<!--   seuInt <- readRDS(out) -->
+<!-- } -->
+<!-- ``` -->
+<!-- ## Visualise clustering -->
+<!-- ```{r, fig.asp=0.9, fig.width=9} -->
+<!-- options(ggrepel.max.overlaps = Inf)  -->
+<!-- DimPlot(seuInt, reduction = 'umap', label = TRUE, repel = TRUE, -->
+<!--         label.size = 2.5, group.by = "integrated_snn_res.1") + NoLegend() -->
+<!-- DimPlot(seuInt, reduction = 'umap', label = TRUE, repel = TRUE, -->
+<!--         label.size = 2.5, group.by = "predicted.ann_level_3") + NoLegend() -->
+<!-- DimPlot(seuInt, reduction = 'umap', label = TRUE, repel = TRUE, -->
+<!--         label.size = 2.5, group.by = "Annotation") + NoLegend() -->
+<!-- ``` -->
+</div>
+</div>
+<div id="analyse-cell-proportions-1" class="section level1">
+<h1>Analyse cell proportions</h1>
+<div id="manual-annotation-proportions" class="section level2">
+<h2>Manual annotation proportions</h2>
+<pre class="r"><code># Differences in cell type proportions
+props &lt;- getTransformedProps(clusters = seu$Broad, 
+                             sample = seu$donor, transform=&quot;asin&quot;)
+props$Proportions %&gt;% knitr::kable()</code></pre>
+<table style="width:100%;">
+<colgroup>
+<col width="10%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">DM</th>
+<th align="right">donor_A</th>
+<th align="right">donor_B</th>
+<th align="right">donor_C</th>
+<th align="right">donor_D</th>
+<th align="right">donor_E</th>
+<th align="right">donor_F</th>
+<th align="right">donor_G</th>
+<th align="right">donor_H</th>
+<th align="right">JC</th>
+<th align="right">JLG</th>
+<th align="right">LC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">B cells</td>
+<td align="right">0.1274095</td>
+<td align="right">0.0598920</td>
+<td align="right">0.0912835</td>
+<td align="right">0.0045965</td>
+<td align="right">0.0132275</td>
+<td align="right">0.0035189</td>
+<td align="right">0.0028694</td>
+<td align="right">0.0066745</td>
+<td align="right">0.0026189</td>
+<td align="right">0.0186625</td>
+<td align="right">0.0418380</td>
+<td align="right">0.0092654</td>
+</tr>
+<tr class="even">
+<td align="left">CD4 T</td>
+<td align="right">0.0818054</td>
+<td align="right">0.1840943</td>
+<td align="right">0.0267673</td>
+<td align="right">0.1021450</td>
+<td align="right">0.0328042</td>
+<td align="right">0.0179143</td>
+<td align="right">0.0190100</td>
+<td align="right">0.1884570</td>
+<td align="right">0.0165866</td>
+<td align="right">0.0499611</td>
+<td align="right">0.0565901</td>
+<td align="right">0.0372822</td>
+</tr>
+<tr class="odd">
+<td align="left">CD8 T</td>
+<td align="right">0.0554772</td>
+<td align="right">0.0731468</td>
+<td align="right">0.0343171</td>
+<td align="right">0.0633299</td>
+<td align="right">0.0354497</td>
+<td align="right">0.0166347</td>
+<td align="right">0.0107604</td>
+<td align="right">0.1126816</td>
+<td align="right">0.0192056</td>
+<td align="right">0.0260498</td>
+<td align="right">0.0810157</td>
+<td align="right">0.0442312</td>
+</tr>
+<tr class="even">
+<td align="left">Dendritic</td>
+<td align="right">0.0110484</td>
+<td align="right">0.0829651</td>
+<td align="right">0.0439259</td>
+<td align="right">0.0199183</td>
+<td align="right">0.0317460</td>
+<td align="right">0.0201536</td>
+<td align="right">0.0136298</td>
+<td align="right">0.0569297</td>
+<td align="right">0.0192056</td>
+<td align="right">0.0365474</td>
+<td align="right">0.0644498</td>
+<td align="right">0.0236047</td>
+</tr>
+<tr class="odd">
+<td align="left">Endothelial</td>
+<td align="right">0.0380818</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0303266</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Epithelial</td>
+<td align="right">0.1687823</td>
+<td align="right">0.0260187</td>
+<td align="right">0.0514756</td>
+<td align="right">0.0020429</td>
+<td align="right">0.0037037</td>
+<td align="right">0.0025592</td>
+<td align="right">0.0003587</td>
+<td align="right">0.0027483</td>
+<td align="right">0.0283719</td>
+<td align="right">0.1459953</td>
+<td align="right">0.0112455</td>
+<td align="right">0.0007721</td>
+</tr>
+<tr class="odd">
+<td align="left">Gamma delta T</td>
+<td align="right">0.0119887</td>
+<td align="right">0.0014728</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0056180</td>
+<td align="right">0.0005291</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0003587</td>
+<td align="right">0.0247350</td>
+<td align="right">0.0008730</td>
+<td align="right">0.0034992</td>
+<td align="right">0.0024184</td>
+<td align="right">0.0024266</td>
+</tr>
+<tr class="even">
+<td align="left">Macrophages</td>
+<td align="right">0.4694405</td>
+<td align="right">0.5002455</td>
+<td align="right">0.7083047</td>
+<td align="right">0.7808989</td>
+<td align="right">0.8687831</td>
+<td align="right">0.9280230</td>
+<td align="right">0.9386657</td>
+<td align="right">0.5622301</td>
+<td align="right">0.9000436</td>
+<td align="right">0.6485226</td>
+<td align="right">0.6964933</td>
+<td align="right">0.8641077</td>
+</tr>
+<tr class="odd">
+<td align="left">Mast cells</td>
+<td align="right">0.0021157</td>
+<td align="right">0.0103093</td>
+<td align="right">0.0041181</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0004365</td>
+<td align="right">0.0005832</td>
+<td align="right">0.0007255</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Monocytes</td>
+<td align="right">0.0023507</td>
+<td align="right">0.0117820</td>
+<td align="right">0.0068634</td>
+<td align="right">0.0051073</td>
+<td align="right">0.0074074</td>
+<td align="right">0.0076775</td>
+<td align="right">0.0111191</td>
+<td align="right">0.0098155</td>
+<td align="right">0.0065474</td>
+<td align="right">0.0056376</td>
+<td align="right">0.0249093</td>
+<td align="right">0.0078315</td>
+</tr>
+<tr class="odd">
+<td align="left">Neutrophils</td>
+<td align="right">0.0042313</td>
+<td align="right">0.0289642</td>
+<td align="right">0.0089224</td>
+<td align="right">0.0015322</td>
+<td align="right">0.0031746</td>
+<td align="right">0.0003199</td>
+<td align="right">0.0003587</td>
+<td align="right">0.0011779</td>
+<td align="right">0.0004365</td>
+<td align="right">0.0021384</td>
+<td align="right">0.0014510</td>
+<td align="right">0.0005515</td>
+</tr>
+<tr class="even">
+<td align="left">NK cells</td>
+<td align="right">0.0190409</td>
+<td align="right">0.0098184</td>
+<td align="right">0.0061771</td>
+<td align="right">0.0086823</td>
+<td align="right">0.0010582</td>
+<td align="right">0.0031990</td>
+<td align="right">0.0021521</td>
+<td align="right">0.0286612</td>
+<td align="right">0.0017460</td>
+<td align="right">0.0110809</td>
+<td align="right">0.0089480</td>
+<td align="right">0.0072799</td>
+</tr>
+<tr class="odd">
+<td align="left">NK T cells</td>
+<td align="right">0.0082276</td>
+<td align="right">0.0112911</td>
+<td align="right">0.0178449</td>
+<td align="right">0.0061287</td>
+<td align="right">0.0021164</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0007174</td>
+<td align="right">0.0058893</td>
+<td align="right">0.0039284</td>
+<td align="right">0.0209953</td>
+<td align="right">0.0099154</td>
+<td align="right">0.0026473</td>
+</tr>
+</tbody>
+</table>
+<div id="cell-proportions-by-donor" class="section level3">
+<h3>Cell proportions by donor</h3>
+<pre class="r"><code>props$Proportions %&gt;%
+  data.frame %&gt;%
+ggplot(aes(x = sample, y = Freq, fill = clusters)) +
+  geom_bar(stat = &quot;identity&quot;) +
+  theme(axis.text.x = element_text(angle = 90, 
+                                   vjust = 0.5, 
+                                   hjust = 1),
+        legend.text = element_text(size = 8)) +
+  labs(x = &quot;Donor&quot;, y = &quot;Proportion&quot;, fill = &quot;Cell label&quot;) + 
+  paletteer::scale_fill_paletteer_d(&quot;LaCroixColoR::paired&quot;)</code></pre>
+<p><img src="figure/04_COMBO.proportion_analysis.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<!-- ## Format proportions for comparison -->
+<!-- ### Flow -->
+<!-- ```{r} -->
+<!-- flow <- read_csv(file = here("data/Flow_data_CITEseq_2-8.csv")) -->
+<!-- flow$HTO <- paste0("Human_HTO_", flow$Hashtag) -->
+<!-- colnames(flow) <- gsub("mono", "Monocyte", colnames(flow)) -->
+<!-- colnames(flow) <- gsub("CD16-", "CD14+", colnames(flow)) -->
+<!-- colnames(flow) <- gsub("_goblet-ciliated-basal", "", colnames(flow)) -->
+<!-- flow %>%  -->
+<!--   dplyr::select(-Hashtag, -`Clinical characteristic`, -Sex, -Age) %>%  -->
+<!--   dplyr::mutate(HTO = factor(HTO)) %>% -->
+<!--   pivot_longer(cols = -HTO, -->
+<!--                names_to = "cell") -> flowProps -->
+<!-- flowProps %>% head %>% knitr::kable() -->
+<!--  # [1] "Macrophages"    "Neutrophils"    "CD8 T"          "CD4 T"          "B"              -->
+<!--  # [6] "Dendritic"      "Monocytes"      "CD16+ Monocyte" "CD14+ Monocyte" "Epithelial"  -->
+<!-- grepl("[Mm]ac[rs]", seu$Annotation) -->
+<!-- ``` -->
+</div>
+</div>
+<div id="load-clinical-information" class="section level2">
+<h2>Load clinical information</h2>
+<p>Import clinical characteristics and patient information and associate with <code>genetic_donor</code> IDs.</p>
+<pre class="r"><code>info &lt;- read.csv(file = here(&quot;data/sample_sheets/Hashtag_Feature_Ref_With_Clin.csv&quot;))
+info$Severity &lt;- strsplit2(info$Clinical_characteristic, &quot; &quot;)[,1]
+info$Treatment &lt;- strsplit2(info$Clinical_characteristic, &quot; &quot;)[,3]
+  
+tab &lt;- table(seu$HTO, seu$donor)
+
+apply(tab, 2, function(x){
+  names(which(x == max(x)))
+}) %&gt;% data.frame %&gt;%
+  dplyr::rename(&quot;HTO&quot; = &quot;.&quot;) %&gt;%
+  rownames_to_column(var = &quot;donor&quot;) %&gt;%
+  inner_join(info, by = c(&quot;HTO&quot; = &quot;id&quot;)) %&gt;%
+  dplyr::select(-read, 
+                -pattern, 
+                -sequence, 
+                -feature_type, 
+                -X) %&gt;%
+  dplyr::mutate(Disease = &quot;CF&quot;) -&gt; info
+
+bind_rows(info, data.frame(donor = c(&quot;JC&quot;, &quot;DM&quot;, &quot;JLG&quot;, &quot;LC&quot;),
+           Disease = c(&quot;CF&quot;, &quot;CF&quot;, &quot;Ctrl&quot;, &quot;CF&quot;),
+           Severity = c(&quot;mild&quot;, &quot;severe&quot;, &quot;control&quot;, &quot;severe&quot;),
+           Treatment = c(&quot;untreated&quot;, &quot;untreated&quot;, &quot;control&quot;, &quot;treated&quot;),
+           Age = rep(3, 4),
+           Sex = c(&quot;M&quot;,&quot;F&quot;,&quot;M&quot;,&quot;M&quot;))) %&gt;%
+  mutate(Batch = c(rep(2, 8,), rep(1, 4))) -&gt; info
+
+info %&gt;% knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">donor</th>
+<th align="left">HTO</th>
+<th align="left">name</th>
+<th align="left">Clinical_characteristic</th>
+<th align="left">Sex</th>
+<th align="right">Age</th>
+<th align="left">Severity</th>
+<th align="left">Treatment</th>
+<th align="left">Disease</th>
+<th align="right">Batch</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">donor_A</td>
+<td align="left">Human_HTO_8</td>
+<td align="left">Human_8</td>
+<td align="left">severe disease treated</td>
+<td align="left">M</td>
+<td align="right">6</td>
+<td align="left">severe</td>
+<td align="left">treated</td>
+<td align="left">CF</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">donor_B</td>
+<td align="left">Human_HTO_1</td>
+<td align="left">Human_1</td>
+<td align="left">severe disease untreated</td>
+<td align="left">F</td>
+<td align="right">6</td>
+<td align="left">severe</td>
+<td align="left">untreated</td>
+<td align="left">CF</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">donor_C</td>
+<td align="left">Human_HTO_4</td>
+<td align="left">Human_4</td>
+<td align="left">mild disease untreated</td>
+<td align="left">F</td>
+<td align="right">6</td>
+<td align="left">mild</td>
+<td align="left">untreated</td>
+<td align="left">CF</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">donor_D</td>
+<td align="left">Human_HTO_6</td>
+<td align="left">Human_6</td>
+<td align="left">mild disease untreated</td>
+<td align="left">M</td>
+<td align="right">5</td>
+<td align="left">mild</td>
+<td align="left">untreated</td>
+<td align="left">CF</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">donor_E</td>
+<td align="left">Human_HTO_3</td>
+<td align="left">Human_3</td>
+<td align="left">severe disease untreated</td>
+<td align="left">F</td>
+<td align="right">5</td>
+<td align="left">severe</td>
+<td align="left">untreated</td>
+<td align="left">CF</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">donor_F</td>
+<td align="left">Human_HTO_5</td>
+<td align="left">Human_5</td>
+<td align="left">mild disease untreated</td>
+<td align="left">F</td>
+<td align="right">6</td>
+<td align="left">mild</td>
+<td align="left">untreated</td>
+<td align="left">CF</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">donor_G</td>
+<td align="left">Human_HTO_2</td>
+<td align="left">Human_2</td>
+<td align="left">severe disease untreated</td>
+<td align="left">F</td>
+<td align="right">6</td>
+<td align="left">severe</td>
+<td align="left">untreated</td>
+<td align="left">CF</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">donor_H</td>
+<td align="left">Human_HTO_7</td>
+<td align="left">Human_7</td>
+<td align="left">mild disease treated</td>
+<td align="left">M</td>
+<td align="right">5</td>
+<td align="left">mild</td>
+<td align="left">treated</td>
+<td align="left">CF</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">JC</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">M</td>
+<td align="right">3</td>
+<td align="left">mild</td>
+<td align="left">untreated</td>
+<td align="left">CF</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">DM</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">F</td>
+<td align="right">3</td>
+<td align="left">severe</td>
+<td align="left">untreated</td>
+<td align="left">CF</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">JLG</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">M</td>
+<td align="right">3</td>
+<td align="left">control</td>
+<td align="left">control</td>
+<td align="left">Ctrl</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">LC</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">M</td>
+<td align="right">3</td>
+<td align="left">severe</td>
+<td align="left">treated</td>
+<td align="left">CF</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<!-- ### scRNA-seq -->
+<!-- ```{r} -->
+<!-- props$Proportions %>% -->
+<!--   as.data.frame.matrix %>%  -->
+<!--   data.frame -> scProps -->
+<!-- rbind(scProps,  -->
+<!--       Monocytes = colSums(scProps[grepl("Monocyte", rownames(scProps)),]), -->
+<!--       Macrophages = colSums(scProps[grepl("Macrophage", rownames(scProps)),]), -->
+<!--       Epithelial = colSums(scProps[rownames(scProps) %in% c("Ciliated", "Basal", "Goblet"),])) -> scProps -->
+<!-- scProps %>% rownames_to_column(var = "cell") %>%  -->
+<!--   pivot_longer(cols = -cell) %>% -->
+<!--   left_join(dplyr::select(info, donor, HTO), by = c("name" = "donor")) %>% -->
+<!--   dplyr::select(-name) %>% -->
+<!--   dplyr::filter(!is.na(HTO)) %>% -->
+<!--   mutate(cell = ifelse(grepl("Neutrophil", cell),  -->
+<!--                        "Neutrophils",  -->
+<!--                        cell)) -> scProps -->
+<!-- scProps %>% head %>% knitr::kable() -->
+<!-- ``` -->
+<!-- ## Compare flow vs. scRNA-seq proportions -->
+<!-- ```{r, fig.asp=1} -->
+<!-- flowProps %>% inner_join(scProps, by = c("HTO", "cell")) -> dat -->
+<!-- ggplot(dat, aes(x = value.x, y = value.y * 100, colour = HTO)) + -->
+<!--   geom_point() + -->
+<!--   facet_wrap(~cell, scales = "free") + -->
+<!--   labs(x = "Flow cytometry %", y = "scRNA-seq %") + -->
+<!--   theme(legend.position = "bottom") -->
+<!-- ggplot(dat, aes(x = value.x, y = value.y * 100, colour = cell)) + -->
+<!--   geom_point() + -->
+<!--   facet_wrap(~HTO, scales = "free") + -->
+<!--   labs(x = "Flow cytometry %", y = "scRNA-seq %") + -->
+<!--   theme(legend.position = "bottom") -->
+<!-- ``` -->
+<!-- ```{r, fig.width=9, fig.asp=0.5} -->
+<!-- neuMarkers <- c("CSF3R", "FPR1", "FCGR3B",  -->
+<!--                 "NAMPT", "MNDA","S100A8", -->
+<!--                 "FUT4", "CEACAM8","LY6E","LY6K") -->
+<!-- otherMarkers <- c("MRC1", "CD3D", "NCAM1", "MS4A1", "CD14", "CD1C", "NTRK1","CD19") -->
+<!-- sub <- subset(seuInt, downsample = 100) -->
+<!-- DoHeatmap(sub, assay = "RNA", slot = "data", -->
+<!--           cells = which(!grepl("macs|macro", sub$Annotation)), -->
+<!--           features = c(neuMarkers,otherMarkers), -->
+<!--           group.by = "Annotation", size = 2) + NoLegend() -->
+<!-- ``` -->
+<!-- # Explore relationship between samples -->
+<!-- ## MDS Plot -->
+<!-- ```{r, message=FALSE, warning=FALSE, fig.asp=1} -->
+<!-- dims <- list(c(1,2), c(1,3), c(2,3), c(3,4)) -->
+<!-- p <- vector("list", length(dims)) -->
+<!-- for (i in 1:length(dims)){ -->
+<!--   mds <- plotMDS(props$TransformedProps, gene.selection = "common", -->
+<!--                  plot = FALSE, dim.plot = dims[[i]]) -->
+<!--   data.frame(x = mds$x, y = mds$y, -->
+<!--              donor = rownames(mds$distance.matrix.squared)) -> dat -->
+<!--   info %>% inner_join(dat) -> dat -->
+<!--   p1 <- ggplot(dat, aes(x = x, y = y, -->
+<!--                         color = Treatment, -->
+<!--                         shape = factor(Batch))) + -->
+<!--     geom_point(size = 4) + -->
+<!--     labs(x = glue("Principal Component {dims[[i]][1]}"), -->
+<!--          y = glue("Principal Component {dims[[i]][2]}"), -->
+<!--          color = "Treatment", -->
+<!--          shape = "Batch") -->
+<!--   p2 <- ggplot(dat, aes(x = x, y = y, -->
+<!--                         color = Severity, -->
+<!--                         shape = factor(Batch))) + -->
+<!--     geom_point(size = 4) + -->
+<!--     scale_color_brewer(palette = "Dark2") + -->
+<!--     labs(x = glue("Principal Component {dims[[i]][1]}"), -->
+<!--          y = glue("Principal Component {dims[[i]][2]}"), -->
+<!--          color = "Severity", -->
+<!--          shape = "Batch") -->
+<!--     p3 <- ggplot(dat, aes(x = x, y = y, -->
+<!--                         color = factor(Age), -->
+<!--                         shape = factor(Batch))) + -->
+<!--     geom_point(size = 4) + -->
+<!--     scale_color_brewer(palette = "Paired") + -->
+<!--     labs(x = glue("Principal Component {dims[[i]][1]}"), -->
+<!--          y = glue("Principal Component {dims[[i]][2]}"), -->
+<!--          color = "Age", -->
+<!--          shape = "Batch") -->
+<!--     p4 <- ggplot(dat, aes(x = x, y = y, -->
+<!--                         color = Sex, -->
+<!--                         shape = factor(Batch))) + -->
+<!--     geom_point(size = 4) + -->
+<!--     scale_color_brewer(palette = "Set1") + -->
+<!--     labs(x = glue("Principal Component {dims[[i]][1]}"), -->
+<!--          y = glue("Principal Component {dims[[i]][2]}"), -->
+<!--          color = "Sex", -->
+<!--          shape = "Batch") -->
+<!--   p[[i]] <- (p1 | p2) / (p3 | p4) & -->
+<!--     theme(legend.position = "bottom", -->
+<!--           legend.direction = "vertical", -->
+<!--           legend.text = element_text(size = 8)) -->
+<!-- } -->
+<!-- p -->
+<!-- ``` -->
+</div>
+</div>
+<div id="differences-in-cell-type-proportions-broad" class="section level1">
+<h1>Differences in cell type proportions (Broad)</h1>
+<div id="proportion-plots" class="section level2">
+<h2>Proportion plots</h2>
+<p>Cell type proportions by individual and severity plus treatment.</p>
+<pre class="r"><code>props$Proportions %&gt;% data.frame %&gt;%
+  inner_join(info, by = c(&quot;sample&quot; = &quot;donor&quot;)) %&gt;%
+  ggplot(aes(x = sample, y = Freq, fill = clusters)) +
+  geom_bar(stat = &quot;identity&quot;) +
+  theme(axis.text.x = element_text(angle = 90,
+                                   hjust = 1,
+                                   vjust = 0.5)) +
+  labs(x = &quot;Individual&quot;, y = &quot;Proportion&quot;, fill = &quot;Cell Type&quot;) +
+  facet_wrap(~ Severity, ncol = 3) +
+  theme(legend.position = &quot;bottom&quot;,
+        legend.text = element_text(size = 8)) + 
+  paletteer::scale_fill_paletteer_d(&quot;LaCroixColoR::paired&quot;)</code></pre>
+<p><img src="figure/04_COMBO.proportion_analysis.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Cell type proportions by individual and treatment.</p>
+<pre class="r"><code>props$Proportions %&gt;% data.frame %&gt;%
+  inner_join(info, by = c(&quot;sample&quot; = &quot;donor&quot;)) %&gt;%
+  ggplot(aes(x = sample, y = Freq, fill = clusters)) +
+  geom_bar(stat = &quot;identity&quot;) +
+  theme(axis.text.x = element_text(angle = 90,
+                                   hjust = 1,
+                                   vjust = 0.5)) +
+  labs(x = &quot;Individual&quot;, y = &quot;Proportion&quot;, fill = &quot;Cell Type&quot;) +
+  facet_wrap(~ Treatment, ncol = 3) +
+  theme(legend.position = &quot;bottom&quot;,
+        legend.text = element_text(size = 8)) + 
+  paletteer::scale_fill_paletteer_d(&quot;LaCroixColoR::paired&quot;)</code></pre>
+<p><img src="figure/04_COMBO.proportion_analysis.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="statistical-analysis-of-cell-type-proportions" class="section level2">
+<h2>Statistical analysis of cell type proportions</h2>
+<p>We can set up a design matrix taking into account various aspects of the data, such as disease severity, treatment and Batch. Please note that the way that <code>propeller</code> has been designed is such that the group information is <em>always</em> first in the design matrix specification, and there is NO intercept.</p>
+<pre class="r"><code>Group &lt;- factor(paste(info$Severity, info$Treatment, sep=&quot;.&quot;))
+Batch &lt;- factor(info$Batch)
+
+design &lt;- model.matrix(~ 0 + Group + Batch)
+colnames(design) &lt;- c(&quot;C&quot;,&quot;MT&quot;,&quot;MU&quot;,
+                      &quot;ST&quot;,&quot;SU&quot;, &quot;Batch&quot;)
+design</code></pre>
+<pre><code>   C MT MU ST SU Batch
+1  0  0  0  1  0     1
+2  0  0  0  0  1     1
+3  0  0  1  0  0     1
+4  0  0  1  0  0     1
+5  0  0  0  0  1     1
+6  0  0  1  0  0     1
+7  0  0  0  0  1     1
+8  0  1  0  0  0     1
+9  0  0  1  0  0     0
+10 0  0  0  0  1     0
+11 1  0  0  0  0     0
+12 0  0  0  1  0     0
+attr(,&quot;assign&quot;)
+[1] 1 1 1 1 1 2
+attr(,&quot;contrasts&quot;)
+attr(,&quot;contrasts&quot;)$Group
+[1] &quot;contr.treatment&quot;
+
+attr(,&quot;contrasts&quot;)$Batch
+[1] &quot;contr.treatment&quot;</code></pre>
+<div id="test-for-differences-in-proportions-across-all-groups" class="section level3">
+<h3>Test for differences in proportions across all groups</h3>
+<p>We have 4 groups: severe disease treated, severe disease untreated, mild disease untreated, mild disease untreated, severe disease untreated, mild disease untreated, severe disease untreated, mild disease treated, NA, NA, NA, NA. In order to perform an ANOVA to test for cell type composition differences between these 4 groups, we can use the <code>propeller.anova</code> function. The <code>coef</code> argument tells the function which columns of the design matrix correspond to the groups we are interested in testing. Here we are interested in the first 4 columns.</p>
+<pre class="r"><code>propeller.anova(prop.list = props, design = design, coef = c(1:5),
+                robust = TRUE, trend = FALSE, sort = TRUE) %&gt;% knitr::kable()</code></pre>
+<table>
+<colgroup>
+<col width="13%" />
+<col width="10%" />
+<col width="11%" />
+<col width="11%" />
+<col width="11%" />
+<col width="11%" />
+<col width="10%" />
+<col width="9%" />
+<col width="9%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">PropMean.C</th>
+<th align="right">PropMean.MT</th>
+<th align="right">PropMean.MU</th>
+<th align="right">PropMean.ST</th>
+<th align="right">PropMean.SU</th>
+<th align="right">Fstatistic</th>
+<th align="right">P.Value</th>
+<th align="right">FDR</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Gamma delta T</td>
+<td align="right">0.0024184</td>
+<td align="right">0.0247350</td>
+<td align="right">0.0016227</td>
+<td align="right">0.0072077</td>
+<td align="right">0.0014649</td>
+<td align="right">2.6342997</td>
+<td align="right">0.1139579</td>
+<td align="right">0.8395097</td>
+</tr>
+<tr class="even">
+<td align="left">CD8 T</td>
+<td align="right">0.0810157</td>
+<td align="right">0.1126816</td>
+<td align="right">0.0333718</td>
+<td align="right">0.0498542</td>
+<td align="right">0.0363517</td>
+<td align="right">2.3448089</td>
+<td align="right">0.1422359</td>
+<td align="right">0.8395097</td>
+</tr>
+<tr class="odd">
+<td align="left">NK cells</td>
+<td align="right">0.0089480</td>
+<td align="right">0.0286612</td>
+<td align="right">0.0049511</td>
+<td align="right">0.0131604</td>
+<td align="right">0.0060274</td>
+<td align="right">1.6795424</td>
+<td align="right">0.2470500</td>
+<td align="right">0.8395097</td>
+</tr>
+<tr class="even">
+<td align="left">Monocytes</td>
+<td align="right">0.0249093</td>
+<td align="right">0.0098155</td>
+<td align="right">0.0065489</td>
+<td align="right">0.0050911</td>
+<td align="right">0.0089865</td>
+<td align="right">1.4513674</td>
+<td align="right">0.3027925</td>
+<td align="right">0.8395097</td>
+</tr>
+<tr class="odd">
+<td align="left">Dendritic</td>
+<td align="right">0.0644498</td>
+<td align="right">0.0569297</td>
+<td align="right">0.0258008</td>
+<td align="right">0.0173266</td>
+<td align="right">0.0412221</td>
+<td align="right">1.2945879</td>
+<td align="right">0.3495852</td>
+<td align="right">0.8395097</td>
+</tr>
+<tr class="even">
+<td align="left">CD4 T</td>
+<td align="right">0.0565901</td>
+<td align="right">0.1884570</td>
+<td align="right">0.0408533</td>
+<td align="right">0.0595438</td>
+<td align="right">0.0714674</td>
+<td align="right">1.1876575</td>
+<td align="right">0.3874660</td>
+<td align="right">0.8395097</td>
+</tr>
+<tr class="odd">
+<td align="left">B cells</td>
+<td align="right">0.0418380</td>
+<td align="right">0.0066745</td>
+<td align="right">0.0255045</td>
+<td align="right">0.0683374</td>
+<td align="right">0.0236629</td>
+<td align="right">0.9439539</td>
+<td align="right">0.4872886</td>
+<td align="right">0.9049645</td>
+</tr>
+<tr class="even">
+<td align="left">Macrophages</td>
+<td align="right">0.6964933</td>
+<td align="right">0.5622301</td>
+<td align="right">0.8293176</td>
+<td align="right">0.6667741</td>
+<td align="right">0.7390542</td>
+<td align="right">0.6824499</td>
+<td align="right">0.6239765</td>
+<td align="right">0.9498527</td>
+</tr>
+<tr class="odd">
+<td align="left">Endothelial</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0190409</td>
+<td align="right">0.0075816</td>
+<td align="right">0.6257735</td>
+<td align="right">0.6575904</td>
+<td align="right">0.9498527</td>
+</tr>
+<tr class="even">
+<td align="left">Neutrophils</td>
+<td align="right">0.0014510</td>
+<td align="right">0.0011779</td>
+<td align="right">0.0028028</td>
+<td align="right">0.0023914</td>
+<td align="right">0.0086590</td>
+<td align="right">0.2556534</td>
+<td align="right">0.8982267</td>
+<td align="right">0.9942515</td>
+</tr>
+<tr class="odd">
+<td align="left">Epithelial</td>
+<td align="right">0.0112455</td>
+<td align="right">0.0027483</td>
+<td align="right">0.0211124</td>
+<td align="right">0.0847772</td>
+<td align="right">0.0440191</td>
+<td align="right">0.2470220</td>
+<td align="right">0.9034123</td>
+<td align="right">0.9942515</td>
+</tr>
+<tr class="even">
+<td align="left">Mast cells</td>
+<td align="right">0.0007255</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0011386</td>
+<td align="right">0.0010578</td>
+<td align="right">0.0027231</td>
+<td align="right">0.1374895</td>
+<td align="right">0.9636740</td>
+<td align="right">0.9942515</td>
+</tr>
+<tr class="odd">
+<td align="left">NK T cells</td>
+<td align="right">0.0099154</td>
+<td align="right">0.0058893</td>
+<td align="right">0.0069755</td>
+<td align="right">0.0054374</td>
+<td align="right">0.0087801</td>
+<td align="right">0.0503685</td>
+<td align="right">0.9942515</td>
+<td align="right">0.9942515</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="test-for-differences-in-proportions-by-treatment-stratified-by-severity" class="section level3">
+<h3>Test for differences in proportions by treatment, stratified by severity</h3>
+<p>Stripchart of cell type proportion, stratified by cell type and treatment.</p>
+<pre class="r"><code>props$Proportions %&gt;% data.frame %&gt;%
+  left_join(info,
+            by = c(&quot;sample&quot; = &quot;donor&quot;)) %&gt;%
+  ggplot(aes(x = Treatment,
+             y = Freq,
+             colour = Severity,
+             shape = factor(Batch))) +
+  geom_jitter(stat = &quot;identity&quot;,
+              width = 0.15,
+              size = 2) +
+  stat_summary(aes(x = Treatment, y = Freq),
+               inherit.aes = FALSE,
+               fun = &quot;mean&quot;,
+               geom = &quot;crossbar&quot;,
+               size = 0.1) +
+  theme(axis.text.x = element_text(angle = 90,
+                                   hjust = 1,
+                                   vjust = 0.5),
+        legend.position = &quot;bottom&quot;,
+        strip.text = element_text(size = 6),
+        axis.text = element_text(size = 6)) +
+  labs(x = &quot;Treatment&quot;, y = &quot;Proportion&quot;,
+       colour = &quot;Severity&quot;, shape = &quot;Batch&quot;) +
+  ggtitle(&quot;Treatment&quot;) +
+  facet_wrap(~ clusters, scales = &quot;free_y&quot;) -&gt; p1
+
+p1</code></pre>
+<p><img src="figure/04_COMBO.proportion_analysis.Rmd/unnamed-chunk-12-1.png" width="864" style="display: block; margin: auto;" /></p>
+<p>As we are interested in testing the effect of treatment within the severity groups we can use the <code>propeller.ttest</code> function and specify a contrast that tests for this comparison with our design matrix.</p>
+<div id="mild-disease-untreated-versus-treated" class="section level4">
+<h4>Mild disease: Untreated versus treated</h4>
+<p>First test for differences in proportions by treatment for mild disease.</p>
+<pre class="r"><code>mycontr &lt;- makeContrasts(MUvMT = MU-MT,
+                         SUvST = SU-ST,
+                         MvSall = 0.5*(MU + MT) - 0.5*(SU + ST),
+                         MvSun = MU-SU,
+                         CvAll = C - 0.25*(SU + ST + MU + MT),
+                         levels=design)
+mycontr</code></pre>
+<pre><code>       Contrasts
+Levels  MUvMT SUvST MvSall MvSun CvAll
+  C         0     0    0.0     0  1.00
+  MT       -1     0    0.5     0 -0.25
+  MU        1     0    0.5     1 -0.25
+  ST        0    -1   -0.5     0 -0.25
+  SU        0     1   -0.5    -1 -0.25
+  Batch     0     0    0.0     0  0.00</code></pre>
+<pre class="r"><code>propeller.ttest(props, design, contrasts = mycontr[,1], robust=TRUE, trend=FALSE,
+                sort=TRUE) %&gt;% knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">PropMean.MT</th>
+<th align="right">PropMean.MU</th>
+<th align="right">PropRatio</th>
+<th align="right">Tstatistic</th>
+<th align="right">P.Value</th>
+<th align="right">FDR</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Gamma delta T</td>
+<td align="right">0.0247350</td>
+<td align="right">0.0016227</td>
+<td align="right">0.0656050</td>
+<td align="right">-2.9372972</td>
+<td align="right">0.0188909</td>
+<td align="right">0.2266865</td>
+</tr>
+<tr class="even">
+<td align="left">CD8 T</td>
+<td align="right">0.1126816</td>
+<td align="right">0.0333718</td>
+<td align="right">0.2961604</td>
+<td align="right">-2.3084619</td>
+<td align="right">0.0499666</td>
+<td align="right">0.2266865</td>
+</tr>
+<tr class="odd">
+<td align="left">NK cells</td>
+<td align="right">0.0286612</td>
+<td align="right">0.0049511</td>
+<td align="right">0.1727454</td>
+<td align="right">-2.2144570</td>
+<td align="right">0.0578443</td>
+<td align="right">0.2266865</td>
+</tr>
+<tr class="even">
+<td align="left">CD4 T</td>
+<td align="right">0.1884570</td>
+<td align="right">0.0408533</td>
+<td align="right">0.2167779</td>
+<td align="right">-2.1010196</td>
+<td align="right">0.0697497</td>
+<td align="right">0.2266865</td>
+</tr>
+<tr class="odd">
+<td align="left">Dendritic</td>
+<td align="right">0.0569297</td>
+<td align="right">0.0258008</td>
+<td align="right">0.4532048</td>
+<td align="right">-1.2644665</td>
+<td align="right">0.2418288</td>
+<td align="right">0.5367486</td>
+</tr>
+<tr class="even">
+<td align="left">Macrophages</td>
+<td align="right">0.5622301</td>
+<td align="right">0.8293176</td>
+<td align="right">1.4750502</td>
+<td align="right">1.2494398</td>
+<td align="right">0.2477301</td>
+<td align="right">0.5367486</td>
+</tr>
+<tr class="odd">
+<td align="left">B cells</td>
+<td align="right">0.0066745</td>
+<td align="right">0.0255045</td>
+<td align="right">3.8211669</td>
+<td align="right">0.5489876</td>
+<td align="right">0.5983892</td>
+<td align="right">0.9111968</td>
+</tr>
+<tr class="even">
+<td align="left">Monocytes</td>
+<td align="right">0.0098155</td>
+<td align="right">0.0065489</td>
+<td align="right">0.6672012</td>
+<td align="right">-0.5334285</td>
+<td align="right">0.6083054</td>
+<td align="right">0.9111968</td>
+</tr>
+<tr class="odd">
+<td align="left">Mast cells</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0011386</td>
+<td align="right">Inf</td>
+<td align="right">0.4924113</td>
+<td align="right">0.6357220</td>
+<td align="right">0.9111968</td>
+</tr>
+<tr class="even">
+<td align="left">Epithelial</td>
+<td align="right">0.0027483</td>
+<td align="right">0.0211124</td>
+<td align="right">7.6818982</td>
+<td align="right">0.3456087</td>
+<td align="right">0.7387821</td>
+<td align="right">0.9111968</td>
+</tr>
+<tr class="odd">
+<td align="left">Neutrophils</td>
+<td align="right">0.0011779</td>
+<td align="right">0.0028028</td>
+<td align="right">2.3795363</td>
+<td align="right">0.2976295</td>
+<td align="right">0.7736060</td>
+<td align="right">0.9111968</td>
+</tr>
+<tr class="even">
+<td align="left">NK T cells</td>
+<td align="right">0.0058893</td>
+<td align="right">0.0069755</td>
+<td align="right">1.1844401</td>
+<td align="right">-0.2071356</td>
+<td align="right">0.8411047</td>
+<td align="right">0.9111968</td>
+</tr>
+<tr class="odd">
+<td align="left">Endothelial</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">NaN</td>
+<td align="right">-0.0471636</td>
+<td align="right">0.9635525</td>
+<td align="right">0.9635525</td>
+</tr>
+</tbody>
+</table>
+<p>There are no statistically significant differences in proportion by treatment for mild disease samples.</p>
+</div>
+<div id="severe-disease-untreated-versus-treated" class="section level4">
+<h4>Severe disease: Untreated versus treated</h4>
+<p>Test for differences in proportions by treatment for severe disease.</p>
+<pre class="r"><code>propeller.ttest(props, design, contrasts = mycontr[,2], robust = TRUE,
+                trend = FALSE, sort=TRUE) %&gt;% knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">PropMean.ST</th>
+<th align="right">PropMean.SU</th>
+<th align="right">PropRatio</th>
+<th align="right">Tstatistic</th>
+<th align="right">P.Value</th>
+<th align="right">FDR</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Dendritic</td>
+<td align="right">0.0173266</td>
+<td align="right">0.0412221</td>
+<td align="right">2.3791298</td>
+<td align="right">1.2866848</td>
+<td align="right">0.2343611</td>
+<td align="right">0.8145404</td>
+</tr>
+<tr class="even">
+<td align="left">Gamma delta T</td>
+<td align="right">0.0072077</td>
+<td align="right">0.0014649</td>
+<td align="right">0.2032469</td>
+<td align="right">-1.2854827</td>
+<td align="right">0.2347601</td>
+<td align="right">0.8145404</td>
+</tr>
+<tr class="odd">
+<td align="left">B cells</td>
+<td align="right">0.0683374</td>
+<td align="right">0.0236629</td>
+<td align="right">0.3462651</td>
+<td align="right">-1.2727034</td>
+<td align="right">0.2397842</td>
+<td align="right">0.8145404</td>
+</tr>
+<tr class="even">
+<td align="left">NK cells</td>
+<td align="right">0.0131604</td>
+<td align="right">0.0060274</td>
+<td align="right">0.4579927</td>
+<td align="right">-1.2223673</td>
+<td align="right">0.2565274</td>
+<td align="right">0.8145404</td>
+</tr>
+<tr class="odd">
+<td align="left">CD8 T</td>
+<td align="right">0.0498542</td>
+<td align="right">0.0363517</td>
+<td align="right">0.7291597</td>
+<td align="right">-0.9737887</td>
+<td align="right">0.3588213</td>
+<td align="right">0.8145404</td>
+</tr>
+<tr class="even">
+<td align="left">Monocytes</td>
+<td align="right">0.0050911</td>
+<td align="right">0.0089865</td>
+<td align="right">1.7651492</td>
+<td align="right">0.9377677</td>
+<td align="right">0.3759417</td>
+<td align="right">0.8145404</td>
+</tr>
+<tr class="odd">
+<td align="left">Endothelial</td>
+<td align="right">0.0190409</td>
+<td align="right">0.0075816</td>
+<td align="right">0.3981769</td>
+<td align="right">-0.7349543</td>
+<td align="right">0.4835965</td>
+<td align="right">0.8970825</td>
+</tr>
+<tr class="even">
+<td align="left">Macrophages</td>
+<td align="right">0.6667741</td>
+<td align="right">0.7390542</td>
+<td align="right">1.1084027</td>
+<td align="right">0.6121775</td>
+<td align="right">0.5578575</td>
+<td align="right">0.8970825</td>
+</tr>
+<tr class="odd">
+<td align="left">Neutrophils</td>
+<td align="right">0.0023914</td>
+<td align="right">0.0086590</td>
+<td align="right">3.6208596</td>
+<td align="right">0.4369349</td>
+<td align="right">0.6737695</td>
+<td align="right">0.8970825</td>
+</tr>
+<tr class="even">
+<td align="left">Epithelial</td>
+<td align="right">0.0847772</td>
+<td align="right">0.0440191</td>
+<td align="right">0.5192326</td>
+<td align="right">-0.4139597</td>
+<td align="right">0.6900634</td>
+<td align="right">0.8970825</td>
+</tr>
+<tr class="odd">
+<td align="left">NK T cells</td>
+<td align="right">0.0054374</td>
+<td align="right">0.0087801</td>
+<td align="right">1.6147514</td>
+<td align="right">0.3058282</td>
+<td align="right">0.7675810</td>
+<td align="right">0.9071412</td>
+</tr>
+<tr class="even">
+<td align="left">CD4 T</td>
+<td align="right">0.0595438</td>
+<td align="right">0.0714674</td>
+<td align="right">1.2002503</td>
+<td align="right">-0.1206202</td>
+<td align="right">0.9070441</td>
+<td align="right">0.9105022</td>
+</tr>
+<tr class="odd">
+<td align="left">Mast cells</td>
+<td align="right">0.0010578</td>
+<td align="right">0.0027231</td>
+<td align="right">2.5742566</td>
+<td align="right">0.1160306</td>
+<td align="right">0.9105022</td>
+<td align="right">0.9105022</td>
+</tr>
+</tbody>
+</table>
+<p>There are no statistically significant differences in proportion by treatment for severe disease samples.</p>
+</div>
+</div>
+<div id="test-for-differences-in-proportions-by-severity" class="section level3">
+<h3>Test for differences in proportions by severity</h3>
+<p>Stripchart of cell type proportions, stratified by cell type and severity.</p>
+<pre class="r"><code>props$Proportions %&gt;% data.frame %&gt;%
+  left_join(info,
+            by = c(&quot;sample&quot; = &quot;donor&quot;)) %&gt;%
+  ggplot(aes(x = Severity,
+             y = Freq,
+             colour = Treatment,
+             shape = factor(Batch))) +
+  geom_jitter(stat = &quot;identity&quot;,
+              width = 0.15,
+              size = 2) +
+  stat_summary(aes(x = Severity, y = Freq),
+               inherit.aes = FALSE,
+               fun = &quot;mean&quot;,
+               geom = &quot;crossbar&quot;,
+               size = 0.1) +
+  theme(axis.text.x = element_text(angle = 90,
+                                   hjust = 1,
+                                   vjust = 0.5),
+        legend.position = &quot;bottom&quot;,
+        strip.text = element_text(size = 6),
+        axis.text = element_text(size = 6)) +
+  labs(x = &quot;Severity&quot;, y = &quot;Proportion&quot;,
+       colour = &quot;Treatment&quot;, shape = &quot;Batch&quot;) +
+  ggtitle(&quot;Severity&quot;) +
+  facet_wrap(~ clusters, scales = &quot;free_y&quot;) -&gt; p1
+
+p1</code></pre>
+<p><img src="figure/04_COMBO.proportion_analysis.Rmd/unnamed-chunk-16-1.png" width="864" style="display: block; margin: auto;" /></p>
+</div>
+<div id="all-mild-versus-severe" class="section level3">
+<h3>All: Mild versus severe</h3>
+<p>Test for differences in proportions between severe and mild disease, across all samples.</p>
+<pre class="r"><code>propeller.ttest(props, design, contrasts = mycontr[,3], robust=TRUE, trend=FALSE,
+                sort=TRUE) %&gt;% knitr::kable()</code></pre>
+<table style="width:100%;">
+<colgroup>
+<col width="13%" />
+<col width="11%" />
+<col width="11%" />
+<col width="11%" />
+<col width="11%" />
+<col width="9%" />
+<col width="10%" />
+<col width="9%" />
+<col width="9%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">PropMean.MT</th>
+<th align="right">PropMean.MU</th>
+<th align="right">PropMean.ST</th>
+<th align="right">PropMean.SU</th>
+<th align="right">PropRatio</th>
+<th align="right">Tstatistic</th>
+<th align="right">P.Value</th>
+<th align="right">FDR</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">B cells</td>
+<td align="right">0.0066745</td>
+<td align="right">0.0255045</td>
+<td align="right">0.0683374</td>
+<td align="right">0.0236629</td>
+<td align="right">0.3244553</td>
+<td align="right">-1.4194602</td>
+<td align="right">0.1945099</td>
+<td align="right">0.6803237</td>
+</tr>
+<tr class="even">
+<td align="left">Gamma delta T</td>
+<td align="right">0.0247350</td>
+<td align="right">0.0016227</td>
+<td align="right">0.0072077</td>
+<td align="right">0.0014649</td>
+<td align="right">1.9497215</td>
+<td align="right">1.1982418</td>
+<td align="right">0.2652805</td>
+<td align="right">0.6803237</td>
+</tr>
+<tr class="odd">
+<td align="left">Endothelial</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0190409</td>
+<td align="right">0.0075816</td>
+<td align="right">0.0000000</td>
+<td align="right">-1.1842404</td>
+<td align="right">0.2706985</td>
+<td align="right">0.6803237</td>
+</tr>
+<tr class="even">
+<td align="left">CD8 T</td>
+<td align="right">0.1126816</td>
+<td align="right">0.0333718</td>
+<td align="right">0.0498542</td>
+<td align="right">0.0363517</td>
+<td align="right">1.4404672</td>
+<td align="right">1.0859608</td>
+<td align="right">0.3092863</td>
+<td align="right">0.6803237</td>
+</tr>
+<tr class="odd">
+<td align="left">Dendritic</td>
+<td align="right">0.0569297</td>
+<td align="right">0.0258008</td>
+<td align="right">0.0173266</td>
+<td align="right">0.0412221</td>
+<td align="right">1.4340528</td>
+<td align="right">0.8919652</td>
+<td align="right">0.3985726</td>
+<td align="right">0.6803237</td>
+</tr>
+<tr class="even">
+<td align="left">NK cells</td>
+<td align="right">0.0286612</td>
+<td align="right">0.0049511</td>
+<td align="right">0.0131604</td>
+<td align="right">0.0060274</td>
+<td align="right">1.3375130</td>
+<td align="right">0.8645264</td>
+<td align="right">0.4125928</td>
+<td align="right">0.6803237</td>
+</tr>
+<tr class="odd">
+<td align="left">Epithelial</td>
+<td align="right">0.0027483</td>
+<td align="right">0.0211124</td>
+<td align="right">0.0847772</td>
+<td align="right">0.0440191</td>
+<td align="right">0.1246933</td>
+<td align="right">-0.8280274</td>
+<td align="right">0.4322837</td>
+<td align="right">0.6803237</td>
+</tr>
+<tr class="even">
+<td align="left">CD4 T</td>
+<td align="right">0.1884570</td>
+<td align="right">0.0408533</td>
+<td align="right">0.0595438</td>
+<td align="right">0.0714674</td>
+<td align="right">1.3450787</td>
+<td align="right">0.7706184</td>
+<td align="right">0.4636565</td>
+<td align="right">0.6803237</td>
+</tr>
+<tr class="odd">
+<td align="left">Neutrophils</td>
+<td align="right">0.0011779</td>
+<td align="right">0.0028028</td>
+<td align="right">0.0023914</td>
+<td align="right">0.0086590</td>
+<td align="right">0.3992807</td>
+<td align="right">-0.7567667</td>
+<td align="right">0.4709933</td>
+<td align="right">0.6803237</td>
+</tr>
+<tr class="even">
+<td align="left">Mast cells</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0011386</td>
+<td align="right">0.0010578</td>
+<td align="right">0.0027231</td>
+<td align="right">0.0000000</td>
+<td align="right">-0.6221998</td>
+<td align="right">0.5512128</td>
+<td align="right">0.7165767</td>
+</tr>
+<tr class="odd">
+<td align="left">Monocytes</td>
+<td align="right">0.0098155</td>
+<td align="right">0.0065489</td>
+<td align="right">0.0050911</td>
+<td align="right">0.0089865</td>
+<td align="right">1.1853257</td>
+<td align="right">0.3985755</td>
+<td align="right">0.7006841</td>
+<td align="right">0.8280812</td>
+</tr>
+<tr class="even">
+<td align="left">Macrophages</td>
+<td align="right">0.5622301</td>
+<td align="right">0.8293176</td>
+<td align="right">0.6667741</td>
+<td align="right">0.7390542</td>
+<td align="right">0.9727248</td>
+<td align="right">0.0596486</td>
+<td align="right">0.9539370</td>
+<td align="right">0.9720561</td>
+</tr>
+<tr class="odd">
+<td align="left">NK T cells</td>
+<td align="right">0.0058893</td>
+<td align="right">0.0069755</td>
+<td align="right">0.0054374</td>
+<td align="right">0.0087801</td>
+<td align="right">0.9276296</td>
+<td align="right">0.0361459</td>
+<td align="right">0.9720561</td>
+<td align="right">0.9720561</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="untreated-mild-versus-severe" class="section level3">
+<h3>Untreated: Mild versus severe</h3>
+<p>Test for differences in proportions between severe and mild disease, in only untreated samples.</p>
+<pre class="r"><code>propeller.ttest(props, design, contrasts = mycontr[,4], robust=TRUE, trend=FALSE,
+                sort=TRUE) %&gt;% knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">PropMean.MU</th>
+<th align="right">PropMean.SU</th>
+<th align="right">PropRatio</th>
+<th align="right">Tstatistic</th>
+<th align="right">P.Value</th>
+<th align="right">FDR</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Dendritic</td>
+<td align="right">0.0258008</td>
+<td align="right">0.0412221</td>
+<td align="right">0.6258977</td>
+<td align="right">-0.8968283</td>
+<td align="right">0.3961239</td>
+<td align="right">0.9095147</td>
+</tr>
+<tr class="even">
+<td align="left">Neutrophils</td>
+<td align="right">0.0028028</td>
+<td align="right">0.0086590</td>
+<td align="right">0.3236821</td>
+<td align="right">-0.8149217</td>
+<td align="right">0.4388174</td>
+<td align="right">0.9095147</td>
+</tr>
+<tr class="odd">
+<td align="left">CD4 T</td>
+<td align="right">0.0408533</td>
+<td align="right">0.0714674</td>
+<td align="right">0.5716357</td>
+<td align="right">-0.8119132</td>
+<td align="right">0.4409381</td>
+<td align="right">0.9095147</td>
+</tr>
+<tr class="even">
+<td align="left">Endothelial</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0075816</td>
+<td align="right">0.0000000</td>
+<td align="right">-0.7990899</td>
+<td align="right">0.4475790</td>
+<td align="right">0.9095147</td>
+</tr>
+<tr class="odd">
+<td align="left">Macrophages</td>
+<td align="right">0.8293176</td>
+<td align="right">0.7390542</td>
+<td align="right">1.1221336</td>
+<td align="right">0.6789133</td>
+<td align="right">0.5168471</td>
+<td align="right">0.9095147</td>
+</tr>
+<tr class="even">
+<td align="left">Monocytes</td>
+<td align="right">0.0065489</td>
+<td align="right">0.0089865</td>
+<td align="right">0.7287447</td>
+<td align="right">-0.6022137</td>
+<td align="right">0.5637887</td>
+<td align="right">0.9095147</td>
+</tr>
+<tr class="odd">
+<td align="left">Mast cells</td>
+<td align="right">0.0011386</td>
+<td align="right">0.0027231</td>
+<td align="right">0.4181362</td>
+<td align="right">-0.3197467</td>
+<td align="right">0.7573915</td>
+<td align="right">0.9095147</td>
+</tr>
+<tr class="even">
+<td align="left">NK T cells</td>
+<td align="right">0.0069755</td>
+<td align="right">0.0087801</td>
+<td align="right">0.7944715</td>
+<td align="right">-0.3196737</td>
+<td align="right">0.7574448</td>
+<td align="right">0.9095147</td>
+</tr>
+<tr class="odd">
+<td align="left">Epithelial</td>
+<td align="right">0.0211124</td>
+<td align="right">0.0440191</td>
+<td align="right">0.4796192</td>
+<td align="right">-0.3181644</td>
+<td align="right">0.7587202</td>
+<td align="right">0.9095147</td>
+</tr>
+<tr class="even">
+<td align="left">Gamma delta T</td>
+<td align="right">0.0016227</td>
+<td align="right">0.0014649</td>
+<td align="right">1.1077181</td>
+<td align="right">-0.3124387</td>
+<td align="right">0.7627354</td>
+<td align="right">0.9095147</td>
+</tr>
+<tr class="odd">
+<td align="left">B cells</td>
+<td align="right">0.0255045</td>
+<td align="right">0.0236629</td>
+<td align="right">1.0778259</td>
+<td align="right">-0.2283020</td>
+<td align="right">0.8252888</td>
+<td align="right">0.9095147</td>
+</tr>
+<tr class="even">
+<td align="left">CD8 T</td>
+<td align="right">0.0333718</td>
+<td align="right">0.0363517</td>
+<td align="right">0.9180271</td>
+<td align="right">-0.1196703</td>
+<td align="right">0.9077096</td>
+<td align="right">0.9095147</td>
+</tr>
+<tr class="odd">
+<td align="left">NK cells</td>
+<td align="right">0.0049511</td>
+<td align="right">0.0060274</td>
+<td align="right">0.8214328</td>
+<td align="right">-0.1173174</td>
+<td align="right">0.9095147</td>
+<td align="right">0.9095147</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="control-versus-disease" class="section level3">
+<h3>Control versus Disease</h3>
+<p>Test for differences in proportions between control and all CF samples.</p>
+<pre class="r"><code>propeller.ttest(props, design, contrasts = mycontr[,5], robust=TRUE, trend=FALSE,
+                sort=TRUE) %&gt;% knitr::kable()</code></pre>
+<table>
+<colgroup>
+<col width="12%" />
+<col width="9%" />
+<col width="10%" />
+<col width="10%" />
+<col width="10%" />
+<col width="10%" />
+<col width="8%" />
+<col width="9%" />
+<col width="8%" />
+<col width="8%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">PropMean.C</th>
+<th align="right">PropMean.MT</th>
+<th align="right">PropMean.MU</th>
+<th align="right">PropMean.ST</th>
+<th align="right">PropMean.SU</th>
+<th align="right">PropRatio</th>
+<th align="right">Tstatistic</th>
+<th align="right">P.Value</th>
+<th align="right">FDR</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Monocytes</td>
+<td align="right">0.0249093</td>
+<td align="right">0.0098155</td>
+<td align="right">0.0065489</td>
+<td align="right">0.0050911</td>
+<td align="right">0.0089865</td>
+<td align="right">3.3825255</td>
+<td align="right">1.9772025</td>
+<td align="right">0.0835906</td>
+<td align="right">0.9568406</td>
+</tr>
+<tr class="even">
+<td align="left">CD8 T</td>
+<td align="right">0.0810157</td>
+<td align="right">0.1126816</td>
+<td align="right">0.0333718</td>
+<td align="right">0.0498542</td>
+<td align="right">0.0363517</td>
+<td align="right">1.5856399</td>
+<td align="right">1.1813401</td>
+<td align="right">0.2715582</td>
+<td align="right">0.9568406</td>
+</tr>
+<tr class="odd">
+<td align="left">B cells</td>
+<td align="right">0.0418380</td>
+<td align="right">0.0066745</td>
+<td align="right">0.0255045</td>
+<td align="right">0.0683374</td>
+<td align="right">0.0236629</td>
+<td align="right">1.8265437</td>
+<td align="right">1.1250724</td>
+<td align="right">0.2940187</td>
+<td align="right">0.9568406</td>
+</tr>
+<tr class="even">
+<td align="left">Dendritic</td>
+<td align="right">0.0644498</td>
+<td align="right">0.0569297</td>
+<td align="right">0.0258008</td>
+<td align="right">0.0173266</td>
+<td align="right">0.0412221</td>
+<td align="right">2.0138075</td>
+<td align="right">1.0921457</td>
+<td align="right">0.3067193</td>
+<td align="right">0.9568406</td>
+</tr>
+<tr class="odd">
+<td align="left">Gamma delta T</td>
+<td align="right">0.0024184</td>
+<td align="right">0.0247350</td>
+<td align="right">0.0016227</td>
+<td align="right">0.0072077</td>
+<td align="right">0.0014649</td>
+<td align="right">0.5330041</td>
+<td align="right">-0.5220027</td>
+<td align="right">0.6158792</td>
+<td align="right">0.9568406</td>
+</tr>
+<tr class="even">
+<td align="left">Endothelial</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0190409</td>
+<td align="right">0.0075816</td>
+<td align="right">NaN</td>
+<td align="right">-0.5215038</td>
+<td align="right">0.6163062</td>
+<td align="right">0.9568406</td>
+</tr>
+<tr class="odd">
+<td align="left">Macrophages</td>
+<td align="right">0.6964933</td>
+<td align="right">0.5622301</td>
+<td align="right">0.8293176</td>
+<td align="right">0.6667741</td>
+<td align="right">0.7390542</td>
+<td align="right">1.0059919</td>
+<td align="right">-0.3842651</td>
+<td align="right">0.7110563</td>
+<td align="right">0.9568406</td>
+</tr>
+<tr class="even">
+<td align="left">Mast cells</td>
+<td align="right">0.0007255</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0011386</td>
+<td align="right">0.0010578</td>
+<td align="right">0.0027231</td>
+<td align="right">Inf</td>
+<td align="right">0.3652107</td>
+<td align="right">0.7244679</td>
+<td align="right">0.9568406</td>
+</tr>
+<tr class="odd">
+<td align="left">Epithelial</td>
+<td align="right">0.0112455</td>
+<td align="right">0.0027483</td>
+<td align="right">0.0211124</td>
+<td align="right">0.0847772</td>
+<td align="right">0.0440191</td>
+<td align="right">0.5213096</td>
+<td align="right">-0.3488315</td>
+<td align="right">0.7364542</td>
+<td align="right">0.9568406</td>
+</tr>
+<tr class="even">
+<td align="left">Neutrophils</td>
+<td align="right">0.0014510</td>
+<td align="right">0.0011779</td>
+<td align="right">0.0028028</td>
+<td align="right">0.0023914</td>
+<td align="right">0.0086590</td>
+<td align="right">0.5046339</td>
+<td align="right">0.2525781</td>
+<td align="right">0.8069944</td>
+<td align="right">0.9568406</td>
+</tr>
+<tr class="odd">
+<td align="left">NK T cells</td>
+<td align="right">0.0099154</td>
+<td align="right">0.0058893</td>
+<td align="right">0.0069755</td>
+<td align="right">0.0054374</td>
+<td align="right">0.0087801</td>
+<td align="right">1.4899674</td>
+<td align="right">0.1663374</td>
+<td align="right">0.8720390</td>
+<td align="right">0.9568406</td>
+</tr>
+<tr class="even">
+<td align="left">NK cells</td>
+<td align="right">0.0089480</td>
+<td align="right">0.0286612</td>
+<td align="right">0.0049511</td>
+<td align="right">0.0131604</td>
+<td align="right">0.0060274</td>
+<td align="right">0.8687164</td>
+<td align="right">-0.0789309</td>
+<td align="right">0.9390358</td>
+<td align="right">0.9568406</td>
+</tr>
+<tr class="odd">
+<td align="left">CD4 T</td>
+<td align="right">0.0565901</td>
+<td align="right">0.1884570</td>
+<td align="right">0.0408533</td>
+<td align="right">0.0595438</td>
+<td align="right">0.0714674</td>
+<td align="right">0.7479875</td>
+<td align="right">0.0558840</td>
+<td align="right">0.9568406</td>
+<td align="right">0.9568406</td>
+</tr>
+</tbody>
+</table>
+<p>There are no statistically significant difference in cell type proportions between the control samples and CF samples.</p>
+<!-- # Comparison of RNA versus ADT expression -->
+<!-- For the ADTs of interest. We can expand this to all the ADTs, but this was easiest to start with because we had the gene names. -->
+<!-- ```{r, fig.asp=2, fig.width = 10, message=FALSE, warning=FALSE} -->
+<!-- prots <- read_csv(file = here("data", -->
+<!--                               "sample_sheets", -->
+<!--                               "TotalSeq_A_Human_Universal_Cocktail_Proteins of interest_29.09.21.csv")) %>% -->
+<!--   dplyr::filter(grepl("^A0", DNA_ID)) %>% -->
+<!--   dplyr::filter(!grepl("[Ii]sotype", Description))  -->
+<!-- se.adt.avg <- sumCountsAcrossCells(seuInt[["ADT.dsb"]]@counts,  -->
+<!--                                     seuInt$Annotation, -->
+<!--                                     average = "mean") -->
+<!-- adt.avg <- assay(se.adt.avg) -->
+<!-- adt.avg <- adt.avg[match(prots$DNA_ID, rownames(adt.avg)), ] -->
+<!-- rownames(adt.avg) <- alias2Symbol(prots$`Gene Name`) -->
+<!-- se.rna.avg <- sumCountsAcrossCells(seuInt[["RNA"]]@data,  -->
+<!--                                    seuInt$Annotation,  -->
+<!--                                    average = "mean") -->
+<!-- rna.avg <- assay(se.rna.avg) -->
+<!-- rna.avg %>% data.frame(check.names = FALSE) %>% -->
+<!--   rownames_to_column(var = "SYMBOL") %>% -->
+<!--   pivot_longer(-SYMBOL) %>% -->
+<!--   dplyr::rename(Identity = name,  -->
+<!--                 Exp = value) %>% -->
+<!--   inner_join(adt.avg %>% data.frame(check.names = FALSE) %>% -->
+<!--   rownames_to_column(var = "SYMBOL") %>% -->
+<!--   pivot_longer(-SYMBOL) %>% -->
+<!--   dplyr::rename(Identity = name,  -->
+<!--                 Exp = value), -->
+<!--   by = c("SYMBOL", "Identity"), suffix = c(".RNA",".ADT")) -> dat -->
+<!-- exp <- matrix(nrow = nrow(rna.avg),  -->
+<!--               ncol = ncol(rna.avg), -->
+<!--               dimnames = list(rownames(rna.avg),  -->
+<!--                               colnames(rna.avg))) -->
+<!-- for(i in 1:ncol(exp)){ -->
+<!--   label <- colnames(exp)[i] -->
+<!--   counts <- seuInt[["RNA"]]@counts[rownames(rna.avg),  -->
+<!--                                    which(seuInt$Annotation %in% label)] %>%  -->
+<!--     as.matrix -->
+<!--   exp[,label] <- nexprs(counts, byrow = TRUE)/ncol(counts)*100 -->
+<!-- } -->
+<!-- remove_empty(exp, which = "cols") %>% -->
+<!--   data.frame(check.names = FALSE) %>% -->
+<!--   rownames_to_column(var = "SYMBOL") %>% -->
+<!--   pivot_longer(-SYMBOL) %>% -->
+<!--   dplyr::rename(Identity = name,  -->
+<!--                 Percent = value) %>% -->
+<!--   inner_join(dat, by = c("SYMBOL", "Identity")) -> dat -->
+<!-- library(DEGreport) -->
+<!-- ggplot(dat, aes(x = Exp.RNA, y = Exp.ADT, colour = Identity)) + -->
+<!--   geom_point(aes(size = Percent), alpha = 0.5) +  -->
+<!--   scale_size_area(max_size = 3, limits = c(0, 100)) + -->
+<!--   geom_smooth(method = "lm",  -->
+<!--               alpha = 0.15,  -->
+<!--               aes(fill = Identity), -->
+<!--               size = 0.5) +  -->
+<!--   geom_cor(ypos = 7.7,  -->
+<!--            size = 2.25,  -->
+<!--            xpos = 0,  -->
+<!--            hjust = 0.5,  -->
+<!--            method = "spearman", -->
+<!--            color = "black") +  -->
+<!--   facet_wrap(vars(Identity),  -->
+<!--              ncol = 5,  -->
+<!--              nrow = 8, -->
+<!--              scales = "free") + -->
+<!--   theme(legend.position = "bottom", -->
+<!--         legend.box = "horizontal", -->
+<!--         legend.justification = 0, -->
+<!--         legend.direction = "vertical", -->
+<!--         legend.text = element_text(size = 8), -->
+<!--         strip.text = element_text(size = 8, margin = margin())) + -->
+<!--   guides(colour = guide_legend(ncol = 3)) +  -->
+<!--   labs(x = "RNA Exp.",  -->
+<!--        y = "ADT Exp.", -->
+<!--        size = "% Cells Exp. RNA") -->
+<!-- ``` -->
+<!-- ```{r, fig.width=12, fig.asp=2} -->
+<!-- ggplot(dat, aes(x = Exp.RNA, y = Exp.ADT, colour = Identity,  -->
+<!--                 group = SYMBOL)) + -->
+<!--   geom_point(aes(size = Percent), alpha = 0.5) +  -->
+<!--   scale_size_area(max_size = 3, limits = c(0, 100)) + -->
+<!--   geom_smooth(method = "lm",  -->
+<!--               alpha = 0.15,  -->
+<!--               aes(fill = SYMBOL), -->
+<!--               size = 0.5, -->
+<!--               colour = "black", fill = "black") +  -->
+<!--   # geom_cor(ypos = 7.7,  -->
+<!--   #          size = 2.25,  -->
+<!--   #          xpos = 0,  -->
+<!--   #          hjust = 0.5,  -->
+<!--   #          method = "spearman", -->
+<!--   #          color = "black") +  -->
+<!--   facet_wrap(vars(SYMBOL),  -->
+<!--              ncol = 6,  -->
+<!--              nrow = 9, -->
+<!--              scales = "free") + -->
+<!--   theme(legend.position = "bottom", -->
+<!--         legend.box = "horizontal", -->
+<!--         legend.justification = 0, -->
+<!--         legend.direction = "vertical", -->
+<!--         legend.text = element_text(size = 8), -->
+<!--         strip.text = element_text(size = 8, margin = margin())) + -->
+<!--   guides(colour = guide_legend(ncol = 3)) +  -->
+<!--   labs(x = "Cell type Mean Norm. RNA Exp.",  -->
+<!--        y = "Cell type Mean Norm. ADT Exp.", -->
+<!--        size = "% Cells Exp. RNA") -->
+<!-- ``` -->
+</div>
+</div>
+</div>
+<div id="session-info" class="section level1 appendix">
+<h1 class="appendix">Session info</h1>
+<summary>
+The analysis and this document were prepared using the following software (click triangle to expand)
+</summary>
+<details>
+<pre class="r"><code>sessioninfo::session_info()</code></pre>
+<pre><code>─ Session info ───────────────────────────────────────────────────────────────
+ setting  value
+ version  R version 4.1.0 (2021-05-18)
+ os       CentOS Linux 7 (Core)
+ system   x86_64, linux-gnu
+ ui       X11
+ language (EN)
+ collate  en_AU.UTF-8
+ ctype    en_AU.UTF-8
+ tz       Australia/Melbourne
+ date     2022-04-26
+ pandoc   2.14.0.3 @ /usr/lib/rstudio-server/bin/pandoc/ (via rmarkdown)
+
+─ Packages ───────────────────────────────────────────────────────────────────
+ ! package                * version   date (UTC) lib source
+ P abind                    1.4-5     2016-07-21 [?] CRAN (R 4.1.0)
+ P AnnotationDbi          * 1.56.2    2021-11-09 [?] Bioconductor
+ P AnnotationFilter       * 1.18.0    2021-10-26 [?] Bioconductor
+ P AnnotationHub          * 3.2.0     2021-10-26 [?] Bioconductor
+ P assertthat               0.2.1     2019-03-21 [?] CRAN (R 4.1.0)
+ P backports                1.4.1     2021-12-13 [?] CRAN (R 4.1.0)
+ P beachmat                 2.10.0    2021-10-26 [?] Bioconductor
+ P beeswarm                 0.4.0     2021-06-01 [?] CRAN (R 4.1.0)
+ P Biobase                * 2.54.0    2021-10-26 [?] Bioconductor
+ P BiocFileCache          * 2.2.0     2021-10-26 [?] Bioconductor
+ P BiocGenerics           * 0.40.0    2021-10-26 [?] Bioconductor
+ P BiocIO                   1.4.0     2021-10-26 [?] Bioconductor
+ P BiocManager              1.30.16   2021-06-15 [?] CRAN (R 4.1.0)
+ P BiocNeighbors            1.12.0    2021-10-26 [?] Bioconductor
+ P BiocParallel           * 1.28.3    2021-12-09 [?] Bioconductor
+ P BiocSingular             1.10.0    2021-10-26 [?] Bioconductor
+ P BiocVersion              3.14.0    2021-05-19 [?] Bioconductor
+ P biomaRt                  2.50.1    2021-11-21 [?] Bioconductor
+ P Biostrings               2.62.0    2021-10-26 [?] Bioconductor
+ P bit                      4.0.4     2020-08-04 [?] CRAN (R 4.1.0)
+ P bit64                    4.0.5     2020-08-30 [?] CRAN (R 4.0.2)
+ P bitops                   1.0-7     2021-04-24 [?] CRAN (R 4.0.2)
+ P blob                     1.2.2     2021-07-23 [?] CRAN (R 4.1.0)
+ P bluster                  1.4.0     2021-10-26 [?] Bioconductor
+ P broom                    0.7.11    2022-01-03 [?] CRAN (R 4.1.0)
+ P bslib                    0.3.1     2021-10-06 [?] CRAN (R 4.1.0)
+ P cachem                   1.0.6     2021-08-19 [?] CRAN (R 4.1.0)
+ P callr                    3.7.0     2021-04-20 [?] CRAN (R 4.1.0)
+ P cellranger               1.1.0     2016-07-27 [?] CRAN (R 4.1.0)
+ P cli                      3.1.0     2021-10-27 [?] CRAN (R 4.1.0)
+ P cluster                  2.1.2     2021-04-17 [?] CRAN (R 4.1.0)
+ P codetools                0.2-18    2020-11-04 [?] CRAN (R 4.1.0)
+ P colorspace               2.0-2     2021-06-24 [?] CRAN (R 4.0.2)
+ P cowplot                  1.1.1     2020-12-30 [?] CRAN (R 4.0.2)
+ P crayon                   1.4.2     2021-10-29 [?] CRAN (R 4.1.0)
+ P curl                     4.3.2     2021-06-23 [?] CRAN (R 4.1.0)
+ P data.table               1.14.2    2021-09-27 [?] CRAN (R 4.1.0)
+ P DBI                      1.1.2     2021-12-20 [?] CRAN (R 4.1.0)
+ P dbplyr                 * 2.1.1     2021-04-06 [?] CRAN (R 4.1.0)
+ P DelayedArray             0.20.0    2021-10-26 [?] Bioconductor
+ P DelayedMatrixStats       1.16.0    2021-10-26 [?] Bioconductor
+ P deldir                   1.0-6     2021-10-23 [?] CRAN (R 4.1.0)
+ P digest                   0.6.29    2021-12-01 [?] CRAN (R 4.1.0)
+ P dplyr                  * 1.0.7     2021-06-18 [?] CRAN (R 4.1.0)
+ P dqrng                    0.3.0     2021-05-01 [?] CRAN (R 4.1.0)
+ P DropletUtils           * 1.14.1    2021-11-08 [?] Bioconductor
+ P edgeR                  * 3.36.0    2021-10-26 [?] Bioconductor
+ P ellipsis                 0.3.2     2021-04-29 [?] CRAN (R 4.0.2)
+ P ensembldb              * 2.18.2    2021-11-08 [?] Bioconductor
+ P evaluate                 0.14      2019-05-28 [?] CRAN (R 4.0.2)
+ P fansi                    1.0.0     2022-01-10 [?] CRAN (R 4.1.0)
+ P farver                   2.1.0     2021-02-28 [?] CRAN (R 4.0.2)
+ P fastmap                  1.1.0     2021-01-25 [?] CRAN (R 4.1.0)
+ P filelock                 1.0.2     2018-10-05 [?] CRAN (R 4.1.0)
+ P fitdistrplus             1.1-6     2021-09-28 [?] CRAN (R 4.1.0)
+ P forcats                * 0.5.1     2021-01-27 [?] CRAN (R 4.1.0)
+ P fs                       1.5.2     2021-12-08 [?] CRAN (R 4.1.0)
+ P future                   1.23.0    2021-10-31 [?] CRAN (R 4.1.0)
+ P future.apply             1.8.1     2021-08-10 [?] CRAN (R 4.1.0)
+ P generics                 0.1.1     2021-10-25 [?] CRAN (R 4.1.0)
+   GenomeInfoDb           * 1.30.1    2022-01-30 [1] Bioconductor
+ P GenomeInfoDbData         1.2.7     2021-12-21 [?] Bioconductor
+ P GenomicAlignments        1.30.0    2021-10-26 [?] Bioconductor
+ P GenomicFeatures        * 1.46.3    2021-12-30 [?] Bioconductor
+ P GenomicRanges          * 1.46.1    2021-11-18 [?] Bioconductor
+ P getPass                  0.2-2     2017-07-21 [?] CRAN (R 4.0.2)
+ P ggbeeswarm               0.6.0     2017-08-07 [?] CRAN (R 4.1.0)
+ P ggplot2                * 3.3.5     2021-06-25 [?] CRAN (R 4.0.2)
+ P ggrepel                  0.9.1     2021-01-15 [?] CRAN (R 4.1.0)
+ P ggridges                 0.5.3     2021-01-08 [?] CRAN (R 4.1.0)
+ P git2r                    0.29.0    2021-11-22 [?] CRAN (R 4.1.0)
+ P glmGamPoi              * 1.6.0     2021-10-26 [?] Bioconductor
+ P globals                  0.14.0    2020-11-22 [?] CRAN (R 4.0.2)
+ P glue                   * 1.6.0     2021-12-17 [?] CRAN (R 4.1.0)
+ P goftest                  1.2-3     2021-10-07 [?] CRAN (R 4.1.0)
+ P gridExtra                2.3       2017-09-09 [?] CRAN (R 4.1.0)
+ P gtable                   0.3.0     2019-03-25 [?] CRAN (R 4.1.0)
+ P haven                    2.4.3     2021-08-04 [?] CRAN (R 4.1.0)
+ P HDF5Array                1.22.1    2021-11-14 [?] Bioconductor
+ P here                   * 1.0.1     2020-12-13 [?] CRAN (R 4.0.2)
+ P highr                    0.9       2021-04-16 [?] CRAN (R 4.1.0)
+ P hms                      1.1.1     2021-09-26 [?] CRAN (R 4.1.0)
+ P htmltools                0.5.2     2021-08-25 [?] CRAN (R 4.1.0)
+ P htmlwidgets              1.5.4     2021-09-08 [?] CRAN (R 4.1.0)
+ P httpuv                   1.6.5     2022-01-05 [?] CRAN (R 4.1.0)
+ P httr                     1.4.2     2020-07-20 [?] CRAN (R 4.1.0)
+ P ica                      1.0-2     2018-05-24 [?] CRAN (R 4.1.0)
+ P igraph                   1.2.11    2022-01-04 [?] CRAN (R 4.1.0)
+ P interactiveDisplayBase   1.32.0    2021-10-26 [?] Bioconductor
+ P IRanges                * 2.28.0    2021-10-26 [?] Bioconductor
+ P irlba                    2.3.5     2021-12-06 [?] CRAN (R 4.1.0)
+ P janitor                * 2.1.0     2021-01-05 [?] CRAN (R 4.0.2)
+ P jquerylib                0.1.4     2021-04-26 [?] CRAN (R 4.1.0)
+ P jsonlite                 1.7.2     2020-12-09 [?] CRAN (R 4.0.2)
+ P KEGGREST                 1.34.0    2021-10-26 [?] Bioconductor
+ P KernSmooth               2.23-20   2021-05-03 [?] CRAN (R 4.1.0)
+ P knitr                    1.37      2021-12-16 [?] CRAN (R 4.1.0)
+ P labeling                 0.4.2     2020-10-20 [?] CRAN (R 4.0.2)
+ P later                    1.3.0     2021-08-18 [?] CRAN (R 4.1.0)
+ P lattice                  0.20-45   2021-09-22 [?] CRAN (R 4.1.0)
+ P lazyeval                 0.2.2     2019-03-15 [?] CRAN (R 4.1.0)
+ P leiden                   0.3.9     2021-07-27 [?] CRAN (R 4.1.0)
+ P lifecycle                1.0.1     2021-09-24 [?] CRAN (R 4.1.0)
+ P limma                  * 3.50.0    2021-10-26 [?] Bioconductor
+ P listenv                  0.8.0     2019-12-05 [?] CRAN (R 4.1.0)
+ P lmtest                   0.9-39    2021-11-07 [?] CRAN (R 4.1.0)
+ P locfit                   1.5-9.4   2020-03-25 [?] CRAN (R 4.1.0)
+ P lubridate                1.8.0     2021-10-07 [?] CRAN (R 4.1.0)
+ P magrittr                 2.0.1     2020-11-17 [?] CRAN (R 4.0.2)
+ P MASS                     7.3-53.1  2021-02-12 [?] CRAN (R 4.0.2)
+ P Matrix                 * 1.4-0     2021-12-08 [?] CRAN (R 4.1.0)
+ P MatrixGenerics         * 1.6.0     2021-10-26 [?] Bioconductor
+ P matrixStats            * 0.61.0    2021-09-17 [?] CRAN (R 4.1.0)
+ P memoise                  2.0.1     2021-11-26 [?] CRAN (R 4.1.0)
+ P metapod                  1.2.0     2021-10-26 [?] Bioconductor
+ P mgcv                     1.8-38    2021-10-06 [?] CRAN (R 4.1.0)
+ P mime                     0.12      2021-09-28 [?] CRAN (R 4.1.0)
+ P miniUI                   0.1.1.1   2018-05-18 [?] CRAN (R 4.1.0)
+ P modelr                   0.1.8     2020-05-19 [?] CRAN (R 4.0.2)
+ P munsell                  0.5.0     2018-06-12 [?] CRAN (R 4.1.0)
+ P nlme                     3.1-153   2021-09-07 [?] CRAN (R 4.1.0)
+ P org.Hs.eg.db           * 3.14.0    2021-12-21 [?] Bioconductor
+ P org.Mm.eg.db             3.14.0    2022-01-24 [?] Bioconductor
+ P paletteer                1.4.0     2021-07-20 [?] CRAN (R 4.1.0)
+ P parallelly               1.30.0    2021-12-17 [?] CRAN (R 4.1.0)
+ P patchwork              * 1.1.1     2020-12-17 [?] CRAN (R 4.0.2)
+ P pbapply                  1.5-0     2021-09-16 [?] CRAN (R 4.1.0)
+ P pillar                   1.6.4     2021-10-18 [?] CRAN (R 4.1.0)
+ P pkgconfig                2.0.3     2019-09-22 [?] CRAN (R 4.1.0)
+ P plotly                   4.10.0    2021-10-09 [?] CRAN (R 4.1.0)
+ P plyr                     1.8.6     2020-03-03 [?] CRAN (R 4.0.2)
+ P png                      0.1-7     2013-12-03 [?] CRAN (R 4.1.0)
+ P polyclip                 1.10-0    2019-03-14 [?] CRAN (R 4.1.0)
+ P prettyunits              1.1.1     2020-01-24 [?] CRAN (R 4.0.2)
+ P prismatic                1.1.0     2021-10-17 [?] CRAN (R 4.1.0)
+ P processx                 3.5.2     2021-04-30 [?] CRAN (R 4.1.0)
+ P progress                 1.2.2     2019-05-16 [?] CRAN (R 4.1.0)
+ P promises                 1.2.0.1   2021-02-11 [?] CRAN (R 4.0.2)
+ P ProtGenerics             1.26.0    2021-10-26 [?] Bioconductor
+ P ps                       1.6.0     2021-02-28 [?] CRAN (R 4.1.0)
+ P purrr                  * 0.3.4     2020-04-17 [?] CRAN (R 4.0.2)
+ P R.methodsS3              1.8.1     2020-08-26 [?] CRAN (R 4.0.2)
+ P R.oo                     1.24.0    2020-08-26 [?] CRAN (R 4.0.2)
+ P R.utils                  2.11.0    2021-09-26 [?] CRAN (R 4.1.0)
+ P R6                       2.5.1     2021-08-19 [?] CRAN (R 4.1.0)
+ P RANN                     2.6.1     2019-01-08 [?] CRAN (R 4.1.0)
+ P rappdirs                 0.3.3     2021-01-31 [?] CRAN (R 4.0.2)
+ P RColorBrewer             1.1-2     2014-12-07 [?] CRAN (R 4.0.2)
+ P Rcpp                     1.0.7     2021-07-07 [?] CRAN (R 4.1.0)
+ P RcppAnnoy                0.0.19    2021-07-30 [?] CRAN (R 4.1.0)
+   RCurl                    1.98-1.6  2022-02-08 [1] CRAN (R 4.1.0)
+ P readr                  * 2.1.1     2021-11-30 [?] CRAN (R 4.1.0)
+ P readxl                   1.3.1     2019-03-13 [?] CRAN (R 4.1.0)
+ P rematch2                 2.1.2     2020-05-01 [?] CRAN (R 4.1.0)
+ P renv                     0.15.0-14 2022-01-10 [?] Github (rstudio/renv@a3b90eb)
+ P reprex                   2.0.1     2021-08-05 [?] CRAN (R 4.1.0)
+ P reshape2                 1.4.4     2020-04-09 [?] CRAN (R 4.1.0)
+ P restfulr                 0.0.13    2017-08-06 [?] CRAN (R 4.1.0)
+ P reticulate               1.22      2021-09-17 [?] CRAN (R 4.1.0)
+ P rhdf5                    2.38.0    2021-10-26 [?] Bioconductor
+ P rhdf5filters             1.6.0     2021-10-26 [?] Bioconductor
+ P Rhdf5lib                 1.16.0    2021-10-26 [?] Bioconductor
+ P rjson                    0.2.21    2022-01-09 [?] CRAN (R 4.1.0)
+ P rlang                    0.4.12    2021-10-18 [?] CRAN (R 4.1.0)
+ P rmarkdown                2.11      2021-09-14 [?] CRAN (R 4.1.0)
+ P ROCR                     1.0-11    2020-05-02 [?] CRAN (R 4.1.0)
+ P rpart                    4.1-15    2019-04-12 [?] CRAN (R 4.1.0)
+ P rprojroot                2.0.2     2020-11-15 [?] CRAN (R 4.0.2)
+ P Rsamtools                2.10.0    2021-10-26 [?] Bioconductor
+ P RSQLite                  2.2.9     2021-12-06 [?] CRAN (R 4.1.0)
+ P rstudioapi               0.13      2020-11-12 [?] CRAN (R 4.0.2)
+ P rsvd                     1.0.5     2021-04-16 [?] CRAN (R 4.1.0)
+ P rtracklayer              1.54.0    2021-10-26 [?] Bioconductor
+ P Rtsne                    0.15      2018-11-10 [?] CRAN (R 4.1.0)
+ P rvest                    1.0.2     2021-10-16 [?] CRAN (R 4.1.0)
+ P S4Vectors              * 0.32.3    2021-11-21 [?] Bioconductor
+ P sass                     0.4.0     2021-05-12 [?] CRAN (R 4.1.0)
+ P ScaledMatrix             1.2.0     2021-10-26 [?] Bioconductor
+ P scales                 * 1.1.1     2020-05-11 [?] CRAN (R 4.0.2)
+ P scater                 * 1.22.0    2021-10-26 [?] Bioconductor
+ P scattermore              0.7       2020-11-24 [?] CRAN (R 4.1.0)
+ P scran                  * 1.22.1    2021-11-14 [?] Bioconductor
+ P sctransform              0.3.2     2020-12-16 [?] CRAN (R 4.1.0)
+ P scuttle                * 1.4.0     2021-10-26 [?] Bioconductor
+ P sessioninfo              1.2.2     2021-12-06 [?] CRAN (R 4.1.0)
+ P Seurat                 * 4.0.6     2021-12-16 [?] CRAN (R 4.1.0)
+ P SeuratObject           * 4.0.4     2021-11-23 [?] CRAN (R 4.1.0)
+ P shiny                    1.7.1     2021-10-02 [?] CRAN (R 4.1.0)
+ P SingleCellExperiment   * 1.16.0    2021-10-26 [?] Bioconductor
+ P snakecase                0.11.0    2019-05-25 [?] CRAN (R 4.0.2)
+ P sparseMatrixStats        1.6.0     2021-10-26 [?] Bioconductor
+ P spatstat.core            2.3-2     2021-11-26 [?] CRAN (R 4.1.0)
+ P spatstat.data            2.1-2     2021-12-17 [?] CRAN (R 4.1.0)
+ P spatstat.geom            2.3-1     2021-12-10 [?] CRAN (R 4.1.0)
+ P spatstat.sparse          2.1-0     2021-12-17 [?] CRAN (R 4.1.0)
+ P spatstat.utils           2.3-0     2021-12-12 [?] CRAN (R 4.1.0)
+ P speckle                * 0.0.3     2022-03-09 [?] Github (Oshlack/speckle@fc07773)
+ P statmod                  1.4.36    2021-05-10 [?] CRAN (R 4.1.0)
+ P stringi                  1.7.6     2021-11-29 [?] CRAN (R 4.1.0)
+ P stringr                * 1.4.0     2019-02-10 [?] CRAN (R 4.0.2)
+ P SummarizedExperiment   * 1.24.0    2021-10-26 [?] Bioconductor
+ P survival                 3.2-13    2021-08-24 [?] CRAN (R 4.1.0)
+ P tensor                   1.5       2012-05-05 [?] CRAN (R 4.1.0)
+ P tibble                 * 3.1.6     2021-11-07 [?] CRAN (R 4.1.0)
+ P tidyr                  * 1.1.4     2021-09-27 [?] CRAN (R 4.1.0)
+ P tidyselect               1.1.1     2021-04-30 [?] CRAN (R 4.1.0)
+ P tidyverse              * 1.3.1     2021-04-15 [?] CRAN (R 4.1.0)
+ P tzdb                     0.2.0     2021-10-27 [?] CRAN (R 4.1.0)
+ P utf8                     1.2.2     2021-07-24 [?] CRAN (R 4.1.0)
+ P uwot                     0.1.11    2021-12-02 [?] CRAN (R 4.1.0)
+ P vctrs                    0.3.8     2021-04-29 [?] CRAN (R 4.0.2)
+ P vipor                    0.4.5     2017-03-22 [?] CRAN (R 4.1.0)
+ P viridis                  0.6.2     2021-10-13 [?] CRAN (R 4.1.0)
+ P viridisLite              0.4.0     2021-04-13 [?] CRAN (R 4.0.2)
+ P whisker                  0.4       2019-08-28 [?] CRAN (R 4.0.2)
+ P withr                    2.4.3     2021-11-30 [?] CRAN (R 4.1.0)
+ P workflowr              * 1.7.0     2021-12-21 [?] CRAN (R 4.1.0)
+ P xfun                     0.29      2021-12-14 [?] CRAN (R 4.1.0)
+ P XML                      3.99-0.8  2021-09-17 [?] CRAN (R 4.1.0)
+ P xml2                     1.3.3     2021-11-30 [?] CRAN (R 4.1.0)
+ P xtable                   1.8-4     2019-04-21 [?] CRAN (R 4.1.0)
+ P XVector                  0.34.0    2021-10-26 [?] Bioconductor
+ P yaml                     2.2.1     2020-02-01 [?] CRAN (R 4.0.2)
+ P zlibbioc                 1.40.0    2021-10-26 [?] Bioconductor
+ P zoo                      1.8-9     2021-03-09 [?] CRAN (R 4.1.0)
+
+ [1] /oshlack_lab/jovana.maksimovic/projects/MCRI/melanie.neeland/paed-cf-cite-seq/renv/library/R-4.1/x86_64-pc-linux-gnu
+ [2] /config/binaries/R/4.1.0/lib64/R/library
+
+ P ── Loaded and on-disk path mismatch.
+
+──────────────────────────────────────────────────────────────────────────────</code></pre>
+</details>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.1.0 (2021-05-18)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: CentOS Linux 7 (Core)
+
+Matrix products: default
+BLAS:   /config/binaries/R/4.1.0/lib64/R/lib/libRblas.so
+LAPACK: /config/binaries/R/4.1.0/lib64/R/lib/libRlapack.so
+
+locale:
+ [1] LC_CTYPE=en_AU.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_AU.UTF-8        LC_COLLATE=en_AU.UTF-8    
+ [5] LC_MONETARY=en_AU.UTF-8    LC_MESSAGES=en_AU.UTF-8   
+ [7] LC_PAPER=en_AU.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_AU.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] speckle_0.0.3               scales_1.1.1               
+ [3] janitor_2.1.0               BiocParallel_1.28.3        
+ [5] glmGamPoi_1.6.0             org.Hs.eg.db_3.14.0        
+ [7] ensembldb_2.18.2            AnnotationFilter_1.18.0    
+ [9] GenomicFeatures_1.46.3      AnnotationDbi_1.56.2       
+[11] AnnotationHub_3.2.0         BiocFileCache_2.2.0        
+[13] dbplyr_2.1.1                patchwork_1.1.1            
+[15] edgeR_3.36.0                limma_3.50.0               
+[17] Matrix_1.4-0                scater_1.22.0              
+[19] scran_1.22.1                scuttle_1.4.0              
+[21] DropletUtils_1.14.1         SingleCellExperiment_1.16.0
+[23] SummarizedExperiment_1.24.0 Biobase_2.54.0             
+[25] GenomicRanges_1.46.1        GenomeInfoDb_1.30.1        
+[27] IRanges_2.28.0              S4Vectors_0.32.3           
+[29] BiocGenerics_0.40.0         MatrixGenerics_1.6.0       
+[31] matrixStats_0.61.0          glue_1.6.0                 
+[33] here_1.0.1                  forcats_0.5.1              
+[35] stringr_1.4.0               dplyr_1.0.7                
+[37] purrr_0.3.4                 readr_2.1.1                
+[39] tidyr_1.1.4                 tibble_3.1.6               
+[41] ggplot2_3.3.5               tidyverse_1.3.1            
+[43] SeuratObject_4.0.4          Seurat_4.0.6               
+[45] workflowr_1.7.0            
+
+loaded via a namespace (and not attached):
+  [1] rappdirs_0.3.3                rtracklayer_1.54.0           
+  [3] scattermore_0.7               R.methodsS3_1.8.1            
+  [5] bit64_4.0.5                   knitr_1.37                   
+  [7] irlba_2.3.5                   DelayedArray_0.20.0          
+  [9] R.utils_2.11.0                data.table_1.14.2            
+ [11] rpart_4.1-15                  KEGGREST_1.34.0              
+ [13] RCurl_1.98-1.6                generics_0.1.1               
+ [15] org.Mm.eg.db_3.14.0           ScaledMatrix_1.2.0           
+ [17] callr_3.7.0                   cowplot_1.1.1                
+ [19] RSQLite_2.2.9                 RANN_2.6.1                   
+ [21] future_1.23.0                 bit_4.0.4                    
+ [23] tzdb_0.2.0                    spatstat.data_2.1-2          
+ [25] xml2_1.3.3                    lubridate_1.8.0              
+ [27] httpuv_1.6.5                  assertthat_0.2.1             
+ [29] viridis_0.6.2                 xfun_0.29                    
+ [31] hms_1.1.1                     jquerylib_0.1.4              
+ [33] evaluate_0.14                 promises_1.2.0.1             
+ [35] restfulr_0.0.13               progress_1.2.2               
+ [37] fansi_1.0.0                   readxl_1.3.1                 
+ [39] igraph_1.2.11                 DBI_1.1.2                    
+ [41] htmlwidgets_1.5.4             spatstat.geom_2.3-1          
+ [43] paletteer_1.4.0               ellipsis_0.3.2               
+ [45] backports_1.4.1               prismatic_1.1.0              
+ [47] biomaRt_2.50.1                deldir_1.0-6                 
+ [49] sparseMatrixStats_1.6.0       vctrs_0.3.8                  
+ [51] ROCR_1.0-11                   abind_1.4-5                  
+ [53] cachem_1.0.6                  withr_2.4.3                  
+ [55] sctransform_0.3.2             GenomicAlignments_1.30.0     
+ [57] prettyunits_1.1.1             goftest_1.2-3                
+ [59] cluster_2.1.2                 lazyeval_0.2.2               
+ [61] crayon_1.4.2                  labeling_0.4.2               
+ [63] pkgconfig_2.0.3               ProtGenerics_1.26.0          
+ [65] nlme_3.1-153                  vipor_0.4.5                  
+ [67] rlang_0.4.12                  globals_0.14.0               
+ [69] lifecycle_1.0.1               miniUI_0.1.1.1               
+ [71] filelock_1.0.2                modelr_0.1.8                 
+ [73] rsvd_1.0.5                    cellranger_1.1.0             
+ [75] rprojroot_2.0.2               polyclip_1.10-0              
+ [77] lmtest_0.9-39                 Rhdf5lib_1.16.0              
+ [79] zoo_1.8-9                     reprex_2.0.1                 
+ [81] beeswarm_0.4.0                whisker_0.4                  
+ [83] ggridges_0.5.3                processx_3.5.2               
+ [85] rjson_0.2.21                  png_0.1-7                    
+ [87] viridisLite_0.4.0             bitops_1.0-7                 
+ [89] getPass_0.2-2                 R.oo_1.24.0                  
+ [91] KernSmooth_2.23-20            rhdf5filters_1.6.0           
+ [93] Biostrings_2.62.0             blob_1.2.2                   
+ [95] DelayedMatrixStats_1.16.0     parallelly_1.30.0            
+ [97] beachmat_2.10.0               memoise_2.0.1                
+ [99] magrittr_2.0.1                plyr_1.8.6                   
+[101] ica_1.0-2                     zlibbioc_1.40.0              
+[103] compiler_4.1.0                BiocIO_1.4.0                 
+[105] dqrng_0.3.0                   RColorBrewer_1.1-2           
+[107] fitdistrplus_1.1-6            snakecase_0.11.0             
+[109] Rsamtools_2.10.0              cli_3.1.0                    
+[111] XVector_0.34.0                listenv_0.8.0                
+[113] pbapply_1.5-0                 ps_1.6.0                     
+[115] MASS_7.3-53.1                 mgcv_1.8-38                  
+[117] tidyselect_1.1.1              stringi_1.7.6                
+[119] highr_0.9                     yaml_2.2.1                   
+[121] BiocSingular_1.10.0           locfit_1.5-9.4               
+[123] ggrepel_0.9.1                 grid_4.1.0                   
+[125] sass_0.4.0                    tools_4.1.0                  
+[127] future.apply_1.8.1            parallel_4.1.0               
+[129] rstudioapi_0.13               bluster_1.4.0                
+[131] git2r_0.29.0                  metapod_1.2.0                
+[133] gridExtra_2.3                 farver_2.1.0                 
+[135] Rtsne_0.15                    digest_0.6.29                
+[137] BiocManager_1.30.16           shiny_1.7.1                  
+[139] Rcpp_1.0.7                    broom_0.7.11                 
+[141] BiocVersion_3.14.0            later_1.3.0                  
+[143] RcppAnnoy_0.0.19              httr_1.4.2                   
+[145] colorspace_2.0-2              XML_3.99-0.8                 
+[147] rvest_1.0.2                   fs_1.5.2                     
+[149] tensor_1.5                    reticulate_1.22              
+[151] splines_4.1.0                 uwot_0.1.11                  
+[153] statmod_1.4.36                rematch2_2.1.2               
+[155] spatstat.utils_2.3-0          renv_0.15.0-14               
+[157] sessioninfo_1.2.2             plotly_4.10.0                
+[159] xtable_1.8-4                  jsonlite_1.7.2               
+[161] R6_2.5.1                      pillar_1.6.4                 
+[163] htmltools_0.5.2               mime_0.12                    
+[165] fastmap_1.1.0                 BiocNeighbors_1.12.0         
+[167] interactiveDisplayBase_1.32.0 codetools_0.2-18             
+[169] utf8_1.2.2                    lattice_0.20-45              
+[171] bslib_0.3.1                   spatstat.sparse_2.1-0        
+[173] curl_4.3.2                    ggbeeswarm_0.6.0             
+[175] leiden_0.3.9                  survival_3.2-13              
+[177] rmarkdown_2.11                munsell_0.5.0                
+[179] rhdf5_2.38.0                  GenomeInfoDbData_1.2.7       
+[181] HDF5Array_1.22.1              haven_2.4.3                  
+[183] reshape2_1.4.4                gtable_0.3.0                 
+[185] spatstat.core_2.3-2          </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1961 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2022-06-16" />
+
+<title>Analysis of CITE-seq Data</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">paed-cf-cite-seq</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Analysis of CITE-seq Data</h1>
+<h3 class="subtitle">Demultiplexing</h3>
+<h4 class="author">Peter Hickey</h4>
+<address class="author_afil">
+Cellular Genomics Projects Team (formerly SCORE), WEHI<br><h4 class="date">2022-06-16</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks">
+Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2022-06-16
+</p>
+<p>
+<strong>Checks:</strong>
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+7
+<span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span>
+0
+</p>
+<p>
+<strong>Knit directory:</strong>
+<code>paed-cf-cite-seq/</code>
+<span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.0). The <em>Checks</em> tab describes the
+reproducibility checks that were applied when the results were created.
+The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you
+know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Environment:</strong> empty
+</a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global
+environment can affect the analysis in your R Markdown file in unknown ways.
+For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20210524code">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Seed:</strong> <code>set.seed(20210524)</code>
+</a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20210524code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20210524)</code> was run prior to running the code in the R Markdown file.
+Setting a seed ensures that any results that rely on randomness, e.g.
+subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Session information:</strong> recorded
+</a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is
+critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Cache:</strong> none
+</a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident
+that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>File paths:</strong> relative
+</a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project
+makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree8255c241a80231919c022a91ab9f226505b1e73ctargetblank8255c24a">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Repository version:</strong> <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/8255c241a80231919c022a91ab9f226505b1e73c" target="_blank">8255c24</a>
+</a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree8255c241a80231919c022a91ab9f226505b1e73ctargetblank8255c24a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and
+connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/8255c241a80231919c022a91ab9f226505b1e73c" target="_blank">8255c24</a>.
+See the <em>Past versions</em> tab to see a history of the changes made to the
+R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the
+analysis have been committed to Git prior to generating the results (you can
+use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only
+checks the R Markdown file, but you know if there are other scripts or data
+files that it depends on. Below is the status of the Git repository when the
+results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/obsolete/
+    Ignored:    code/obsolete/
+    Ignored:    data/190930_A00152_0150_BHTYCMDSXX/
+    Ignored:    data/CellRanger/
+    Ignored:    data/GSE127465_RAW/
+    Ignored:    data/SCEs/02_ZILIONIS.sct_normalised.SEU.rds
+    Ignored:    data/SCEs/03_C133_Neeland.demultiplexed.SCE.rds
+    Ignored:    data/SCEs/03_C133_Neeland.emptyDrops.SCE.rds
+    Ignored:    data/SCEs/03_C133_Neeland.nuclear_fraction_calls.rds
+    Ignored:    data/SCEs/03_C133_Neeland.preprocessed.SCE.rds
+    Ignored:    data/SCEs/03_CF_BAL_Pilot.CellRanger_v6.SCE.rds
+    Ignored:    data/SCEs/03_CF_BAL_Pilot.emptyDrops.SCE.rds
+    Ignored:    data/SCEs/03_CF_BAL_Pilot.nuclear_fraction_calls.rds
+    Ignored:    data/SCEs/03_CF_BAL_Pilot.preprocessed.SCE.rds
+    Ignored:    data/SCEs/03_COMBO.clustered.SEU.rds
+    Ignored:    data/SCEs/03_COMBO.clustered_annotated_macrophages_diet.SEU.rds
+    Ignored:    data/SCEs/03_COMBO.clustered_annotated_others_diet.SEU.rds
+    Ignored:    data/SCEs/03_COMBO.clustered_annotated_tcells_diet.SEU.rds
+    Ignored:    data/SCEs/03_COMBO.clustered_azimuth.SEU.rds
+    Ignored:    data/SCEs/03_COMBO.clustered_azimuth_v2.SEU.rds
+    Ignored:    data/SCEs/03_COMBO.clustered_diet.SEU.rds
+    Ignored:    data/SCEs/03_COMBO.integrated.SEU.rds
+    Ignored:    data/SCEs/03_COMBO.zilionis_mapped.SEU.rds
+    Ignored:    data/SCEs/04_C133_Neeland.adt_dsb_normalised.rds
+    Ignored:    data/SCEs/04_C133_Neeland.adt_integrated.rds
+    Ignored:    data/SCEs/04_C133_Neeland.all_integrated.SEU.rds
+    Ignored:    data/SCEs/04_CF_BAL_Pilot.CellRanger_v6.SCE.rds
+    Ignored:    data/SCEs/04_CF_BAL_Pilot.emptyDrops.SCE.rds
+    Ignored:    data/SCEs/04_CF_BAL_Pilot.preprocessed.SCE.rds
+    Ignored:    data/SCEs/04_CF_BAL_Pilot.transfer_adt.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clean_clustered.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clean_clustered.SEU_bk.rds
+    Ignored:    data/SCEs/04_COMBO.clean_integrated.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clean_integrated.SEU_bk.rds
+    Ignored:    data/SCEs/04_COMBO.clean_macrophages_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clean_others_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clean_tcells_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clustered.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clustered_annotated_adt_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clustered_annotated_lung_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clustered_annotated_macrophages_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clustered_annotated_others_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clustered_annotated_tcells_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clustered_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.integrated.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.macrophages_clustered.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.macrophages_integrated.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.others_clustered.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.others_integrated.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.tcells_clustered.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.tcells_integrated.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.zilionis_mapped.SEU.rds
+    Ignored:    data/SCEs/05_CF_BAL_Pilot.transfer_adt.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clean_clustered.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clean_integrated.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clean_macrophages_diet.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clean_others_diet.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clean_tcells_diet.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clustered_annotated_adt_diet.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clustered_annotated_lung_diet.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clustered_annotated_macrophages_diet.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clustered_annotated_others_diet.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clustered_annotated_tcells_diet.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.macrophages_clustered.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.macrophages_integrated.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.others_clustered.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.others_integrated.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.tcells_clustered.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.tcells_integrated.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.clean_clustered.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.clean_integrated.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.clean_macrophages_diet.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.clean_others_diet.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.clean_tcells_diet.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.macrophages_clustered.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.macrophages_integrated.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.others_clustered.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.others_integrated.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.tcells_clustered.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.tcells_integrated.SEU.rds
+    Ignored:    data/SCEs/C133_Neeland.CellRanger.SCE.rds
+    Ignored:    data/SCEs/obsolete/
+    Ignored:    data/emptyDrops/
+    Ignored:    data/obsolete/
+    Ignored:    data/sample_sheets/obsolete/
+    Ignored:    output/marker-analysis/obsolete/
+    Ignored:    output/obsolete/
+    Ignored:    rename_captures.R
+    Ignored:    renv/library/
+    Ignored:    renv/staging/
+    Ignored:    wflow_background.R
+
+Unstaged changes:
+    Modified:   .gitignore
+    Modified:   .renvignore
+    Deleted:    analysis/03_C133_Neeland.demultiplex.Rmd
+    Deleted:    analysis/03_C133_Neeland.preprocess.Rmd
+    Deleted:    analysis/03_COMBO.clustering_annotation.Rmd
+    Deleted:    analysis/04_CF_BAL_Pilot.emptyDrops.Rmd
+    Deleted:    analysis/04_CF_BAL_Pilot.preprocess.Rmd
+    Deleted:    analysis/04_COMBO.transfer_proteins.Rmd
+    Deleted:    analysis/05_COMBO.cluster_macrophages.Rmd
+    Deleted:    analysis/05_COMBO.cluster_others.Rmd
+    Deleted:    analysis/05_COMBO.cluster_tcells.Rmd
+    Deleted:    analysis/05_COMBO.expression_analysis.Rmd
+    Deleted:    analysis/05_COMBO.postprocess_all.Rmd
+    Deleted:    analysis/05_COMBO.postprocess_macrophages.Rmd
+    Deleted:    analysis/05_COMBO.postprocess_others.Rmd
+    Deleted:    analysis/05_COMBO.postprocess_tcells.Rmd
+    Modified:   renv/.gitignore
+    Modified:   renv/settings.dcf
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in
+this status report because it is ok for generated content to have uncommitted
+changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made
+to the R Markdown (<code>analysis/04_C133_Neeland.demultiplex.Rmd</code>) and HTML (<code>docs/04_C133_Neeland.demultiplex.html</code>)
+files. If you’ve configured a remote Git repository (see
+<code>?wflow_git_remote</code>), click on the hyperlinks in the table below to
+view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/8255c241a80231919c022a91ab9f226505b1e73c/analysis/04_C133_Neeland.demultiplex.Rmd" target="_blank">8255c24</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-16
+</td>
+<td>
+wflow_publish(c(paste0("analysis/", list.files(path = here::here("analysis"),
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="load-libraries" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Load libraries</h1>
+<pre class="r"><code>suppressPackageStartupMessages(library(BiocStyle))
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(here))
+suppressPackageStartupMessages(library(glue))
+suppressPackageStartupMessages(library(DropletUtils))
+suppressPackageStartupMessages(library(scran))
+suppressPackageStartupMessages(library(scater))
+suppressPackageStartupMessages(library(scuttle))
+suppressPackageStartupMessages(library(janitor))
+suppressPackageStartupMessages(library(cowplot))
+suppressPackageStartupMessages(library(patchwork))
+suppressPackageStartupMessages(library(scales))
+suppressPackageStartupMessages(library(DropletQC))</code></pre>
+</div>
+<div id="motivation" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Motivation</h1>
+<p>Cells were obtained from 8 donors.
+We used ‘cell hashing’ to distinguish cells from each donor.
+Cells from each samples were labelled with a unique hashtag oligo (HTO) and then evenly mixed (i.e. 1:1:1:1:1:1:1:1 ratio) and a sample of the mixture run over 2 10x captures.
+We can additionally use the natural genetic variation between donors to distinguish cells from each donor.</p>
+<p>The aim here is to demultiplex the data so we can assign each droplet to a single donor (via its HTO and/or genetics).</p>
+<div id="cell-hashing" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Cell hashing</h2>
+<p>Cell hashing uses a series of oligo-tagged antibodies (hash tag oligos, HTOs) against ubiquitously expressed surface proteins with different barcodes to uniquely label cells from distinct samples, which can be subsequently pooled in one scRNA-seq run.
+By sequencing these tags alongside the cellular transcriptome, we can assign each cell to its sample of origin, and robustly identify doublets originating from multiple samples.</p>
+<p>The aim of HTO demultiplexing is to assign each droplet to the relevant pool.
+It will also assign droplets as ‘doublets’ (those droplets containing multiple HTOs) or ‘negative’ (those droplets with insufficient HTOs).
+To demultiplex these samples we use the HTO demultiplexing routines from <em><a href="https://bioconductor.org/packages/3.14/DropletUtils">DropletUtils</a></em>.</p>
+</div>
+<div id="genetic-variation" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Genetic variation</h2>
+<p>To demultiplex droplets from the donors we rely on the natural genetic variation of cells from different donors.
+We do not have reference genotypes from each donor, but we can still assign cells back to <code>donor_A</code>, <code>donor_B</code>, …, <code>donor_H</code>.
+To do this, we use <a href="https://vireosnp.readthedocs.io/"><strong>vireo</strong> (Variational Inference for Reconstructing Ensemble Origin)</a>.</p>
+</div>
+</div>
+<div id="setting-up-the-data" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Setting up the data</h1>
+<p>The count data were processed using <strong>CellRanger</strong> and the <em><a href="https://bioconductor.org/packages/3.14/DropletUtils">DropletUtils</a></em> R/Bioconductor packages.
+Empty droplets were filtered out using <code>emptyDrops</code> and samples were demultiplexed using <code>hashedDrops</code>, which can be viewed <a href="../docs/03_C133_Neeland.emptyDrops.html">here</a>.
+The results are available in a <em>SingleCellExperiment</em> object, along with the metadata in <a href="../data/SCEs/03_C133_Neeland.emptyDrops.SCE.rds"><code>data/SCEs/03_C133_Neeland.emptyDrops.SCE.rds</code></a>.</p>
+<pre class="r"><code>sce &lt;- readRDS(here(&quot;data&quot;, &quot;SCEs&quot;, &quot;03_C133_Neeland.emptyDrops.SCE.rds&quot;))
+sce</code></pre>
+<pre><code>class: SingleCellExperiment 
+dim: 36601 24828 
+metadata(1): Samples
+assays(1): counts
+rownames(36601): ENSG00000243485 ENSG00000237613 ... ENSG00000278817
+  ENSG00000277196
+rowData names(3): ID Symbol Type
+colnames(24828): 1_AAACCCACACTTCCTG-1 1_AAACCCACAGACAAAT-1 ...
+  2_TTTGTTGTCATTGGTG-1 2_TTTGTTGTCGATGGAG-1
+colData names(3): Sample Barcode capture
+reducedDimNames(0):
+mainExpName: NULL
+altExpNames(2): HTO ADT</code></pre>
+<div id="dropletutils" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> DropletUtils</h2>
+<p>We use the <code>emptyDrops()</code> function from the <em><a href="https://bioconductor.org/packages/3.14/DropletUtils">DropletUtils</a></em> package to test whether the expression profile for each cell barcode is significantly different from the ambient RNA pool <span class="citation">(Lun et al. 2018)</span>.
+This tends to be less conservative than the cell calling algorithm from the <strong>CellRanger</strong> pipeline, which often discards genuine cells with low RNA content (and thus low total counts).
+Any significant deviation indicates that the barcode corresponds to a cell-containing droplet.
+We call cells at a false discovery rate (FDR) of 0.1%, meaning that no more than 0.1% of our called barcodes should be empty droplets on average.</p>
+</div>
+</div>
+<div id="demultiplexing-with-hashtag-oligos-htos" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Demultiplexing with hashtag oligos (HTOs)</h1>
+<p>We run <code>hashedDrops()</code> from the <em><a href="https://bioconductor.org/packages/3.14/DropletUtils">DropletUtils</a></em> package to demultiplex the HTO count matrix for the subset of cell-containing libraries.
+We run this separately on each capture, which allows estimation of capture-specific ambient HTO profiles.
+<code>hashedDrops()</code> reports the likely pool of origin for each library based on its most abundant HTO after adjusting those abundances for the ambient contamination.
+The <code>hashedDrops()</code> function estimates the ambient contamination of each HTO, which is adjusted for when assigning barcodes to HTO labels.</p>
+</div>
+<div id="assign-hashing-tag-oligos-htos" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Assign Hashing Tag Oligos (HTOs)</h1>
+<p>Prepare the object.</p>
+<pre class="r"><code># Preparing HTO data -----------------------------------------------------------
+hto_counts &lt;- counts(altExp(sce, &quot;HTO&quot;))</code></pre>
+<p>Demultiplex the cells using HTOs.</p>
+<pre class="r"><code># Demultiplexing HTOs (DropletUtils) -------------------------------------------
+
+confident.min &lt;- 2
+hash_stats &lt;- hashedDrops(hto_counts, confident.min = confident.min)
+
+hist(
+  hash_stats$LogFC,
+  xlab = &quot;Log fold-change from best to second HTO&quot;,
+  main = &quot;&quot;)
+abline(v = confident.min, col = &quot;red&quot;, lty = 2, lwd = 2)</code></pre>
+<p><img src="figure/04_C133_Neeland.demultiplex.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Numbers of cells confidently assigned to each hashtag.</p>
+<pre class="r"><code>table(Raw = hash_stats$Best, Confident = hash_stats$Confident)</code></pre>
+<pre><code>   Confident
+Raw FALSE TRUE
+  1   510 1665
+  2   956 2849
+  3   892 3297
+  4   669 1673
+  5   943 2957
+  6   477 1878
+  7   682 2333
+  8   646 2401</code></pre>
+<p>Plot HTO logFCs for all cells.</p>
+<pre class="r"><code># Doublets show up in the top-left, singlets in the bottom right.
+plot(hash_stats$LogFC, hash_stats$LogFC2, pch=&quot;.&quot;)
+points(hash_stats$LogFC[hash_stats$Confident], 
+       hash_stats$LogFC2[hash_stats$Confident], 
+       pch=&quot;.&quot;, 
+       col = &quot;red&quot;)
+abline(v = 2, h = 2, col = &quot;blue&quot;, lty = 2)</code></pre>
+<p><img src="figure/04_C133_Neeland.demultiplex.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Visualise HTO demultiplexing results.</p>
+<pre class="r"><code># Visualization
+tmp &lt;- SingleCellExperiment(
+  assays = list(counts = hto_counts),
+  colData = hash_stats)
+sf &lt;- librarySizeFactors(counts(tmp))
+# NOTE: Kludge to workaround non-positive size factors (corresponding to
+#       droplets with zero HTO counts).
+sf &lt;- pmax(sf, min(sf[sf &gt; 0]))
+sizeFactors(tmp) &lt;- sf
+tmp &lt;- logNormCounts(tmp)
+tmp$Best &lt;- factor(tmp$Best)
+tmp$Confident &lt;- factor(tmp$Confident)
+tmp$Doublet &lt;- factor(tmp$Doublet)
+
+plotHeatmap(
+  tmp,
+  rownames(tmp),
+  order_columns_by = c(&quot;Best&quot;, &quot;Confident&quot;, &quot;Doublet&quot;),
+  center = TRUE,
+  symmetric = TRUE,
+  color = hcl.colors(101, &quot;Blue-Red 3&quot;),
+  cluster_rows = FALSE)</code></pre>
+<p><img src="figure/04_C133_Neeland.demultiplex.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Add HTO data to SCE and save.</p>
+<pre class="r"><code># Add to SCE
+stopifnot(identical(colnames(sce), rownames(hash_stats)))
+colData(sce) &lt;- cbind(colData(sce), hash_stats)
+sce$HTO &lt;- factor(
+  case_when(
+    sce$Confident ~ rownames(hto_counts)[sce$Best],
+    sce$Doublet ~ &quot;Doublet&quot;,
+    TRUE ~ &quot;Unknown&quot;),
+  levels = c(paste0(&quot;Human_HTO_&quot;, 1:8), &quot;Doublet&quot;, &quot;Unknown&quot;))
+
+dim(sce)</code></pre>
+<pre><code>[1] 36601 24828</code></pre>
+<p>Figure <a href="#fig:hto-demultiplexing">5.1</a> plots the number and proportion of droplets assigned to each HTO in each capture and if these were confidently or not confidently assigned.</p>
+<pre class="r"><code>p1 &lt;- ggcells(sce) + 
+  geom_bar(
+    aes(x = Best, fill = Confident), 
+    position = position_stack(reverse = TRUE)) + 
+  coord_flip() +
+  ylab(&quot;Number of droplets&quot;) +
+  theme_cowplot(font_size = 7)
+p2 &lt;- ggcells(sce) + 
+  geom_bar(
+    aes(x = Best, fill = Confident), 
+    position = position_fill(reverse = TRUE)) + 
+  coord_flip() + 
+  ylab(&quot;Proportion of droplets&quot;) + 
+  theme_cowplot(font_size = 7)
+(p1 + p1 + facet_grid(~capture) + plot_layout(widths = c(1, 2))) / 
+  (p2 + p2 + facet_grid(~capture) + plot_layout(widths = c(1, 2))) +
+  plot_layout(guides = &quot;collect&quot;)</code></pre>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:hto-demultiplexing"></span>
+<img src="figure/04_C133_Neeland.demultiplex.Rmd/hto-demultiplexing-1.png" alt="Number and proportion of droplets assigned to each HTO and if these were confidently or not confidently assigned overall (left) and within each capture (right)." width="672" />
+<p class="caption">
+Figure 5.1: Number and proportion of droplets assigned to each HTO and if these were confidently or not confidently assigned overall (left) and within each capture (right).
+</p>
+</div>
+</div>
+<div id="demultiplexing-cells-without-genotype-reference" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Demultiplexing cells without genotype reference</h1>
+<p>The HTOs allow us to assign droplets to donors.
+However, if for some reason the HTO data were unable to match a droplet to a donor, we might still be able to use the genetic data to recover the donor identity of the droplet.</p>
+<div id="genotyping" class="section level2" number="6.1">
+<h2><span class="header-section-number">6.1</span> Genotyping</h2>
+<p>We used <a href="https://github.com/single-cell-genetics/cellsnp-lite"><strong>cellsnp-lite</strong> (<code>v1.2.0</code>)</a> <span class="citation">(Huang and Huang 2021)</span> to genotype each scRNA-seq droplet at common SNPs from the 1000 Genomes Project (see <a href="../code/cellsnp-lite.sh"><code>code/cellsnp-lite.sh</code></a>).
+This gives us a cell variant call format (VCF) file with genotypes for each droplet, from which we can extract the variant-by-cell matrices of integer counts of the number of reads supporting the reference and alternative allele for each variant in each cell and the total number of reads overlapping each variant in each cell.</p>
+</div>
+<div id="assigning-barcodes-to-donors" class="section level2" number="6.2">
+<h2><span class="header-section-number">6.2</span> Assigning barcodes to donors</h2>
+<p>We use <a href="https://vireosnp.readthedocs.io/"><strong>vireo</strong> (Variational Inference for Reconstructing Ensemble Origin)</a> to assign droplets to donors, using the knowledge that there are 8 donors in the pool (see <a href="../code/vireo.sh"><code>code/vireo.sh</code></a>).
+This also identifies doublets by identifying any barcodes with genotypes from multiple donors.</p>
+<pre class="r"><code>capture_names &lt;- levels(sce$capture)
+capture_names &lt;- setNames(capture_names, capture_names)
+
+vireo_df &lt;- do.call(
+  rbind,
+  lapply(capture_names, function(cn) {
+    vireo_df &lt;- read.table(
+      here(&quot;data&quot;, &quot;vireo&quot;, cn, &quot;donor_ids.tsv&quot;),
+      header = TRUE)
+    vireo_df$donor_id &lt;- paste0(cn, &quot;_&quot;, vireo_df$donor_id)
+    captureNumber &lt;- sub(&quot;C133_&quot;, &quot;&quot;, cn)
+    vireo_df$colname &lt;- paste0(captureNumber, &quot;_&quot;, vireo_df$cell)
+    # NOTE: Reorder so matches SCE.
+    j &lt;- match(colnames(sce)[sce$capture == cn], vireo_df$colname)
+    stopifnot(!anyNA(j))
+    vireo_df &lt;- vireo_df[j, ]
+  }))</code></pre>
+<p>The table below summarises the genotype-based demultiplexing results.</p>
+<pre class="r"><code>knitr::kable(
+  tabyl(vireo_df, donor_id) %&gt;%
+    adorn_pct_formatting(1),
+  caption = &quot;Assignment of droplets to donors using vireo.&quot;)</code></pre>
+<table>
+<caption><span id="tab:unnamed-chunk-10">Table 6.1: </span>Assignment of droplets to donors using vireo.</caption>
+<thead>
+<tr class="header">
+<th align="left">donor_id</th>
+<th align="right">n</th>
+<th align="left">percent</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">C133_1_donor0</td>
+<td align="right">1307</td>
+<td align="left">5.3%</td>
+</tr>
+<tr class="even">
+<td align="left">C133_1_donor1</td>
+<td align="right">916</td>
+<td align="left">3.7%</td>
+</tr>
+<tr class="odd">
+<td align="left">C133_1_donor2</td>
+<td align="right">1165</td>
+<td align="left">4.7%</td>
+</tr>
+<tr class="even">
+<td align="left">C133_1_donor3</td>
+<td align="right">1162</td>
+<td align="left">4.7%</td>
+</tr>
+<tr class="odd">
+<td align="left">C133_1_donor4</td>
+<td align="right">1843</td>
+<td align="left">7.4%</td>
+</tr>
+<tr class="even">
+<td align="left">C133_1_donor5</td>
+<td align="right">1563</td>
+<td align="left">6.3%</td>
+</tr>
+<tr class="odd">
+<td align="left">C133_1_donor6</td>
+<td align="right">1529</td>
+<td align="left">6.2%</td>
+</tr>
+<tr class="even">
+<td align="left">C133_1_donor7</td>
+<td align="right">1340</td>
+<td align="left">5.4%</td>
+</tr>
+<tr class="odd">
+<td align="left">C133_1_doublet</td>
+<td align="right">875</td>
+<td align="left">3.5%</td>
+</tr>
+<tr class="even">
+<td align="left">C133_1_unassigned</td>
+<td align="right">200</td>
+<td align="left">0.8%</td>
+</tr>
+<tr class="odd">
+<td align="left">C133_2_donor0</td>
+<td align="right">1414</td>
+<td align="left">5.7%</td>
+</tr>
+<tr class="even">
+<td align="left">C133_2_donor1</td>
+<td align="right">958</td>
+<td align="left">3.9%</td>
+</tr>
+<tr class="odd">
+<td align="left">C133_2_donor2</td>
+<td align="right">1583</td>
+<td align="left">6.4%</td>
+</tr>
+<tr class="even">
+<td align="left">C133_2_donor3</td>
+<td align="right">1729</td>
+<td align="left">7.0%</td>
+</tr>
+<tr class="odd">
+<td align="left">C133_2_donor4</td>
+<td align="right">1988</td>
+<td align="left">8.0%</td>
+</tr>
+<tr class="even">
+<td align="left">C133_2_donor5</td>
+<td align="right">1238</td>
+<td align="left">5.0%</td>
+</tr>
+<tr class="odd">
+<td align="left">C133_2_donor6</td>
+<td align="right">1151</td>
+<td align="left">4.6%</td>
+</tr>
+<tr class="even">
+<td align="left">C133_2_donor7</td>
+<td align="right">1283</td>
+<td align="left">5.2%</td>
+</tr>
+<tr class="odd">
+<td align="left">C133_2_doublet</td>
+<td align="right">1261</td>
+<td align="left">5.1%</td>
+</tr>
+<tr class="even">
+<td align="left">C133_2_unassigned</td>
+<td align="right">323</td>
+<td align="left">1.3%</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="matching-donors-across-assays" class="section level2" number="6.3">
+<h2><span class="header-section-number">6.3</span> Matching donors across assays</h2>
+<p>The <a href="#genotyping">Genotyping</a> and <a href="#assigning-barcodes-to-donors">Assigning barcodes to donors</a> is done independently for each capture.
+As such, there is no guarantee that <code>donor0</code> is <code>C133_1</code> is the same person as <code>donor0</code> in <code>C133_2</code>.
+We therefore then need to match donors across captures by matching their genotypes across captures.</p>
+<p>We do this by matching the donor-level genotypes from the scRNA-seq data across pairs of captures.</p>
+<pre class="r"><code>library(vcfR)
+f1 &lt;- here(&quot;data/vireo/C133_1/GT_donors.vireo.vcf.gz&quot;)
+f2 &lt;- here(&quot;data/vireo/C133_2/GT_donors.vireo.vcf.gz&quot;)
+x1 &lt;- read.vcfR(f1)
+x2 &lt;- read.vcfR(f2)
+# Create unique ID for each locus in each capture.
+y1 &lt;- paste(
+  x1@fix[,&quot;CHROM&quot;],
+  x1@fix[,&quot;POS&quot;],
+  x1@fix[,&quot;REF&quot;],
+  x1@fix[,&quot;ALT&quot;],
+  sep = &quot;_&quot;)
+y2 &lt;- paste(
+  x2@fix[,&quot;CHROM&quot;],
+  x2@fix[,&quot;POS&quot;],
+  x2@fix[,&quot;REF&quot;],
+  x2@fix[,&quot;ALT&quot;],
+  sep = &quot;_&quot;)
+# Only keep the loci in common between the 2 captures.
+i1 &lt;- na.omit(match(y2, y1))
+i2 &lt;- na.omit(match(y1, y2))
+# Construct genotype matrix at common loci from the 2 captures.
+g1 &lt;- apply(
+  x1@gt[i1, paste0(&quot;donor&quot;, 0:7)],
+  2,
+  function(x) sapply(strsplit(x, &quot;:&quot;), `[[`, 1))
+g2 &lt;- apply(
+  x2@gt[i2, paste0(&quot;donor&quot;, 0:7)],
+  2,
+  function(x) sapply(strsplit(x, &quot;:&quot;), `[[`, 1))
+# Count number of genotype matches between pairs of donors (one from each 
+# capture) and convert to a proportion.
+donor_names &lt;- paste0(&quot;donor&quot;, 0:7)
+z &lt;- matrix(
+  NA_real_,
+  nrow = 8,
+  ncol = 8,
+  dimnames = list(donor_names, donor_names))
+for (i in rownames(z)) {
+  for (j in colnames(z)) {
+    z[i, j] &lt;- sum(g1[, i] == g2[, j]) / nrow(g1)
+  }
+}
+rownames(z) &lt;- paste0(&quot;C133_1_&quot;, rownames(z))
+colnames(z) &lt;- paste0(&quot;C133_2_&quot;, colnames(z))</code></pre>
+<p>Figure <a href="#fig:genotype-heatmap">6.1</a> shows that we can easily match donors between pairs of captures by selecting the pair with the highest proportion of matching genotypes.</p>
+<pre class="r"><code>pheatmap::pheatmap(
+  z,
+  color = viridisLite::inferno(101),
+  cluster_rows = FALSE,
+  cluster_cols = FALSE,
+  main = &quot;Proportion of matching genotypes&quot;)</code></pre>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:genotype-heatmap"></span>
+<img src="figure/04_C133_Neeland.demultiplex.Rmd/genotype-heatmap-1.png" alt="Proportion of matching genotypes between capture `C133_1` (rows) and capture `C133_2` (columns)." width="672" />
+<p class="caption">
+Figure 6.1: Proportion of matching genotypes between capture <code>C133_1</code> (rows) and capture <code>C133_2</code> (columns).
+</p>
+</div>
+<p>The table below gives the best matches between the two captures.</p>
+<pre class="r"><code>best_match_df &lt;- data.frame(
+  C133_1 = rownames(z),
+  C133_2 = apply(
+    z, 1,
+    function(x) colnames(z)[which.max(x)]),
+  check.names = FALSE)
+best_match_df$genetic_donor &lt;- paste0(&quot;donor_&quot;, LETTERS[1:8])
+knitr::kable(
+  dplyr::select(best_match_df, genetic_donor, everything()),
+  caption = &quot;Best match between the scRNA-seq donor and the mini-bulk donor.&quot;,
+  row.names = FALSE)</code></pre>
+<table>
+<caption><span id="tab:unnamed-chunk-12">Table 6.2: </span>Best match between the scRNA-seq donor and the mini-bulk donor.</caption>
+<thead>
+<tr class="header">
+<th align="left">genetic_donor</th>
+<th align="left">C133_1</th>
+<th align="left">C133_2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">donor_A</td>
+<td align="left">C133_1_donor0</td>
+<td align="left">C133_2_donor7</td>
+</tr>
+<tr class="even">
+<td align="left">donor_B</td>
+<td align="left">C133_1_donor1</td>
+<td align="left">C133_2_donor1</td>
+</tr>
+<tr class="odd">
+<td align="left">donor_C</td>
+<td align="left">C133_1_donor2</td>
+<td align="left">C133_2_donor5</td>
+</tr>
+<tr class="even">
+<td align="left">donor_D</td>
+<td align="left">C133_1_donor3</td>
+<td align="left">C133_2_donor6</td>
+</tr>
+<tr class="odd">
+<td align="left">donor_E</td>
+<td align="left">C133_1_donor4</td>
+<td align="left">C133_2_donor4</td>
+</tr>
+<tr class="even">
+<td align="left">donor_F</td>
+<td align="left">C133_1_donor5</td>
+<td align="left">C133_2_donor3</td>
+</tr>
+<tr class="odd">
+<td align="left">donor_G</td>
+<td align="left">C133_1_donor6</td>
+<td align="left">C133_2_donor2</td>
+</tr>
+<tr class="even">
+<td align="left">donor_H</td>
+<td align="left">C133_1_donor7</td>
+<td align="left">C133_2_donor0</td>
+</tr>
+</tbody>
+</table>
+<p>Finally, the inferred donor of each cell (<code>genetic_donor</code><a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> in the above table) is added to the <em>SingleCellExperiment</em> object.</p>
+<pre class="r"><code>best_match_long_df &lt;- tidyr::pivot_longer(
+  best_match_df,
+  c(C133_1, C133_2)) %&gt;%
+  dplyr::select(genetic_donor, value)
+stopifnot(identical(colnames(sce), vireo_df$colname))
+# NOTE: We exclude the redundant &#39;cell&#39; and &#39;colname&#39; columns.
+sce$vireo &lt;- DataFrame(
+  vireo_df[, setdiff(colnames(vireo_df), c(&quot;cell&quot;, &quot;colname&quot;))])
+sce$genetic_donor &lt;- left_join(
+  vireo_df,
+  best_match_long_df, 
+  by = c(&quot;donor_id&quot; = &quot;value&quot;)) %&gt;%
+  mutate(
+    genetic_donor = factor(
+      case_when(
+        is.na(genetic_donor) ~ sub(&quot;C133_[0-9]_&quot;, &quot;&quot;, donor_id),
+        TRUE ~ genetic_donor),
+      levels = c(paste0(&quot;donor_&quot;, LETTERS[1:8]), &quot;doublet&quot;, &quot;unassigned&quot;))) %&gt;%
+  pull(genetic_donor)</code></pre>
+</div>
+</div>
+<div id="summary" class="section level1" number="7">
+<h1><span class="header-section-number">7</span> Summary</h1>
+<pre class="r"><code># Some useful colours
+sce$colours &lt;- S4Vectors::make_zero_col_DFrame(ncol(sce))
+
+hto_colours &lt;- setNames(
+  palette.colors(nlevels(sce$HTO), &quot;Paired&quot;),
+  levels(sce$HTO))
+sce$colours$hto_colours &lt;- hto_colours[sce$HTO]
+
+# NOTE: the 10th colour of the palette, i.e. light grey, is hard to be seen on grey-background umap, thus replaced !
+genetic_donor_colours &lt;- setNames(
+  c(palette.colors(nlevels(sce$genetic_donor)-1, &quot;Tableau 10&quot;), &quot;#000000&quot;),
+  levels(sce$genetic_donor))
+sce$colours$genetic_donor_colours &lt;- genetic_donor_colours[sce$genetic_donor]
+
+capture_colours &lt;- setNames(
+  palette.colors(nlevels(sce$capture), &quot;Accent&quot;),
+  levels(sce$capture))
+sce$colours$capture_colours &lt;- capture_colours[sce$capture]</code></pre>
+<p>The plan for this experiment was to devote 1/8 (12.5%) of each capture to each sample.
+Each capture was planned to have the same representation of donors.</p>
+<p>Due to the sample multiplexing strategy, most droplets should be assigned to a single <code>HTO</code> and <code>genetic_donor</code>.
+The below table shows that most droplets assigned to a single <code>HTO</code> are also assigned to a single <code>genetic_donor</code> and vice versa.
+However, there are more <code>Doublet</code> and <code>Unknown</code> droplets using the <code>HTO</code> data than from the <code>genetic_donor</code> data.</p>
+<aside>
+It may pay to take a closer look at those droplets with discordant <code>HTO</code> and <code>genetic_donor</code> assignments.
+</aside>
+<pre class="r"><code>tabyl(
+  as.data.frame(colData(sce)[, c(&quot;HTO&quot;, &quot;genetic_donor&quot;)]),
+  HTO,
+  genetic_donor) %&gt;%
+  adorn_title(placement = &quot;combined&quot;) %&gt;%
+  adorn_totals(&quot;both&quot;) %&gt;%
+  knitr::kable(caption = &quot;Number of droplets assigned to each `HTO`/`donor` combination.&quot;)</code></pre>
+<table>
+<caption><span id="tab:unnamed-chunk-15">Table 7.1: </span>Number of droplets assigned to each <code>HTO</code>/<code>donor</code> combination.</caption>
+<colgroup>
+<col width="16%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="10%" />
+<col width="5%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">HTO/genetic_donor</th>
+<th align="right">donor_A</th>
+<th align="right">donor_B</th>
+<th align="right">donor_C</th>
+<th align="right">donor_D</th>
+<th align="right">donor_E</th>
+<th align="right">donor_F</th>
+<th align="right">donor_G</th>
+<th align="right">donor_H</th>
+<th align="right">doublet</th>
+<th align="right">unassigned</th>
+<th align="right">Total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Human_HTO_1</td>
+<td align="right">0</td>
+<td align="right">1620</td>
+<td align="right">3</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">9</td>
+<td align="right">0</td>
+<td align="right">16</td>
+<td align="right">15</td>
+<td align="right">1665</td>
+</tr>
+<tr class="even">
+<td align="left">Human_HTO_2</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">2763</td>
+<td align="right">2</td>
+<td align="right">49</td>
+<td align="right">30</td>
+<td align="right">2849</td>
+</tr>
+<tr class="odd">
+<td align="left">Human_HTO_3</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">3267</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">17</td>
+<td align="right">8</td>
+<td align="right">3297</td>
+</tr>
+<tr class="even">
+<td align="left">Human_HTO_4</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1663</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">7</td>
+<td align="right">2</td>
+<td align="right">1673</td>
+</tr>
+<tr class="odd">
+<td align="left">Human_HTO_5</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">2913</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">30</td>
+<td align="right">8</td>
+<td align="right">2957</td>
+</tr>
+<tr class="even">
+<td align="left">Human_HTO_6</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1861</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">8</td>
+<td align="right">6</td>
+<td align="right">1878</td>
+</tr>
+<tr class="odd">
+<td align="left">Human_HTO_7</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2310</td>
+<td align="right">14</td>
+<td align="right">6</td>
+<td align="right">2333</td>
+</tr>
+<tr class="even">
+<td align="left">Human_HTO_8</td>
+<td align="right">2274</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">4</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">30</td>
+<td align="right">81</td>
+<td align="right">2401</td>
+</tr>
+<tr class="odd">
+<td align="left">Doublet</td>
+<td align="right">181</td>
+<td align="right">163</td>
+<td align="right">248</td>
+<td align="right">216</td>
+<td align="right">380</td>
+<td align="right">330</td>
+<td align="right">273</td>
+<td align="right">281</td>
+<td align="right">1581</td>
+<td align="right">29</td>
+<td align="right">3682</td>
+</tr>
+<tr class="even">
+<td align="left">Unknown</td>
+<td align="right">133</td>
+<td align="right">86</td>
+<td align="right">482</td>
+<td align="right">227</td>
+<td align="right">178</td>
+<td align="right">47</td>
+<td align="right">63</td>
+<td align="right">155</td>
+<td align="right">384</td>
+<td align="right">338</td>
+<td align="right">2093</td>
+</tr>
+<tr class="odd">
+<td align="left">Total</td>
+<td align="right">2590</td>
+<td align="right">1874</td>
+<td align="right">2403</td>
+<td align="right">2313</td>
+<td align="right">3831</td>
+<td align="right">3292</td>
+<td align="right">3112</td>
+<td align="right">2754</td>
+<td align="right">2136</td>
+<td align="right">523</td>
+<td align="right">24828</td>
+</tr>
+</tbody>
+</table>
+<div id="breakdown-by-capture" class="section level2" number="7.1">
+<h2><span class="header-section-number">7.1</span> Breakdown by <code>capture</code></h2>
+<pre class="r"><code>prop_droplets_per_genetic_donor &lt;- as.vector(
+  table(sce$genetic_donor) / 
+    sum(!sce$genetic_donor %in% c(&quot;doublet&quot;, &quot;unassigned&quot;)))</code></pre>
+<p>Figure <a href="#fig:breakdown-by-capture">7.1</a> breaks down the demultiplexing results by capture.
+In good news, we observe that:</p>
+<ul>
+<li>Each capture has a very similar number of droplets.</li>
+<li>Each capture has similar proportions of each donor (by HTO).</li>
+<li>Each capture has similar proportions of each donor (by genetics).</li>
+<li>Of those droplets that are not doublets or unassigned, the percentage that come from each donor (median = 12.1%; desired = 12.5%) is very close to the desired value (P = 1 using a two-sided t-test that the average proportion is different from 12.5%).</li>
+</ul>
+<p>However, in less-good news, we also observe that:</p>
+<ul>
+<li>Of those droplets that are not doublets or unassigned, there is a 2-fold difference in the percentage that come from each donor (min = 8.5%; max = 17.3%)</li>
+</ul>
+<pre class="r"><code>p1 &lt;- ggcells(sce) + 
+  geom_bar(
+    aes(x = capture, fill = HTO),
+    position = position_fill(reverse = TRUE)) +
+  coord_flip() +
+  ylab(&quot;Frequency&quot;) +
+  theme_cowplot(font_size = 8) + 
+  scale_fill_manual(values = hto_colours)
+p2 &lt;- ggcells(sce) + 
+  geom_bar(
+    aes(x = capture, fill = genetic_donor),
+    position = position_fill(reverse = TRUE)) +
+  coord_flip() +
+  ylab(&quot;Frequency&quot;) +
+  theme_cowplot(font_size = 8) + 
+  scale_fill_manual(values = genetic_donor_colours)
+p3 &lt;- ggcells(sce) + 
+  geom_bar(aes(x = capture, fill = capture)) + 
+  coord_flip() + 
+  ylab(&quot;Number of droplets&quot;) + 
+  theme_cowplot(font_size = 8) + 
+  scale_fill_manual(values = capture_colours) +
+  guides(fill = FALSE)
+p1 + p2 + p3 + plot_layout(guides = &quot;collect&quot;)</code></pre>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:breakdown-by-capture"></span>
+<img src="figure/04_C133_Neeland.demultiplex.Rmd/breakdown-by-capture-1.png" alt="Breakdown of the demultiplexing results by `capture`." width="672" />
+<p class="caption">
+Figure 7.1: Breakdown of the demultiplexing results by <code>capture</code>.
+</p>
+</div>
+</div>
+<div id="breakdown-by-hto" class="section level2" number="7.2">
+<h2><span class="header-section-number">7.2</span> Breakdown by <code>HTO</code></h2>
+<p>Figure <a href="#fig:breakdown-by-hto">7.2</a> breaks down the demultiplexing results by HTO.
+In good news, we observe that:</p>
+<ul>
+<li>The proportion of droplets from each <code>HTO</code> are very similar across captures.</li>
+<li>Almost all droplets assigned to each <code>HTO</code> are also assigned to a single <code>genetic_donor</code>.</li>
+</ul>
+<pre class="r"><code>p1 &lt;- ggcells(sce) + 
+  geom_bar(
+    aes(x = HTO, fill = genetic_donor),
+    position = position_fill(reverse = TRUE)) +
+  coord_flip() +
+  ylab(&quot;Frequency&quot;) +
+  theme_cowplot(font_size = 8) + 
+  scale_fill_manual(values = genetic_donor_colours)
+p2 &lt;- ggcells(sce) + 
+  geom_bar(aes(x = HTO, fill = HTO)) + 
+  coord_flip() + 
+  ylab(&quot;Number of droplets&quot;) + 
+  theme_cowplot(font_size = 8) + 
+  scale_fill_manual(values = hto_colours) +
+  guides(fill = FALSE)
+(p1 + p1 + facet_grid(~capture) + plot_layout(widths = c(1, 2))) /
+  (p2 + p2 + facet_grid(~capture) + plot_layout(widths = c(1, 2))) +
+  plot_layout(guides = &quot;collect&quot;)</code></pre>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:breakdown-by-hto"></span>
+<img src="figure/04_C133_Neeland.demultiplex.Rmd/breakdown-by-hto-1.png" alt="Breakdown of the demultiplexing results by `HTO`." width="672" />
+<p class="caption">
+Figure 7.2: Breakdown of the demultiplexing results by <code>HTO</code>.
+</p>
+</div>
+</div>
+<div id="breakdown-by-genetic_donor" class="section level2" number="7.3">
+<h2><span class="header-section-number">7.3</span> Breakdown by <code>genetic_donor</code></h2>
+<p>Figure <a href="#fig:breakdown-by-genetic-donor">7.3</a> breaks down the demultiplexing results by <code>genetic_donor</code>.
+In good news, we observe that:</p>
+<ul>
+<li>The proportion of droplets from each <code>genetic_donor</code> are mostly very similar across captures.</li>
+<li>Almost all droplets assigned to each <code>genetic_donor</code> are also assigned to a single <code>HTO</code>.</li>
+</ul>
+<pre class="r"><code>p1 &lt;- ggcells(sce) + 
+  geom_bar(
+    aes(x = genetic_donor, fill = HTO),
+    position = position_fill(reverse = TRUE)) +
+  coord_flip() +
+  ylab(&quot;Frequency&quot;) +
+  theme_cowplot(font_size = 8) + 
+  scale_fill_manual(values = hto_colours)
+p2 &lt;- ggcells(sce) + 
+  geom_bar(aes(x = genetic_donor, fill = genetic_donor)) + 
+  coord_flip() + 
+  ylab(&quot;Number of droplets&quot;) + 
+  theme_cowplot(font_size = 8) + 
+  scale_fill_manual(values = genetic_donor_colours) +
+  guides(fill = FALSE)
+(p1 + p1 + facet_grid(~capture) + plot_layout(widths = c(1, 2))) /
+  (p2 + p2 + facet_grid(~capture) + plot_layout(widths = c(1, 2))) +
+  plot_layout(guides = &quot;collect&quot;)</code></pre>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:breakdown-by-genetic-donor"></span>
+<img src="figure/04_C133_Neeland.demultiplex.Rmd/breakdown-by-genetic-donor-1.png" alt="Breakdown of the demultiplexing results by `genetic_donor`." width="672" />
+<p class="caption">
+Figure 7.3: Breakdown of the demultiplexing results by <code>genetic_donor</code>.
+</p>
+</div>
+</div>
+</div>
+<div id="save-data" class="section level1" number="8">
+<h1><span class="header-section-number">8</span> Save data</h1>
+<pre class="r"><code>out &lt;- here(&quot;data&quot;,
+            &quot;SCEs&quot;, 
+            &quot;03_C133_Neeland.demultiplexed.SCE.rds&quot;)
+
+if(!file.exists(out)) saveRDS(sce, out)</code></pre>
+</div>
+<div id="session-info" class="section level1 appendix" number="9">
+<h1><span class="header-section-number">9</span> Session info</h1>
+<summary>
+The analysis and this document were prepared using the following software (click triangle to expand)
+</summary>
+<details>
+<pre class="r"><code>sessioninfo::session_info()</code></pre>
+<pre><code>─ Session info ───────────────────────────────────────────────────────────────
+ setting  value
+ version  R version 4.1.0 (2021-05-18)
+ os       CentOS Linux 7 (Core)
+ system   x86_64, linux-gnu
+ ui       X11
+ language (EN)
+ collate  en_AU.UTF-8
+ ctype    en_AU.UTF-8
+ tz       Australia/Melbourne
+ date     2022-06-16
+ pandoc   2.17.1.1 @ /usr/lib/rstudio-server/bin/quarto/bin/ (via rmarkdown)
+
+─ Packages ───────────────────────────────────────────────────────────────────
+ ! package              * version    date (UTC) lib source
+ P ape                    5.6-1      2022-01-07 [?] CRAN (R 4.1.0)
+ P assertthat             0.2.1      2019-03-21 [?] CRAN (R 4.1.0)
+ P backports              1.4.1      2021-12-13 [?] CRAN (R 4.1.0)
+ P beachmat               2.10.0     2021-10-26 [?] Bioconductor
+ P beeswarm               0.4.0      2021-06-01 [?] CRAN (R 4.1.0)
+ P Biobase              * 2.54.0     2021-10-26 [?] Bioconductor
+ P BiocGenerics         * 0.40.0     2021-10-26 [?] Bioconductor
+ P BiocManager            1.30.16    2021-06-15 [?] CRAN (R 4.1.0)
+ P BiocNeighbors          1.12.0     2021-10-26 [?] Bioconductor
+ P BiocParallel           1.28.3     2021-12-09 [?] Bioconductor
+ P BiocSingular           1.10.0     2021-10-26 [?] Bioconductor
+ P BiocStyle            * 2.22.0     2021-10-26 [?] Bioconductor
+ P bitops                 1.0-7      2021-04-24 [?] CRAN (R 4.0.2)
+ P bluster                1.4.0      2021-10-26 [?] Bioconductor
+ P bookdown               0.24       2021-09-02 [?] CRAN (R 4.1.0)
+ P broom                  0.7.11     2022-01-03 [?] CRAN (R 4.1.0)
+ P bslib                  0.3.1      2021-10-06 [?] CRAN (R 4.1.0)
+ P callr                  3.7.0      2021-04-20 [?] CRAN (R 4.1.0)
+ P cellranger             1.1.0      2016-07-27 [?] CRAN (R 4.1.0)
+ P cli                    3.1.0      2021-10-27 [?] CRAN (R 4.1.0)
+ P cluster                2.1.2      2021-04-17 [?] CRAN (R 4.1.0)
+ P colorspace             2.0-2      2021-06-24 [?] CRAN (R 4.0.2)
+ P cowplot              * 1.1.1      2020-12-30 [?] CRAN (R 4.0.2)
+ P crayon                 1.4.2      2021-10-29 [?] CRAN (R 4.1.0)
+ P DBI                    1.1.2      2021-12-20 [?] CRAN (R 4.1.0)
+ P dbplyr                 2.1.1      2021-04-06 [?] CRAN (R 4.1.0)
+ P DelayedArray           0.20.0     2021-10-26 [?] Bioconductor
+ P DelayedMatrixStats     1.16.0     2021-10-26 [?] Bioconductor
+ P digest                 0.6.29     2021-12-01 [?] CRAN (R 4.1.0)
+ P dplyr                * 1.0.7      2021-06-18 [?] CRAN (R 4.1.0)
+ P dqrng                  0.3.0      2021-05-01 [?] CRAN (R 4.1.0)
+ P DropletQC            * 0.0.0.9000 2021-08-06 [?] Github (powellgenomicslab/DropletQC@4409c95)
+ P DropletUtils         * 1.14.1     2021-11-08 [?] Bioconductor
+ P edgeR                  3.36.0     2021-10-26 [?] Bioconductor
+ P ellipsis               0.3.2      2021-04-29 [?] CRAN (R 4.0.2)
+ P evaluate               0.14       2019-05-28 [?] CRAN (R 4.0.2)
+ P fansi                  1.0.0      2022-01-10 [?] CRAN (R 4.1.0)
+ P farver                 2.1.0      2021-02-28 [?] CRAN (R 4.0.2)
+ P fastmap                1.1.0      2021-01-25 [?] CRAN (R 4.1.0)
+ P forcats              * 0.5.1      2021-01-27 [?] CRAN (R 4.1.0)
+ P fs                     1.5.2      2021-12-08 [?] CRAN (R 4.1.0)
+ P generics               0.1.1      2021-10-25 [?] CRAN (R 4.1.0)
+   GenomeInfoDb         * 1.30.1     2022-01-30 [1] Bioconductor
+ P GenomeInfoDbData       1.2.7      2021-12-21 [?] Bioconductor
+ P GenomicRanges        * 1.46.1     2021-11-18 [?] Bioconductor
+ P getPass                0.2-2      2017-07-21 [?] CRAN (R 4.0.2)
+ P ggbeeswarm             0.6.0      2017-08-07 [?] CRAN (R 4.1.0)
+ P ggplot2              * 3.3.5      2021-06-25 [?] CRAN (R 4.0.2)
+ P ggrepel                0.9.1      2021-01-15 [?] CRAN (R 4.1.0)
+ P git2r                  0.29.0     2021-11-22 [?] CRAN (R 4.1.0)
+ P glue                 * 1.6.0      2021-12-17 [?] CRAN (R 4.1.0)
+ P gridExtra              2.3        2017-09-09 [?] CRAN (R 4.1.0)
+ P gtable                 0.3.0      2019-03-25 [?] CRAN (R 4.1.0)
+ P haven                  2.4.3      2021-08-04 [?] CRAN (R 4.1.0)
+ P HDF5Array              1.22.1     2021-11-14 [?] Bioconductor
+ P here                 * 1.0.1      2020-12-13 [?] CRAN (R 4.0.2)
+ P highr                  0.9        2021-04-16 [?] CRAN (R 4.1.0)
+ P hms                    1.1.1      2021-09-26 [?] CRAN (R 4.1.0)
+ P htmltools              0.5.2      2021-08-25 [?] CRAN (R 4.1.0)
+ P httpuv                 1.6.5      2022-01-05 [?] CRAN (R 4.1.0)
+ P httr                   1.4.2      2020-07-20 [?] CRAN (R 4.1.0)
+ P igraph                 1.2.11     2022-01-04 [?] CRAN (R 4.1.0)
+ P IRanges              * 2.28.0     2021-10-26 [?] Bioconductor
+ P irlba                  2.3.5      2021-12-06 [?] CRAN (R 4.1.0)
+ P janitor              * 2.1.0      2021-01-05 [?] CRAN (R 4.0.2)
+ P jquerylib              0.1.4      2021-04-26 [?] CRAN (R 4.1.0)
+ P jsonlite               1.7.2      2020-12-09 [?] CRAN (R 4.0.2)
+ P knitr                  1.37       2021-12-16 [?] CRAN (R 4.1.0)
+ P labeling               0.4.2      2020-10-20 [?] CRAN (R 4.0.2)
+ P later                  1.3.0      2021-08-18 [?] CRAN (R 4.1.0)
+ P lattice                0.20-45    2021-09-22 [?] CRAN (R 4.1.0)
+ P lifecycle              1.0.1      2021-09-24 [?] CRAN (R 4.1.0)
+ P limma                  3.50.0     2021-10-26 [?] Bioconductor
+ P locfit                 1.5-9.4    2020-03-25 [?] CRAN (R 4.1.0)
+ P lubridate              1.8.0      2021-10-07 [?] CRAN (R 4.1.0)
+ P magrittr               2.0.1      2020-11-17 [?] CRAN (R 4.0.2)
+ P MASS                   7.3-53.1   2021-02-12 [?] CRAN (R 4.0.2)
+ P Matrix                 1.4-0      2021-12-08 [?] CRAN (R 4.1.0)
+ P MatrixGenerics       * 1.6.0      2021-10-26 [?] Bioconductor
+ P matrixStats          * 0.61.0     2021-09-17 [?] CRAN (R 4.1.0)
+ P mclust                 5.4.9      2021-12-17 [?] CRAN (R 4.1.0)
+ P memuse                 4.2-1      2021-10-20 [?] CRAN (R 4.1.0)
+ P metapod                1.2.0      2021-10-26 [?] Bioconductor
+ P mgcv                   1.8-38     2021-10-06 [?] CRAN (R 4.1.0)
+ P modelr                 0.1.8      2020-05-19 [?] CRAN (R 4.0.2)
+ P munsell                0.5.0      2018-06-12 [?] CRAN (R 4.1.0)
+ P nlme                   3.1-153    2021-09-07 [?] CRAN (R 4.1.0)
+ P patchwork            * 1.1.1      2020-12-17 [?] CRAN (R 4.0.2)
+ P permute                0.9-5      2019-03-12 [?] CRAN (R 4.1.0)
+ P pheatmap               1.0.12     2019-01-04 [?] CRAN (R 4.1.0)
+ P pillar                 1.6.4      2021-10-18 [?] CRAN (R 4.1.0)
+ P pinfsc50               1.2.0      2020-06-03 [?] CRAN (R 4.1.0)
+ P pkgconfig              2.0.3      2019-09-22 [?] CRAN (R 4.1.0)
+ P processx               3.5.2      2021-04-30 [?] CRAN (R 4.1.0)
+ P promises               1.2.0.1    2021-02-11 [?] CRAN (R 4.0.2)
+ P ps                     1.6.0      2021-02-28 [?] CRAN (R 4.1.0)
+ P purrr                * 0.3.4      2020-04-17 [?] CRAN (R 4.0.2)
+ P R.methodsS3            1.8.1      2020-08-26 [?] CRAN (R 4.0.2)
+ P R.oo                   1.24.0     2020-08-26 [?] CRAN (R 4.0.2)
+ P R.utils                2.11.0     2021-09-26 [?] CRAN (R 4.1.0)
+ P R6                     2.5.1      2021-08-19 [?] CRAN (R 4.1.0)
+ P RColorBrewer           1.1-2      2014-12-07 [?] CRAN (R 4.0.2)
+ P Rcpp                   1.0.7      2021-07-07 [?] CRAN (R 4.1.0)
+   RCurl                  1.98-1.6   2022-02-08 [1] CRAN (R 4.1.0)
+ P readr                * 2.1.1      2021-11-30 [?] CRAN (R 4.1.0)
+ P readxl                 1.3.1      2019-03-13 [?] CRAN (R 4.1.0)
+ P renv                   0.15.0-14  2022-01-10 [?] Github (rstudio/renv@a3b90eb)
+ P reprex                 2.0.1      2021-08-05 [?] CRAN (R 4.1.0)
+ P rhdf5                  2.38.0     2021-10-26 [?] Bioconductor
+ P rhdf5filters           1.6.0      2021-10-26 [?] Bioconductor
+ P Rhdf5lib               1.16.0     2021-10-26 [?] Bioconductor
+ P rlang                  0.4.12     2021-10-18 [?] CRAN (R 4.1.0)
+ P rmarkdown              2.11       2021-09-14 [?] CRAN (R 4.1.0)
+ P rprojroot              2.0.2      2020-11-15 [?] CRAN (R 4.0.2)
+ P rstudioapi             0.13       2020-11-12 [?] CRAN (R 4.0.2)
+ P rsvd                   1.0.5      2021-04-16 [?] CRAN (R 4.1.0)
+ P rvest                  1.0.2      2021-10-16 [?] CRAN (R 4.1.0)
+ P S4Vectors            * 0.32.3     2021-11-21 [?] Bioconductor
+ P sass                   0.4.0      2021-05-12 [?] CRAN (R 4.1.0)
+ P ScaledMatrix           1.2.0      2021-10-26 [?] Bioconductor
+ P scales               * 1.1.1      2020-05-11 [?] CRAN (R 4.0.2)
+ P scater               * 1.22.0     2021-10-26 [?] Bioconductor
+ P scran                * 1.22.1     2021-11-14 [?] Bioconductor
+ P scuttle              * 1.4.0      2021-10-26 [?] Bioconductor
+ P sessioninfo            1.2.2      2021-12-06 [?] CRAN (R 4.1.0)
+ P SingleCellExperiment * 1.16.0     2021-10-26 [?] Bioconductor
+ P snakecase              0.11.0     2019-05-25 [?] CRAN (R 4.0.2)
+ P sparseMatrixStats      1.6.0      2021-10-26 [?] Bioconductor
+ P statmod                1.4.36     2021-05-10 [?] CRAN (R 4.1.0)
+ P stringi                1.7.6      2021-11-29 [?] CRAN (R 4.1.0)
+ P stringr              * 1.4.0      2019-02-10 [?] CRAN (R 4.0.2)
+ P SummarizedExperiment * 1.24.0     2021-10-26 [?] Bioconductor
+ P tibble               * 3.1.6      2021-11-07 [?] CRAN (R 4.1.0)
+ P tidyr                * 1.1.4      2021-09-27 [?] CRAN (R 4.1.0)
+ P tidyselect             1.1.1      2021-04-30 [?] CRAN (R 4.1.0)
+ P tidyverse            * 1.3.1      2021-04-15 [?] CRAN (R 4.1.0)
+ P tzdb                   0.2.0      2021-10-27 [?] CRAN (R 4.1.0)
+ P utf8                   1.2.2      2021-07-24 [?] CRAN (R 4.1.0)
+ P vcfR                 * 1.12.0     2020-09-01 [?] CRAN (R 4.1.0)
+ P vctrs                  0.3.8      2021-04-29 [?] CRAN (R 4.0.2)
+ P vegan                  2.5-7      2020-11-28 [?] CRAN (R 4.1.0)
+ P vipor                  0.4.5      2017-03-22 [?] CRAN (R 4.1.0)
+ P viridis                0.6.2      2021-10-13 [?] CRAN (R 4.1.0)
+ P viridisLite            0.4.0      2021-04-13 [?] CRAN (R 4.0.2)
+ P whisker                0.4        2019-08-28 [?] CRAN (R 4.0.2)
+ P withr                  2.4.3      2021-11-30 [?] CRAN (R 4.1.0)
+ P workflowr            * 1.7.0      2021-12-21 [?] CRAN (R 4.1.0)
+ P xfun                   0.29       2021-12-14 [?] CRAN (R 4.1.0)
+ P xml2                   1.3.3      2021-11-30 [?] CRAN (R 4.1.0)
+ P XVector                0.34.0     2021-10-26 [?] Bioconductor
+ P yaml                   2.2.1      2020-02-01 [?] CRAN (R 4.0.2)
+ P zlibbioc               1.40.0     2021-10-26 [?] Bioconductor
+
+ [1] /oshlack_lab/jovana.maksimovic/projects/MCRI/melanie.neeland/paed-cf-cite-seq/renv/library/R-4.1/x86_64-pc-linux-gnu
+ [2] /config/binaries/R/4.1.0/lib64/R/library
+
+ P ── Loaded and on-disk path mismatch.
+
+──────────────────────────────────────────────────────────────────────────────</code></pre>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Huang2020.12.31.424913" class="csl-entry">
+Huang, Xianjie, and Yuanhua Huang. 2021. <span>“Cellsnp-Lite: An Efficient Tool for Genotyping Single Cells.”</span> <em>bioRxiv</em>. <a href="https://doi.org/10.1101/2020.12.31.424913">https://doi.org/10.1101/2020.12.31.424913</a>.
+</div>
+<div id="ref-lun2018distinguishing" class="csl-entry">
+Lun, A., S. Riesenfeld, T. Andrews, T. P. Dao, T. Gomes, participants in the 1st Human Cell Atlas Jamboree, and J. Marioni. 2018. <span>“Distinguishing Cells from Empty Droplets in Droplet-Based Single-Cell RNA Sequencing Data.”</span> <em>bioRxiv</em>. <a href="https://doi.org/10.1101/234872">https://doi.org/10.1101/234872</a>.
+</div>
+</div>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.1.0 (2021-05-18)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: CentOS Linux 7 (Core)
+
+Matrix products: default
+BLAS:   /config/binaries/R/4.1.0/lib64/R/lib/libRblas.so
+LAPACK: /config/binaries/R/4.1.0/lib64/R/lib/libRlapack.so
+
+locale:
+ [1] LC_CTYPE=en_AU.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_AU.UTF-8        LC_COLLATE=en_AU.UTF-8    
+ [5] LC_MONETARY=en_AU.UTF-8    LC_MESSAGES=en_AU.UTF-8   
+ [7] LC_PAPER=en_AU.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_AU.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] vcfR_1.12.0                 DropletQC_0.0.0.9000       
+ [3] scales_1.1.1                patchwork_1.1.1            
+ [5] cowplot_1.1.1               janitor_2.1.0              
+ [7] scater_1.22.0               scran_1.22.1               
+ [9] scuttle_1.4.0               DropletUtils_1.14.1        
+[11] SingleCellExperiment_1.16.0 SummarizedExperiment_1.24.0
+[13] Biobase_2.54.0              GenomicRanges_1.46.1       
+[15] GenomeInfoDb_1.30.1         IRanges_2.28.0             
+[17] S4Vectors_0.32.3            BiocGenerics_0.40.0        
+[19] MatrixGenerics_1.6.0        matrixStats_0.61.0         
+[21] glue_1.6.0                  here_1.0.1                 
+[23] forcats_0.5.1               stringr_1.4.0              
+[25] dplyr_1.0.7                 purrr_0.3.4                
+[27] readr_2.1.1                 tidyr_1.1.4                
+[29] tibble_3.1.6                ggplot2_3.3.5              
+[31] tidyverse_1.3.1             BiocStyle_2.22.0           
+[33] workflowr_1.7.0            
+
+loaded via a namespace (and not attached):
+  [1] readxl_1.3.1              backports_1.4.1          
+  [3] igraph_1.2.11             splines_4.1.0            
+  [5] BiocParallel_1.28.3       digest_0.6.29            
+  [7] htmltools_0.5.2           viridis_0.6.2            
+  [9] fansi_1.0.0               magrittr_2.0.1           
+ [11] ScaledMatrix_1.2.0        cluster_2.1.2            
+ [13] tzdb_0.2.0                limma_3.50.0             
+ [15] modelr_0.1.8              R.utils_2.11.0           
+ [17] colorspace_2.0-2          rvest_1.0.2              
+ [19] ggrepel_0.9.1             haven_2.4.3              
+ [21] xfun_0.29                 callr_3.7.0              
+ [23] crayon_1.4.2              RCurl_1.98-1.6           
+ [25] jsonlite_1.7.2            ape_5.6-1                
+ [27] gtable_0.3.0              zlibbioc_1.40.0          
+ [29] XVector_0.34.0            DelayedArray_0.20.0      
+ [31] BiocSingular_1.10.0       Rhdf5lib_1.16.0          
+ [33] HDF5Array_1.22.1          pheatmap_1.0.12          
+ [35] DBI_1.1.2                 edgeR_3.36.0             
+ [37] Rcpp_1.0.7                viridisLite_0.4.0        
+ [39] dqrng_0.3.0               mclust_5.4.9             
+ [41] rsvd_1.0.5                metapod_1.2.0            
+ [43] httr_1.4.2                RColorBrewer_1.1-2       
+ [45] ellipsis_0.3.2            farver_2.1.0             
+ [47] pkgconfig_2.0.3           R.methodsS3_1.8.1        
+ [49] sass_0.4.0                dbplyr_2.1.1             
+ [51] locfit_1.5-9.4            utf8_1.2.2               
+ [53] labeling_0.4.2            tidyselect_1.1.1         
+ [55] rlang_0.4.12              later_1.3.0              
+ [57] munsell_0.5.0             cellranger_1.1.0         
+ [59] tools_4.1.0               cli_3.1.0                
+ [61] generics_0.1.1            broom_0.7.11             
+ [63] evaluate_0.14             fastmap_1.1.0            
+ [65] yaml_2.2.1                processx_3.5.2           
+ [67] knitr_1.37                fs_1.5.2                 
+ [69] nlme_3.1-153              sparseMatrixStats_1.6.0  
+ [71] whisker_0.4               R.oo_1.24.0              
+ [73] xml2_1.3.3                compiler_4.1.0           
+ [75] rstudioapi_0.13           beeswarm_0.4.0           
+ [77] reprex_2.0.1              statmod_1.4.36           
+ [79] bslib_0.3.1               stringi_1.7.6            
+ [81] highr_0.9                 ps_1.6.0                 
+ [83] memuse_4.2-1              lattice_0.20-45          
+ [85] bluster_1.4.0             Matrix_1.4-0             
+ [87] permute_0.9-5             vegan_2.5-7              
+ [89] vctrs_0.3.8               pillar_1.6.4             
+ [91] lifecycle_1.0.1           rhdf5filters_1.6.0       
+ [93] BiocManager_1.30.16       jquerylib_0.1.4          
+ [95] BiocNeighbors_1.12.0      bitops_1.0-7             
+ [97] irlba_2.3.5               httpuv_1.6.5             
+ [99] R6_2.5.1                  bookdown_0.24            
+[101] promises_1.2.0.1          renv_0.15.0-14           
+[103] gridExtra_2.3             vipor_0.4.5              
+[105] sessioninfo_1.2.2         MASS_7.3-53.1            
+[107] assertthat_0.2.1          rhdf5_2.38.0             
+[109] rprojroot_2.0.2           pinfsc50_1.2.0           
+[111] withr_2.4.3               GenomeInfoDbData_1.2.7   
+[113] mgcv_1.8-38               parallel_4.1.0           
+[115] hms_1.1.1                 grid_4.1.0               
+[117] beachmat_2.10.0           rmarkdown_2.11           
+[119] DelayedMatrixStats_1.16.0 snakecase_0.11.0         
+[121] git2r_0.29.0              getPass_0.2-2            
+[123] lubridate_1.8.0           ggbeeswarm_0.6.0         </code></pre>
+</div>
+</div>
+<div class="footnotes footnotes-end-of-document">
+<hr />
+<ol>
+<li id="fn1"><p>This includes barcodes labelled as ‘doublets’ or ‘unassigned’<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

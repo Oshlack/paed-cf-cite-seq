@@ -1,0 +1,2666 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Jovana Maksimovic" />
+
+<meta name="date" content="2022-06-16" />
+
+<title>Analysis of scRNA-seq &amp; CITE-seq Data Combined</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">paed-cf-cite-seq</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Analysis of scRNA-seq &amp; CITE-seq Data Combined</h1>
+<h3 class="subtitle">Combine and Annotate Data</h3>
+<h4 class="author">Jovana Maksimovic</h4>
+<h4 class="date">June 16, 2022</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks">
+Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2022-06-16
+</p>
+<p>
+<strong>Checks:</strong>
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+7
+<span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span>
+0
+</p>
+<p>
+<strong>Knit directory:</strong>
+<code>paed-cf-cite-seq/</code>
+<span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.0). The <em>Checks</em> tab describes the
+reproducibility checks that were applied when the results were created.
+The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you
+know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Environment:</strong> empty
+</a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global
+environment can affect the analysis in your R Markdown file in unknown ways.
+For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20210524code">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Seed:</strong> <code>set.seed(20210524)</code>
+</a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20210524code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20210524)</code> was run prior to running the code in the R Markdown file.
+Setting a seed ensures that any results that rely on randomness, e.g.
+subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Session information:</strong> recorded
+</a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is
+critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Cache:</strong> none
+</a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident
+that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>File paths:</strong> relative
+</a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project
+makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree8255c241a80231919c022a91ab9f226505b1e73ctargetblank8255c24a">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Repository version:</strong> <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/8255c241a80231919c022a91ab9f226505b1e73c" target="_blank">8255c24</a>
+</a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree8255c241a80231919c022a91ab9f226505b1e73ctargetblank8255c24a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and
+connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/8255c241a80231919c022a91ab9f226505b1e73c" target="_blank">8255c24</a>.
+See the <em>Past versions</em> tab to see a history of the changes made to the
+R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the
+analysis have been committed to Git prior to generating the results (you can
+use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only
+checks the R Markdown file, but you know if there are other scripts or data
+files that it depends on. Below is the status of the Git repository when the
+results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/obsolete/
+    Ignored:    code/obsolete/
+    Ignored:    data/190930_A00152_0150_BHTYCMDSXX/
+    Ignored:    data/CellRanger/
+    Ignored:    data/GSE127465_RAW/
+    Ignored:    data/SCEs/02_ZILIONIS.sct_normalised.SEU.rds
+    Ignored:    data/SCEs/03_C133_Neeland.demultiplexed.SCE.rds
+    Ignored:    data/SCEs/03_C133_Neeland.emptyDrops.SCE.rds
+    Ignored:    data/SCEs/03_C133_Neeland.nuclear_fraction_calls.rds
+    Ignored:    data/SCEs/03_C133_Neeland.preprocessed.SCE.rds
+    Ignored:    data/SCEs/03_CF_BAL_Pilot.CellRanger_v6.SCE.rds
+    Ignored:    data/SCEs/03_CF_BAL_Pilot.emptyDrops.SCE.rds
+    Ignored:    data/SCEs/03_CF_BAL_Pilot.nuclear_fraction_calls.rds
+    Ignored:    data/SCEs/03_CF_BAL_Pilot.preprocessed.SCE.rds
+    Ignored:    data/SCEs/03_COMBO.clustered.SEU.rds
+    Ignored:    data/SCEs/03_COMBO.clustered_annotated_macrophages_diet.SEU.rds
+    Ignored:    data/SCEs/03_COMBO.clustered_annotated_others_diet.SEU.rds
+    Ignored:    data/SCEs/03_COMBO.clustered_annotated_tcells_diet.SEU.rds
+    Ignored:    data/SCEs/03_COMBO.clustered_azimuth.SEU.rds
+    Ignored:    data/SCEs/03_COMBO.clustered_azimuth_v2.SEU.rds
+    Ignored:    data/SCEs/03_COMBO.clustered_diet.SEU.rds
+    Ignored:    data/SCEs/03_COMBO.integrated.SEU.rds
+    Ignored:    data/SCEs/03_COMBO.zilionis_mapped.SEU.rds
+    Ignored:    data/SCEs/04_C133_Neeland.adt_dsb_normalised.rds
+    Ignored:    data/SCEs/04_C133_Neeland.adt_integrated.rds
+    Ignored:    data/SCEs/04_C133_Neeland.all_integrated.SEU.rds
+    Ignored:    data/SCEs/04_CF_BAL_Pilot.CellRanger_v6.SCE.rds
+    Ignored:    data/SCEs/04_CF_BAL_Pilot.emptyDrops.SCE.rds
+    Ignored:    data/SCEs/04_CF_BAL_Pilot.preprocessed.SCE.rds
+    Ignored:    data/SCEs/04_CF_BAL_Pilot.transfer_adt.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clean_clustered.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clean_clustered.SEU_bk.rds
+    Ignored:    data/SCEs/04_COMBO.clean_integrated.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clean_integrated.SEU_bk.rds
+    Ignored:    data/SCEs/04_COMBO.clean_macrophages_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clean_others_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clean_tcells_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clustered.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clustered_annotated_adt_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clustered_annotated_lung_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clustered_annotated_macrophages_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clustered_annotated_others_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clustered_annotated_tcells_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.clustered_diet.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.integrated.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.macrophages_clustered.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.macrophages_integrated.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.others_clustered.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.others_integrated.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.tcells_clustered.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.tcells_integrated.SEU.rds
+    Ignored:    data/SCEs/04_COMBO.zilionis_mapped.SEU.rds
+    Ignored:    data/SCEs/05_CF_BAL_Pilot.transfer_adt.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clean_clustered.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clean_integrated.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clean_macrophages_diet.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clean_others_diet.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clean_tcells_diet.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clustered_annotated_adt_diet.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clustered_annotated_lung_diet.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clustered_annotated_macrophages_diet.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clustered_annotated_others_diet.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.clustered_annotated_tcells_diet.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.macrophages_clustered.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.macrophages_integrated.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.others_clustered.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.others_integrated.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.tcells_clustered.SEU.rds
+    Ignored:    data/SCEs/05_COMBO.tcells_integrated.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.clean_clustered.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.clean_integrated.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.clean_macrophages_diet.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.clean_others_diet.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.clean_tcells_diet.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.macrophages_clustered.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.macrophages_integrated.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.others_clustered.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.others_integrated.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.tcells_clustered.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.tcells_integrated.SEU.rds
+    Ignored:    data/SCEs/C133_Neeland.CellRanger.SCE.rds
+    Ignored:    data/SCEs/obsolete/
+    Ignored:    data/emptyDrops/
+    Ignored:    data/obsolete/
+    Ignored:    data/sample_sheets/obsolete/
+    Ignored:    output/marker-analysis/obsolete/
+    Ignored:    output/obsolete/
+    Ignored:    rename_captures.R
+    Ignored:    renv/library/
+    Ignored:    renv/staging/
+    Ignored:    wflow_background.R
+
+Unstaged changes:
+    Modified:   .gitignore
+    Modified:   .renvignore
+    Deleted:    analysis/03_C133_Neeland.demultiplex.Rmd
+    Deleted:    analysis/03_C133_Neeland.preprocess.Rmd
+    Deleted:    analysis/03_COMBO.clustering_annotation.Rmd
+    Deleted:    analysis/04_CF_BAL_Pilot.emptyDrops.Rmd
+    Deleted:    analysis/04_CF_BAL_Pilot.preprocess.Rmd
+    Deleted:    analysis/04_COMBO.transfer_proteins.Rmd
+    Deleted:    analysis/05_COMBO.cluster_macrophages.Rmd
+    Deleted:    analysis/05_COMBO.cluster_others.Rmd
+    Deleted:    analysis/05_COMBO.cluster_tcells.Rmd
+    Deleted:    analysis/05_COMBO.expression_analysis.Rmd
+    Deleted:    analysis/05_COMBO.postprocess_all.Rmd
+    Deleted:    analysis/05_COMBO.postprocess_macrophages.Rmd
+    Deleted:    analysis/05_COMBO.postprocess_others.Rmd
+    Deleted:    analysis/05_COMBO.postprocess_tcells.Rmd
+    Modified:   renv/.gitignore
+    Modified:   renv/settings.dcf
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in
+this status report because it is ok for generated content to have uncommitted
+changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made
+to the R Markdown (<code>analysis/06_COMBO.clustering_annotation.Rmd</code>) and HTML (<code>docs/06_COMBO.clustering_annotation.html</code>)
+files. If you’ve configured a remote Git repository (see
+<code>?wflow_git_remote</code>), click on the hyperlinks in the table below to
+view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/8255c241a80231919c022a91ab9f226505b1e73c/analysis/06_COMBO.clustering_annotation.Rmd" target="_blank">8255c24</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-16
+</td>
+<td>
+wflow_publish(c(paste0("analysis/", list.files(path = here::here("analysis"),
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="load-libraries" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Load libraries</h1>
+</div>
+<div id="load-data" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Load Data</h1>
+<p>Load the processed CF_BAL_Pilot and C133_Neeland data sets.</p>
+<pre class="r"><code># load preprocessed data
+sce1 &lt;- readRDS(here(&quot;data&quot;, &quot;SCEs&quot;, &quot;04_CF_BAL_Pilot.preprocessed.SCE.rds&quot;))
+sce2 &lt;- readRDS(here(&quot;data&quot;, &quot;SCEs&quot;, &quot;03_C133_Neeland.preprocessed.SCE.rds&quot;))
+
+# append letter to cell IDs to denote experiment &amp; avoid duplicate IDs
+colnames(sce1) &lt;- paste0(&quot;A-&quot;, colnames(sce1))
+colnames(sce2) &lt;- paste0(&quot;B-&quot;, colnames(sce2))
+
+# identify shared genes
+shared_genes &lt;- intersect(rowData(sce1)$ID, rowData(sce2)$ID)
+
+# sort &amp; subset each SCE relative to shared genes
+m1 &lt;- match(shared_genes, rowData(sce1)$ID)
+all(shared_genes == rowData(sce1)$ID[m1])</code></pre>
+<pre><code>[1] TRUE</code></pre>
+<pre class="r"><code>sce1 &lt;- sce1[m1,]
+# sort &amp; subset each SCE relative to shared genes
+m2 &lt;- match(shared_genes, rowData(sce2)$ID)
+all(shared_genes == rowData(sce2)$ID[m2])</code></pre>
+<pre><code>[1] TRUE</code></pre>
+<pre class="r"><code>sce2 &lt;- sce2[m2,]
+
+# create combined matrix of counts 
+combo_counts &lt;- cbind(counts(sce1), counts(sce2))
+
+# combine cell metadata 
+combo_data &lt;- DataFrame(
+  bind_rows(colData(sce1) %&gt;% 
+                     data.frame %&gt;% 
+                     dplyr::select(Barcode, capture, 
+                                   nuclear_fraction, cell_status), 
+                   colData(sce2) %&gt;% 
+                     data.frame %&gt;% 
+                     dplyr::select(Barcode, capture, 
+                                   nuclear_fraction, cell_status)))
+combo_data$HTO &lt;- as.factor(c(as.character(sce1$capture), 
+                     as.character(sce2$HTO)))
+combo_data$donor &lt;- as.factor(c(as.character(sce1$capture), 
+                     as.character(sce2$genetic_donor)))
+combo_data$experiment &lt;- as.factor(c(rep(1, ncol(sce1)), 
+                              rep(2, ncol(sce2))))
+
+sce &lt;- SingleCellExperiment(
+  list(counts = combo_counts),
+       colData = combo_data,
+  rowData = rowData(sce1))
+sce</code></pre>
+<pre><code>class: SingleCellExperiment 
+dim: 32732 54106 
+metadata(0):
+assays(1): counts
+rownames(32732): MIR1302-2HG FAM138A ... AC213203.1 FAM231C
+rowData names(16): ID Symbol ... NCBI.REFSEQ NCBI.SYMBOL
+colnames(54106): A-1_AAACCCAAGCTAGTTC-1 A-1_AAACCCACAAGATTGA-1 ...
+  B-2_TTTGTTGTCATTGGTG-1 B-2_TTTGTTGTCGATGGAG-1
+colData names(7): Barcode capture ... donor experiment
+reducedDimNames(0):
+mainExpName: NULL
+altExpNames(0):</code></pre>
+</div>
+<div id="quality-controls" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Quality controls</h1>
+<div id="identify-uninformative-genes" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Identify uninformative genes</h2>
+<p>Identify genes that are not informative for cell clustering or downstream marker gene identification. For example, genes without gene symbols or duplicated gene symbols, mitochondrial genes, ribosomal genes and sex chromosome genes are not considered informative.</p>
+<pre class="r"><code># Some useful gene sets
+mito_set &lt;- rownames(sce)[which(rowData(sce)$CHR == &quot;MT&quot;)]
+ribo_set &lt;- grep(&quot;^RP(S|L)&quot;, rownames(sce), value = TRUE)
+# NOTE: A more curated approach for identifying ribosomal protein genes
+#       (https://github.com/Bioconductor/OrchestratingSingleCellAnalysis-base/blob/ae201bf26e3e4fa82d9165d8abf4f4dc4b8e5a68/feature-selection.Rmd#L376-L380)
+library(msigdbr)
+c2_sets &lt;- msigdbr(species = &quot;Homo sapiens&quot;, category = &quot;C2&quot;)
+ribo_set &lt;- union(
+  ribo_set,
+  c2_sets[c2_sets$gs_name == &quot;KEGG_RIBOSOME&quot;, ]$human_gene_symbol)
+is_ribo &lt;- rownames(sce) %in% ribo_set
+sex_set &lt;- rownames(sce)[any(rowData(sce)$ENSEMBL.SEQNAME %in% c(&quot;X&quot;, &quot;Y&quot;))]
+pseudogene_set &lt;- rownames(sce)[
+  any(grepl(&quot;pseudogene&quot;, rowData(sce)$ENSEMBL.GENEBIOTYPE))]</code></pre>
+</div>
+<div id="calculate-quality-control-metrics" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Calculate quality control metrics</h2>
+<p>Calculate various quality control metrics for each cell.</p>
+<pre class="r"><code>is_mito &lt;- rownames(sce) %in% mito_set
+is_ribo &lt;- rownames(sce) %in% ribo_set
+sce &lt;- addPerCellQC(
+  sce, 
+  subsets = list(Mito = which(is_mito), Ribo = which(is_ribo)))
+
+head(colData(sce)) %&gt;% knitr::kable()</code></pre>
+<p>Calculate the percentage of zero counts for each cell.</p>
+<pre class="r"><code>sce$zero_percent &lt;- colSums(counts(sce) == 0)/nrow(sce)
+summary(sce$zero_percent)</code></pre>
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.7278  0.8554  0.8830  0.8974  0.9481  0.9994 </code></pre>
+</div>
+<div id="visualise-qc-metrics" class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> Visualise QC metrics</h2>
+<p>Figure <a href="#fig:qcplot-by-capture-combo">3.1</a> shows that the vast majority of samples are good-quality:</p>
+<ul>
+<li>The median library size is around 17,400<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>.</li>
+<li>The median number of genes detected is around 3,800.</li>
+<li>The median percentage of UMIs that are mapped to mitochondrial RNA is around 6%</li>
+<li>The percentage of UMIs that are mapped to ribosomal protein genes is 12%.</li>
+</ul>
+<pre class="r"><code>p1 &lt;- plotColData(
+  sce,
+  &quot;sum&quot;,
+  x = &quot;capture&quot;,
+  colour_by = &quot;experiment&quot;,
+  point_size = 0.5) +
+  scale_y_log10() +
+  theme(axis.text.x = element_text(size = 6)) +
+  annotation_logticks(
+    sides = &quot;l&quot;,
+    short = unit(0.03, &quot;cm&quot;),
+    mid = unit(0.06, &quot;cm&quot;),
+    long = unit(0.09, &quot;cm&quot;))
+p2 &lt;- plotColData(
+  sce,
+  &quot;detected&quot;,
+  x = &quot;capture&quot;,
+  colour_by = &quot;experiment&quot;,
+  point_size = 0.5) +
+  theme(axis.text.x = element_text(size = 6))
+p3 &lt;- plotColData(
+  sce,
+  &quot;subsets_Mito_percent&quot;,
+  x = &quot;capture&quot;,
+  colour_by = &quot;experiment&quot;,
+  point_size = 0.5) +
+  theme(axis.text.x = element_text(size = 6))
+p4 &lt;- plotColData(
+  sce,
+  &quot;subsets_Ribo_percent&quot;,
+  x = &quot;capture&quot;,
+  colour_by = &quot;experiment&quot;,
+  point_size = 0.5) +
+  theme(axis.text.x = element_text(size = 6))
+
+p5 &lt;- plotColData(
+  sce, 
+  x = &quot;capture&quot;, 
+  y = &quot;zero_percent&quot;, 
+  colour_by = &quot;experiment&quot;,
+  point_size = 0.5) +
+  theme(axis.text.x = element_text(size = 6))
+
+((p1 | p2) / (p3 | p4) / p5) + 
+  plot_layout(guides = &quot;collect&quot;) &amp;
+  theme(legend.position = &quot;bottom&quot;)</code></pre>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:qcplot-by-capture-combo"></span>
+<img src="figure/06_COMBO.clustering_annotation.Rmd/qcplot-by-capture-combo-1.png" alt="Distributions of various QC metrics for all cells in the dataset. This includes the library sizes, number of genes detected, and percentage of reads mapped to mitochondrial genes." width="672" />
+<p class="caption">
+Figure 3.1: Distributions of various QC metrics for all cells in the dataset. This includes the library sizes, number of genes detected, and percentage of reads mapped to mitochondrial genes.
+</p>
+</div>
+<pre class="r"><code>p1 &lt;- plotColData(
+  sce,
+  &quot;sum&quot;,
+  x = &quot;donor&quot;,
+  colour_by = &quot;experiment&quot;,
+  point_size = 0.5) +
+  scale_y_log10() +
+  theme(axis.text.x = element_text(angle = 90)) +
+  annotation_logticks(
+    sides = &quot;l&quot;,
+    short = unit(0.03, &quot;cm&quot;),
+    mid = unit(0.06, &quot;cm&quot;),
+    long = unit(0.09, &quot;cm&quot;))
+
+p2 &lt;- plotColData(
+  sce,
+  &quot;detected&quot;,
+  x = &quot;donor&quot;,
+  colour_by = &quot;experiment&quot;,
+  point_size = 0.5) +
+  theme(axis.text.x = element_text(angle = 90, 
+                                   hjust = 0.5, 
+                                   vjust = 1))
+p3 &lt;- plotColData(
+  sce,
+  &quot;subsets_Mito_percent&quot;,
+  x = &quot;donor&quot;,
+  colour_by = &quot;experiment&quot;,
+  point_size = 0.5) +
+  theme(axis.text.x = element_text(angle = 90))
+p4 &lt;- plotColData(
+  sce,
+  &quot;subsets_Ribo_percent&quot;,
+  x = &quot;donor&quot;,
+  colour_by = &quot;experiment&quot;,
+  point_size = 0.5) +
+  theme(axis.text.x = element_text(angle = 90))
+
+p5 &lt;- plotColData(
+  sce, 
+  x = &quot;donor&quot;, 
+  y = &quot;zero_percent&quot;, 
+  colour_by = &quot;experiment&quot;,
+  point_size = 0.5) +
+  theme(axis.text.x = element_text(angle = 90))
+
+((p1 | p2) / (p3 | p4) / p5) + 
+  plot_layout(guides = &quot;collect&quot;) &amp;
+  theme(legend.position = &quot;bottom&quot;)</code></pre>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:qcplot-by-experiment"></span>
+<img src="figure/06_COMBO.clustering_annotation.Rmd/qcplot-by-experiment-1.png" alt="Distributions of various QC metrics for all cells in the dataset. This includes the library sizes, number of genes detected, and percentage of reads mapped to mitochondrial genes." width="672" />
+<p class="caption">
+Figure 3.2: Distributions of various QC metrics for all cells in the dataset. This includes the library sizes, number of genes detected, and percentage of reads mapped to mitochondrial genes.
+</p>
+</div>
+<pre class="r"><code>plotColData(
+  sce, 
+  x = &quot;sum&quot;, 
+  y = &quot;detected&quot;,
+  other_fields = &quot;capture&quot;,
+  colour_by = &quot;zero_percent&quot;,
+  point_size = 0.25, 
+  point_alpha = 0.25) +
+  facet_wrap(vars(capture), ncol = 2)</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plotColData(
+  sce, 
+  x = &quot;detected&quot;, 
+  y = &quot;subsets_Mito_percent&quot;,
+  other_fields = &quot;capture&quot;,
+  colour_by = &quot;zero_percent&quot;,
+  point_size = 0.25, 
+  point_alpha = 0.25) +
+  facet_wrap(vars(capture), ncol = 2)</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plotColData(
+  sce, 
+  x = &quot;sum&quot;, 
+  y = &quot;subsets_Ribo_percent&quot;,
+  other_fields = &quot;capture&quot;,
+  colour_by = &quot;zero_percent&quot;,
+  point_size = 0.25, 
+  point_alpha = 0.25) +
+  scale_x_log10() +
+  facet_wrap(vars(capture), ncol = 2)</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plotColData(
+  sce, 
+  x = &quot;sum&quot;, 
+  y = &quot;subsets_Mito_percent&quot;,
+  other_fields = &quot;capture&quot;,
+  colour_by = &quot;cell_status&quot;,
+  point_size = 0.25, 
+  point_alpha = 0.25) +
+  scale_x_log10() +
+  facet_wrap(vars(capture), ncol = 2)</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>colData(sce) %&gt;%
+  data.frame %&gt;%
+ggplot(aes(x = cell_status, y = sum, fill = cell_status)) +
+  geom_violin(scale = &quot;count&quot;, size = 0.25) +
+  scale_y_log10() +
+  facet_wrap(~ capture, scales = &quot;free_y&quot;)</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="discard-uninformative-genes-cells" class="section level2" number="3.4">
+<h2><span class="header-section-number">3.4</span> Discard uninformative genes &amp; cells</h2>
+<p>Remove uninformative genes and filter out low quality cells:
+(1) cells that are called <em>doublets</em> or <em>unassigned</em> based on genetic assignment,
+(2) cells that are called <em>doublets</em> based on HTO assignment and,
+(3) cells that were called <em>empty droplets</em> by <code>DropletQC</code> in the scRNA-seq data only.</p>
+<pre class="r"><code>uninformative &lt;- is_mito | is_ribo | rownames(sce) %in% sex_set | rownames(sce) %in% pseudogene_set
+sum(uninformative)</code></pre>
+<pre><code>[1] 1558</code></pre>
+<pre class="r"><code>junk &lt;- sce$donor %in% c(&quot;doublet&quot;, &quot;unassigned&quot;) | sce$HTO %in% &quot;Doublet&quot; | (sce$cell_status == &quot;empty_droplet&quot; &amp; sce$experiment == 1)
+  
+sceFlt &lt;- sce[!uninformative, !junk]
+sceFlt</code></pre>
+<pre><code>class: SingleCellExperiment 
+dim: 31174 45590 
+metadata(0):
+assays(1): counts
+rownames(31174): MIR1302-2HG FAM138A ... AC213203.1 FAM231C
+rowData names(16): ID Symbol ... NCBI.REFSEQ NCBI.SYMBOL
+colnames(45590): A-1_AAACCCAAGCTAGTTC-1 A-1_AAACCCACAAGATTGA-1 ...
+  B-2_TTTGTTGCATCGAGCC-1 B-2_TTTGTTGTCGATGGAG-1
+colData names(17): Barcode capture ... total zero_percent
+reducedDimNames(0):
+mainExpName: NULL
+altExpNames(0):</code></pre>
+</div>
+<div id="remove-low-abundance-genes" class="section level2" number="3.5">
+<h2><span class="header-section-number">3.5</span> Remove low-abundance genes</h2>
+<p>Keep only genes that are expressed in at least 20 cells. On average, this means that we will only be able to identify clusters with &gt;20 cells.</p>
+<pre class="r"><code>numCells &lt;- nexprs(sceFlt, byrow = TRUE)
+keep &lt;- numCells &gt; 20
+sum(keep)</code></pre>
+<pre><code>[1] 19120</code></pre>
+<p>Keep the genes that meet the criteria.</p>
+<pre class="r"><code>sceFlt &lt;- sceFlt[keep,]
+sceFlt</code></pre>
+<pre><code>class: SingleCellExperiment 
+dim: 19120 45590 
+metadata(0):
+assays(1): counts
+rownames(19120): AL627309.1 AL669831.5 ... AC004556.1 AC240274.1
+rowData names(16): ID Symbol ... NCBI.REFSEQ NCBI.SYMBOL
+colnames(45590): A-1_AAACCCAAGCTAGTTC-1 A-1_AAACCCACAAGATTGA-1 ...
+  B-2_TTTGTTGCATCGAGCC-1 B-2_TTTGTTGTCGATGGAG-1
+colData names(17): Barcode capture ... total zero_percent
+reducedDimNames(0):
+mainExpName: NULL
+altExpNames(0):</code></pre>
+</div>
+<div id="convert-to-seurat-object" class="section level2" number="3.6">
+<h2><span class="header-section-number">3.6</span> Convert to <code>Seurat</code> object</h2>
+<p>Convert <code>SingleCellExperiment</code> object to a <code>SeuratObject</code>.</p>
+<pre class="r"><code>counts &lt;- counts(sceFlt)
+rownames(counts) &lt;- rowData(sceFlt)$Symbol
+
+seu &lt;- CreateSeuratObject(counts = counts, 
+                          meta.data = data.frame(colData(sceFlt)))
+seu</code></pre>
+<pre><code>An object of class Seurat 
+19120 features across 45590 samples within 1 assay 
+Active assay: RNA (19120 features, 0 variable features)</code></pre>
+<pre><code>            used   (Mb) gc trigger    (Mb)   max used    (Mb)
+Ncells   8718371  465.7   14316903   764.7   14316903   764.7
+Vcells 536602696 4094.0 1993226295 15207.2 3244341485 24752.4</code></pre>
+</div>
+<div id="visualise-combined-filtered-data" class="section level2" number="3.7">
+<h2><span class="header-section-number">3.7</span> Visualise combined, filtered data</h2>
+<pre class="r"><code>DefaultAssay(seu) &lt;- &quot;RNA&quot;
+seu &lt;- NormalizeData(seu) %&gt;% 
+  FindVariableFeatures() %&gt;% 
+  ScaleData() %&gt;% 
+  RunPCA(verbose = FALSE, dims = 1:30) %&gt;%
+  RunUMAP(verbose = FALSE, dims = 1:30)</code></pre>
+<pre class="r"><code>DimPlot(seu, group.by = &quot;experiment&quot;, combine = FALSE)</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>DimPlot(seu, split.by = &quot;experiment&quot;, combine = FALSE)</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-18-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="integrate-data" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Integrate data</h1>
+<p>Normalise the data using <code>SCTransform</code> and integrate across batches/individuals.</p>
+<pre class="r"><code>out &lt;- here(&quot;data/SCEs/04_COMBO.integrated.SEU.rds&quot;)
+
+if(!file.exists(out)) {
+  seuInt &lt;- intDat(seu, split = &quot;donor&quot;, type = &quot;RNA&quot;, 
+                   reference = unique(as.character(seu$capture[seu$experiment == 1])))
+  saveRDS(seuInt, file = out)
+  
+} else {
+  seuInt &lt;- readRDS(out)
+  
+}</code></pre>
+<pre><code>             used    (Mb) gc trigger    (Mb)   max used    (Mb)
+Ncells    8773844   468.6   14316903   764.7   14316903   764.7
+Vcells 2300603946 17552.3 2911065156 22209.7 3244341485 24752.4</code></pre>
+<div id="visualise-integrated-data" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Visualise integrated data</h2>
+<pre class="r"><code>seuInt &lt;- RunPCA(seuInt, npcs = 30, verbose = FALSE)
+seuInt &lt;- RunUMAP(seuInt, verbose = FALSE, dims = 1:30)
+DimPlot(seuInt, group.by = &quot;experiment&quot;, combine = FALSE)</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="cluster-data" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Cluster data</h1>
+<div id="perform-linear-dimensional-reduction" class="section level2" number="5.1">
+<h2><span class="header-section-number">5.1</span> Perform linear dimensional reduction</h2>
+<pre class="r"><code>p1 &lt;- DimPlot(seuInt, reduction = &quot;pca&quot;, group.by = &quot;donor&quot;)
+p2 &lt;- DimPlot(seuInt, reduction = &quot;pca&quot;, dims = c(1,3), group.by = &quot;donor&quot;)
+p3 &lt;- DimPlot(seuInt, reduction = &quot;pca&quot;, dims = c(2,3), group.by = &quot;donor&quot;)
+p4 &lt;- DimPlot(seuInt, reduction = &quot;pca&quot;, dims = c(3,4), group.by = &quot;donor&quot;)
+
+((p1 | p2) / (p3 | p4)) + plot_layout(guides = &quot;collect&quot;) &amp;
+  theme(legend.text = element_text(size = 8),
+        plot.title = element_text(size = 10),
+        axis.title = element_text(size = 9),
+        axis.text = element_text(size = 8))</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>DimHeatmap(seuInt, dims = 1:30, cells = 500, balanced = TRUE)</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-23-1.png" width="864" style="display: block; margin: auto;" /></p>
+</div>
+<div id="determine-the-dimensionality-of-the-dataset" class="section level2" number="5.2">
+<h2><span class="header-section-number">5.2</span> Determine the <em>dimensionality</em> of the dataset</h2>
+<pre class="r"><code>ElbowPlot(seuInt, ndims = 30)</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cluster-the-cells" class="section level2" number="5.3">
+<h2><span class="header-section-number">5.3</span> Cluster the cells</h2>
+<pre class="r"><code>out &lt;- here(&quot;data/SCEs/04_COMBO.clustered.SEU.rds&quot;)
+
+if(!file.exists(out)) {
+  seuInt &lt;- FindNeighbors(seuInt, reduction = &quot;pca&quot;, dims = 1:30)
+  seuInt &lt;- FindClusters(seuInt, algorithm = 3, 
+                         resolution = seq(0.1, 1, by = 0.1))
+  seuInt &lt;- RunUMAP(seuInt, dims = 1:30)
+  saveRDS(seuInt, file = out)
+  
+} else {
+  seuInt &lt;- readRDS(out)
+  
+}</code></pre>
+</div>
+<div id="visualise-clustering-at-default-resolution" class="section level2" number="5.4">
+<h2><span class="header-section-number">5.4</span> Visualise clustering at default resolution</h2>
+<pre class="r"><code>DimPlot(seuInt, reduction = &#39;umap&#39;, label = TRUE, repel = TRUE,
+        label.size = 2.5) + NoLegend()</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-26-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="clustree-resolution-visualisation" class="section level2" number="5.5">
+<h2><span class="header-section-number">5.5</span> <code>Clustree</code> resolution visualisation</h2>
+<pre class="r"><code>clustree(seuInt, prefix = &quot;integrated_snn_res.&quot;)</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-27-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="annotate-data-using-zilionis-reference" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Annotate data using <em>Zilionis</em> reference</h1>
+<div id="load-zilionis-reference-data" class="section level2" number="6.1">
+<h2><span class="header-section-number">6.1</span> Load <em>Zilionis</em> reference data</h2>
+<pre class="r"><code>Sys.setenv(&quot;VROOM_CONNECTION_SIZE&quot; = 1000000)
+files &lt;- list.files(here::here(&quot;data/GSE127465_RAW&quot;), 
+                    full.names = TRUE,
+                    pattern = &quot;raw_counts&quot;)
+library &lt;- limma::strsplit2(limma::strsplit2(files, &quot;human_&quot;)[,2], 
+                            &quot;_raw&quot;)[,1]
+out &lt;- here::here(&quot;data/GSE127465_RAW/raw_dgCMatrix.rds&quot;)
+
+if(!file.exists(out)){
+  raw &lt;- lapply(files, function(f){
+    message(f)
+    vroom::vroom(f) %&gt;% 
+      tibble::column_to_rownames(&quot;barcode&quot;) %&gt;%
+      t() %&gt;%
+      as(&quot;dgCMatrix&quot;)
+  })
+  rawCmp &lt;- purrr::reduce(raw, cbind)
+  times &lt;- sapply(raw, ncol)
+  libTagged &lt;- paste0(rep(library, times), &quot;_&quot;, colnames(rawCmp))
+  colnames(rawCmp) &lt;- libTagged
+  saveRDS(rawCmp, out)
+  
+} else {
+  rawCmp &lt;- readRDS(out)
+  
+}
+
+metadata &lt;- vroom::vroom(here::here(&quot;data&quot;,
+                                    &quot;GSE127465_RAW&quot;,
+                                    &quot;GSE127465_human_cell_metadata_54773x25.tsv.gz&quot;)) %&gt;%
+  dplyr::filter(Library %in% library) %&gt;%
+  dplyr::mutate(ID = paste0(Library, &quot;_&quot;, Barcode))
+
+m &lt;- match(metadata$ID, colnames(rawCmp))
+subRaw &lt;- rawCmp[, m]
+all(colnames(subRaw) == metadata$ID)</code></pre>
+<pre><code>[1] TRUE</code></pre>
+<pre class="r"><code>zilionisRaw &lt;- CreateSeuratObject(counts = subRaw, 
+                                  meta.data = data.frame(metadata, 
+                                                         row.names = metadata$ID))
+zilionisRaw &lt;- zilionisRaw[, !grepl(&quot;specific&quot;, zilionisRaw$Major.cell.type)]
+zilionisRaw</code></pre>
+<pre><code>An object of class Seurat 
+41861 features across 24495 samples within 1 assay 
+Active assay: RNA (41861 features, 0 variable features)</code></pre>
+</div>
+<div id="normalise-zilionis-reference-data-using-sctranscorm" class="section level2" number="6.2">
+<h2><span class="header-section-number">6.2</span> Normalise <em>Zilionis</em> reference data using <code>SCTranscorm</code></h2>
+<pre class="r"><code>out &lt;- here(&quot;data/SCEs/02_ZILIONIS.sct_normalised.SEU.rds&quot;)
+
+if(!file.exists(out)) {
+  zilSct &lt;- SCTransform(zilionisRaw, method = &quot;glmGamPoi&quot;)
+  zilSct &lt;- RunPCA(zilSct, verbose = FALSE, dims = 1:30) 
+  zilSct &lt;- FindNeighbors(zilSct, reduction = &quot;pca&quot;, dims = 1:20)
+  zilSct &lt;- FindClusters(zilSct, algorithm = 3)
+  zilSct &lt;- RunUMAP(zilSct, dims = 1:30, reduction = &quot;pca&quot;, 
+                    return.model = TRUE)
+  saveRDS(zilSct, file = out)
+  
+} else {
+  zilSct &lt;- readRDS(out)
+  
+}</code></pre>
+<pre><code>             used    (Mb) gc trigger    (Mb)   max used    (Mb)
+Ncells    9051961   483.5   14316903   764.7   14316903   764.7
+Vcells 3728408350 28445.5 6036814145 46057.3 4192106805 31983.3</code></pre>
+</div>
+<div id="map-data-to-zilionis-reference" class="section level2" number="6.3">
+<h2><span class="header-section-number">6.3</span> Map data to <em>Zilionis</em> reference</h2>
+<pre class="r"><code>out &lt;- here(&quot;data/SCEs/04_COMBO.zilionis_mapped.SEU.rds&quot;)
+
+if(!file.exists(out)) {
+  anchors &lt;- FindTransferAnchors(reference = zilSct, query = seuInt,
+                                 dims = 1:30, reference.reduction = &quot;pca&quot;,
+                                 normalization.method = &quot;SCT&quot;)
+  seuInt &lt;- MapQuery(anchorset = anchors, reference = zilSct, 
+                     query = seuInt, 
+                     refdata = list(celltype = &quot;Major.cell.type&quot;), 
+                     reference.reduction = &quot;pca&quot;, 
+                     reduction.model = &quot;umap&quot;)
+  saveRDS(seuInt, file = out)
+  
+} else {
+  seuInt &lt;- readRDS(out)
+  
+}</code></pre>
+</div>
+<div id="visualise-reference-mapping" class="section level2" number="6.4">
+<h2><span class="header-section-number">6.4</span> Visualise reference mapping</h2>
+<pre class="r"><code>p1 &lt;- DimPlot(zilSct, reduction = &quot;umap&quot;, group.by = &quot;Major.cell.type&quot;, 
+              label = TRUE, label.size = 2.5, repel = TRUE) + 
+  NoLegend() + 
+  ggtitle(&quot;Reference annotations&quot;) +
+  theme(axis.text = element_text(size = 8),
+        axis.title = element_text(size = 8),
+        title = element_text(size = 9))
+
+p2 &lt;- DimPlot(seuInt, reduction = &quot;ref.umap&quot;, 
+              group.by = &quot;predicted.celltype&quot;, label = TRUE,
+              label.size = 2.5, repel = TRUE) + 
+  NoLegend() + 
+  ggtitle(&quot;Query transferred labels&quot;)  +
+  theme(axis.text = element_text(size = 8),
+        axis.title = element_text(size = 8),
+        title = element_text(size = 9))
+
+p1 + p2</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-32-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+<div id="explore-reference-annotations" class="section level2" number="6.5">
+<h2><span class="header-section-number">6.5</span> Explore reference annotations</h2>
+<div id="plot-qc-metrics-by-label" class="section level3" number="6.5.1">
+<h3><span class="header-section-number">6.5.1</span> Plot QC metrics by label</h3>
+<pre class="r"><code>options(scipen=1)
+seuInt@meta.data %&gt;%
+  ggplot(aes(y = predicted.celltype.score,
+             x = predicted.celltype,
+             fill = predicted.celltype)) +
+  geom_violin(scale = &quot;width&quot;) +
+  theme(text = element_text(size = 8),
+        axis.text.x = element_text(angle = 90,
+                            vjust = 0.5,
+                            hjust = 1)) +
+  NoLegend() -&gt; p1
+
+seuInt@meta.data %&gt;%
+  ggplot(aes(y = nCount_RNA,
+             x = predicted.celltype,
+             fill = predicted.celltype)) +
+  geom_violin(scale = &quot;area&quot;) +
+  scale_y_log10() +
+  theme(text = element_text(size = 8),
+        axis.text.x = element_text(angle = 90,
+                            vjust = 0.5,
+                            hjust = 1)) +
+  NoLegend() -&gt; p2
+
+seuInt@meta.data %&gt;%
+  ggplot(aes(y = nFeature_RNA,
+             x = predicted.celltype,
+             fill = predicted.celltype)) +
+  geom_violin(scale = &quot;area&quot;) +
+  scale_y_log10() +
+  theme(text = element_text(size = 8),
+        axis.text.x = element_text(angle = 90,
+                            vjust = 0.5,
+                            hjust = 1)) +
+  NoLegend() -&gt; p3
+
+(p1 / p2 / p3)</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-33-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="visualise-labels-on-clustering-umap" class="section level3" number="6.5.2">
+<h3><span class="header-section-number">6.5.2</span> Visualise labels on clustering UMAP</h3>
+<pre class="r"><code>DimPlot(seuInt, reduction = &#39;umap&#39;, 
+            label = TRUE, repel = TRUE,
+            label.size = 2.5, 
+            group.by = &quot;predicted.celltype&quot;) + NoLegend()</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-34-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+</div>
+<div id="annotate-data-using-azimuth-human-lung-cell-reference-v1.0" class="section level1" number="7">
+<h1><span class="header-section-number">7</span> Annotate data using Azimuth &amp; <em>Human Lung Cell Reference v1.0</em></h1>
+<div id="add-azimuth-labels" class="section level2" number="7.1">
+<h2><span class="header-section-number">7.1</span> Add Azimuth labels</h2>
+<p>Save filtered data and upload to Azimuth for annotation with Human Lung Cell reference.
+Add Azimuth labels to data.</p>
+<pre class="r"><code>out &lt;- here(&quot;data/SCEs/04_COMBO.clustered_diet.SEU.rds&quot;)
+
+if(!file.exists(out)){
+  DefaultAssay(seuInt) &lt;- &quot;RNA&quot;
+  seuDiet &lt;- DietSeurat(seuInt, assays = &quot;RNA&quot;)
+  saveRDS(seuDiet, out)
+  
+} else {
+  seuInt &lt;- AddAzimuthResults(seuInt,
+                              filename = here(&quot;data/SCEs/03_COMBO.clustered_azimuth.SEU.rds&quot;))
+  seuInt$predicted.annotation.l1 &lt;- fct_drop(seuInt$predicted.annotation.l1)
+  
+}
+
+if(any(grepl(&quot;predicted.annotation.l1&quot;,
+         colnames(seuInt@meta.data)))) table(seuInt$predicted.annotation.l1)</code></pre>
+<pre><code>
+             Basophil/Mast                   Ciliated 
+                        48                        384 
+Alveolar Epithelial Type 2           Bronchial Vessel 
+                        19                         87 
+    Capillary Intermediate                      Basal 
+                       134                        363 
+                 Dendritic             CD16+ Monocyte 
+                      2494                         24 
+            CD14+ Monocyte              Smooth Muscle 
+                       620                          1 
+                     CD8 T                      CD4 T 
+                      2416                       3578 
+    Plasmacytoid Dendritic                          B 
+                       141                       1403 
+                Macrophage                       Vein 
+                     32039                         37 
+                    Artery                     Mucous 
+                        12                         10 
+                 Lymphatic   Proliferating Macrophage 
+                        28                        758 
+        Proliferating NK/T           Natural Killer T 
+                       102                        257 
+            Natural Killer                     Plasma 
+                       121                         33 
+            Neuroendocrine                   Ionocyte 
+                         4                        412 
+                    Goblet 
+                        65 </code></pre>
+</div>
+<div id="visualise-reference-mapping-1" class="section level2" number="7.2">
+<h2><span class="header-section-number">7.2</span> Visualise reference mapping</h2>
+<pre class="r"><code>DimPlot(seuInt, reduction = &#39;umap.proj&#39;, 
+        label = TRUE, repel = TRUE, label.size = 2.5, 
+        group.by = &quot;predicted.annotation.l1&quot;) + NoLegend()</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-36-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>DimPlot(seuInt, reduction = &#39;umap&#39;, 
+        label = TRUE, repel = TRUE, label.size = 2.5, 
+        group.by = &quot;predicted.annotation.l1&quot;) + NoLegend()</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-36-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="explore-reference-annotations-1" class="section level2" number="7.3">
+<h2><span class="header-section-number">7.3</span> Explore reference annotations</h2>
+<div id="plot-qc-metrics-by-label-1" class="section level3" number="7.3.1">
+<h3><span class="header-section-number">7.3.1</span> Plot QC metrics by label</h3>
+<pre class="r"><code>options(scipen=1)
+seuInt@meta.data %&gt;%
+  ggplot(aes(y = predicted.annotation.l1.score,
+             x = predicted.annotation.l1,
+             fill = predicted.annotation.l1)) +
+  geom_violin(scale = &quot;width&quot;) +
+  theme(text = element_text(size = 8),
+        axis.text.x = element_text(angle = 90,
+                            vjust = 0.5,
+                            hjust = 1)) +
+  NoLegend() -&gt; p1
+
+seuInt@meta.data %&gt;%
+  ggplot(aes(y = nCount_RNA,
+             x = predicted.annotation.l1,
+             fill = predicted.annotation.l1)) +
+  geom_violin(scale = &quot;area&quot;) +
+  scale_y_log10() +
+  theme(text = element_text(size = 8),
+        axis.text.x = element_text(angle = 90,
+                            vjust = 0.5,
+                            hjust = 1)) +
+  NoLegend() -&gt; p2
+
+seuInt@meta.data %&gt;%
+  ggplot(aes(y = nFeature_RNA,
+             x = predicted.annotation.l1,
+             fill = predicted.annotation.l1)) +
+  geom_violin(scale = &quot;area&quot;) +
+  scale_y_log10() +
+  theme(text = element_text(size = 8),
+        axis.text.x = element_text(angle = 90,
+                            vjust = 0.5,
+                            hjust = 1)) +
+  NoLegend() -&gt; p3
+
+(p1 / p2 / p3)</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-37-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+</div>
+<div id="annotate-data-using-azimuth-human-lung-cell-reference-v2.0" class="section level1" number="8">
+<h1><span class="header-section-number">8</span> Annotate data using Azimuth &amp; <em>Human Lung Cell Reference v2.0</em></h1>
+<div id="add-azimuth-labels-1" class="section level2" number="8.1">
+<h2><span class="header-section-number">8.1</span> Add Azimuth labels</h2>
+<p>Upload previously saved filtered data to Azimuth for annotation with Human Lung Cell reference version 2.0.
+Add Azimuth labels to data.</p>
+<pre class="r"><code>seuInt &lt;- AddAzimuthResults(seuInt,
+                            filename = here(&quot;data/SCEs/03_COMBO.clustered_azimuth_v2.SEU.rds&quot;))
+seuInt$predicted.ann_level_1 &lt;- fct_drop(seuInt$predicted.ann_level_1)
+seuInt$predicted.ann_level_2 &lt;- fct_drop(seuInt$predicted.ann_level_2)
+seuInt$predicted.ann_level_3 &lt;- fct_drop(seuInt$predicted.ann_level_3)
+seuInt$predicted.ann_level_4 &lt;- fct_drop(seuInt$predicted.ann_level_4)
+seuInt$predicted.ann_finest_level &lt;- fct_drop(seuInt$predicted.ann_finest_level)
+
+table(seuInt$predicted.ann_level_1) %&gt;% knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Var1</th>
+<th align="right">Freq</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Endothelial</td>
+<td align="right">322</td>
+</tr>
+<tr class="even">
+<td align="left">Epithelial</td>
+<td align="right">1800</td>
+</tr>
+<tr class="odd">
+<td align="left">Immune</td>
+<td align="right">43468</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>table(seuInt$predicted.ann_level_2) %&gt;% knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Var1</th>
+<th align="right">Freq</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Airway epithelium</td>
+<td align="right">1488</td>
+</tr>
+<tr class="even">
+<td align="left">Alveolar epithelium</td>
+<td align="right">299</td>
+</tr>
+<tr class="odd">
+<td align="left">Blood vessels</td>
+<td align="right">325</td>
+</tr>
+<tr class="even">
+<td align="left">Lymphatic EC</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">Lymphoid</td>
+<td align="right">7955</td>
+</tr>
+<tr class="even">
+<td align="left">Myeloid</td>
+<td align="right">35521</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>table(seuInt$predicted.ann_level_3) %&gt;% knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Var1</th>
+<th align="right">Freq</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">AT1</td>
+<td align="right">369</td>
+</tr>
+<tr class="even">
+<td align="left">AT2</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">B cell lineage</td>
+<td align="right">1492</td>
+</tr>
+<tr class="even">
+<td align="left">Basal</td>
+<td align="right">541</td>
+</tr>
+<tr class="odd">
+<td align="left">Dendritic cells</td>
+<td align="right">2081</td>
+</tr>
+<tr class="even">
+<td align="left">EC arterial</td>
+<td align="right">27</td>
+</tr>
+<tr class="odd">
+<td align="left">EC capillary</td>
+<td align="right">121</td>
+</tr>
+<tr class="even">
+<td align="left">EC venous</td>
+<td align="right">187</td>
+</tr>
+<tr class="odd">
+<td align="left">Innate lymphoid cell NK</td>
+<td align="right">120</td>
+</tr>
+<tr class="even">
+<td align="left">Lymphatic EC mature</td>
+<td align="right">11</td>
+</tr>
+<tr class="odd">
+<td align="left">Macrophages</td>
+<td align="right">33161</td>
+</tr>
+<tr class="even">
+<td align="left">Mast cells</td>
+<td align="right">51</td>
+</tr>
+<tr class="odd">
+<td align="left">Monocytes</td>
+<td align="right">204</td>
+</tr>
+<tr class="even">
+<td align="left">Multiciliated lineage</td>
+<td align="right">386</td>
+</tr>
+<tr class="odd">
+<td align="left">Rare</td>
+<td align="right">99</td>
+</tr>
+<tr class="even">
+<td align="left">Secretory</td>
+<td align="right">397</td>
+</tr>
+<tr class="odd">
+<td align="left">T cell lineage</td>
+<td align="right">6342</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>table(seuInt$predicted.ann_level_4) %&gt;% knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Var1</th>
+<th align="right">Freq</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Alveolar macrophages</td>
+<td align="right">28722</td>
+</tr>
+<tr class="even">
+<td align="left">B cells</td>
+<td align="right">1471</td>
+</tr>
+<tr class="odd">
+<td align="left">Basal resting</td>
+<td align="right">244</td>
+</tr>
+<tr class="even">
+<td align="left">CD4 T cells</td>
+<td align="right">3020</td>
+</tr>
+<tr class="odd">
+<td align="left">CD8 T cells</td>
+<td align="right">3237</td>
+</tr>
+<tr class="even">
+<td align="left">Classical monocytes</td>
+<td align="right">122</td>
+</tr>
+<tr class="odd">
+<td align="left">Club</td>
+<td align="right">258</td>
+</tr>
+<tr class="even">
+<td align="left">DC1</td>
+<td align="right">63</td>
+</tr>
+<tr class="odd">
+<td align="left">DC2</td>
+<td align="right">1789</td>
+</tr>
+<tr class="even">
+<td align="left">Deuterosomal</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">EC general capillary</td>
+<td align="right">135</td>
+</tr>
+<tr class="even">
+<td align="left">EC venous pulmonary</td>
+<td align="right">10</td>
+</tr>
+<tr class="odd">
+<td align="left">EC venous systemic</td>
+<td align="right">171</td>
+</tr>
+<tr class="even">
+<td align="left">Goblet</td>
+<td align="right">120</td>
+</tr>
+<tr class="odd">
+<td align="left">Interstitial macrophages</td>
+<td align="right">4403</td>
+</tr>
+<tr class="even">
+<td align="left">Ionocyte</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Migratory DCs</td>
+<td align="right">120</td>
+</tr>
+<tr class="even">
+<td align="left">Multiciliated</td>
+<td align="right">384</td>
+</tr>
+<tr class="odd">
+<td align="left">NK cells</td>
+<td align="right">120</td>
+</tr>
+<tr class="even">
+<td align="left">Non-classical monocytes</td>
+<td align="right">62</td>
+</tr>
+<tr class="odd">
+<td align="left">None</td>
+<td align="right">505</td>
+</tr>
+<tr class="even">
+<td align="left">Plasma cells</td>
+<td align="right">37</td>
+</tr>
+<tr class="odd">
+<td align="left">Plasmacytoid DCs</td>
+<td align="right">143</td>
+</tr>
+<tr class="even">
+<td align="left">SMG duct</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">Suprabasal</td>
+<td align="right">276</td>
+</tr>
+<tr class="even">
+<td align="left">T cells proliferating</td>
+<td align="right">74</td>
+</tr>
+<tr class="odd">
+<td align="left">Tuft</td>
+<td align="right">99</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>table(seuInt$predicted.ann_finest_level) %&gt;% knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Var1</th>
+<th align="right">Freq</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Alveolar macrophages</td>
+<td align="right">27390</td>
+</tr>
+<tr class="even">
+<td align="left">Alveolar Mφ CCL3+</td>
+<td align="right">573</td>
+</tr>
+<tr class="odd">
+<td align="left">Alveolar Mφ proliferating</td>
+<td align="right">686</td>
+</tr>
+<tr class="even">
+<td align="left">AT1</td>
+<td align="right">400</td>
+</tr>
+<tr class="odd">
+<td align="left">AT2</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">B cells</td>
+<td align="right">1471</td>
+</tr>
+<tr class="odd">
+<td align="left">Basal resting</td>
+<td align="right">245</td>
+</tr>
+<tr class="even">
+<td align="left">CD4 T cells</td>
+<td align="right">3020</td>
+</tr>
+<tr class="odd">
+<td align="left">CD8 T cells</td>
+<td align="right">3237</td>
+</tr>
+<tr class="even">
+<td align="left">Classical monocytes</td>
+<td align="right">133</td>
+</tr>
+<tr class="odd">
+<td align="left">Club (nasal)</td>
+<td align="right">230</td>
+</tr>
+<tr class="even">
+<td align="left">Club (non-nasal)</td>
+<td align="right">32</td>
+</tr>
+<tr class="odd">
+<td align="left">DC1</td>
+<td align="right">63</td>
+</tr>
+<tr class="even">
+<td align="left">DC2</td>
+<td align="right">1909</td>
+</tr>
+<tr class="odd">
+<td align="left">Deuterosomal</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">EC arterial</td>
+<td align="right">27</td>
+</tr>
+<tr class="odd">
+<td align="left">EC general capillary</td>
+<td align="right">145</td>
+</tr>
+<tr class="even">
+<td align="left">EC venous pulmonary</td>
+<td align="right">10</td>
+</tr>
+<tr class="odd">
+<td align="left">EC venous systemic</td>
+<td align="right">171</td>
+</tr>
+<tr class="even">
+<td align="left">Goblet (bronchial)</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Goblet (nasal)</td>
+<td align="right">116</td>
+</tr>
+<tr class="even">
+<td align="left">Interstitial Mφ perivascular</td>
+<td align="right">267</td>
+</tr>
+<tr class="odd">
+<td align="left">Ionocyte</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">Lymphatic EC mature</td>
+<td align="right">12</td>
+</tr>
+<tr class="odd">
+<td align="left">Mast cells</td>
+<td align="right">51</td>
+</tr>
+<tr class="even">
+<td align="left">Migratory DCs</td>
+<td align="right">120</td>
+</tr>
+<tr class="odd">
+<td align="left">Monocyte-derived Mφ</td>
+<td align="right">4054</td>
+</tr>
+<tr class="even">
+<td align="left">Multiciliated (nasal)</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Multiciliated (non-nasal)</td>
+<td align="right">383</td>
+</tr>
+<tr class="even">
+<td align="left">NK cells</td>
+<td align="right">120</td>
+</tr>
+<tr class="odd">
+<td align="left">Non-classical monocytes</td>
+<td align="right">86</td>
+</tr>
+<tr class="even">
+<td align="left">Plasma cells</td>
+<td align="right">37</td>
+</tr>
+<tr class="odd">
+<td align="left">Plasmacytoid DCs</td>
+<td align="right">143</td>
+</tr>
+<tr class="even">
+<td align="left">SMG duct</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">Suprabasal</td>
+<td align="right">276</td>
+</tr>
+<tr class="even">
+<td align="left">T cells proliferating</td>
+<td align="right">74</td>
+</tr>
+<tr class="odd">
+<td align="left">Tuft</td>
+<td align="right">100</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="visualise-reference-mapping-2" class="section level2" number="8.2">
+<h2><span class="header-section-number">8.2</span> Visualise reference mapping</h2>
+<pre class="r"><code>azimuth_results &lt;- readRDS(here(&quot;data/SCEs/03_COMBO.clustered_azimuth.SEU.rds&quot;))
+seuInt[[&quot;umap.proj.v1&quot;]] &lt;- azimuth_results$umap
+
+DimPlot(seuInt, reduction = &#39;umap.proj.v1&#39;, 
+        label = TRUE, repel = TRUE, label.size = 2.5, 
+        group.by = &quot;predicted.annotation.l1&quot;) + NoLegend()</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-39-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>DimPlot(seuInt, reduction = &#39;umap.proj&#39;, 
+        label = TRUE, repel = TRUE, label.size = 2.5, 
+        group.by = &quot;predicted.ann_level_1&quot;) + NoLegend()</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-39-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>DimPlot(seuInt, reduction = &#39;umap.proj&#39;, 
+        label = TRUE, repel = TRUE, label.size = 2.5, 
+        group.by = &quot;predicted.ann_level_2&quot;) + NoLegend()</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-39-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>DimPlot(seuInt, reduction = &#39;umap.proj&#39;, 
+        label = TRUE, repel = TRUE, label.size = 2.5, 
+        group.by = &quot;predicted.ann_level_3&quot;) + NoLegend()</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-39-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>DimPlot(seuInt, reduction = &#39;umap.proj&#39;, 
+        label = TRUE, repel = TRUE, label.size = 2.5, 
+        group.by = &quot;predicted.ann_level_4&quot;) + NoLegend()</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-39-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>DimPlot(seuInt, reduction = &#39;umap.proj&#39;, 
+        label = TRUE, repel = TRUE, label.size = 2.5, 
+        group.by = &quot;predicted.ann_finest_level&quot;) + NoLegend()</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-39-6.png" width="672" style="display: block; margin: auto;" />
+## Visualise cell type abundance</p>
+<pre class="r"><code>labels &lt;- colnames(seuInt@meta.data)[grepl(&quot;(?!.*score$)predicted.ann&quot;,
+                                           colnames(seuInt@meta.data), 
+                                           perl = TRUE)]
+p &lt;- vector(&quot;list&quot;,length(labels))
+
+for(label in labels){
+  seuInt@meta.data %&gt;%
+    ggplot(aes(x = !!sym(label), fill = !!sym(label))) +
+    geom_bar() +
+    geom_text(aes(label = ..count..), stat = &quot;count&quot;,
+              vjust = -0.5, colour = &quot;black&quot;, size = 2) +
+    scale_y_log10() +
+    theme(axis.text.x = element_blank(),
+          axis.title.x = element_blank(),
+          axis.ticks.x = element_blank()) +
+    NoLegend() +
+    labs(y = &quot;No. Cells (log scale)&quot;) -&gt; p1
+  
+  seuInt@meta.data %&gt;%
+    dplyr::select(!!sym(label), experiment) %&gt;%
+    group_by(!!sym(label), experiment) %&gt;%
+    summarise(num = n()) %&gt;%
+    mutate(prop = num / sum(num)) %&gt;%
+  ggplot(aes(x = !!sym(label), y = prop * 100, 
+             fill = experiment)) + 
+    geom_bar(stat = &quot;identity&quot;) +
+    theme(axis.text.x = element_text(angle = 90, 
+                                     vjust = 0.5, 
+                                     hjust = 1)) +
+    labs(y = &quot;% Cells&quot;, fill = &quot;Experiment&quot;) -&gt; p2
+  
+  p1 / p2 -&gt; p[[label]]
+}
+
+p</code></pre>
+<pre><code>[[1]]
+NULL
+
+[[2]]
+NULL
+
+[[3]]
+NULL
+
+[[4]]
+NULL
+
+[[5]]
+NULL
+
+[[6]]
+NULL
+
+[[7]]
+NULL
+
+$predicted.annotation.l1</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-40-1.png" width="864" style="display: block; margin: auto;" /></p>
+<pre><code>
+$predicted.ann_level_1</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-40-2.png" width="864" style="display: block; margin: auto;" /></p>
+<pre><code>
+$predicted.ann_level_2</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-40-3.png" width="864" style="display: block; margin: auto;" /></p>
+<pre><code>
+$predicted.ann_level_3</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-40-4.png" width="864" style="display: block; margin: auto;" /></p>
+<pre><code>
+$predicted.ann_level_4</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-40-5.png" width="864" style="display: block; margin: auto;" /></p>
+<pre><code>
+$predicted.ann_level_5</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-40-6.png" width="864" style="display: block; margin: auto;" /></p>
+<pre><code>
+$predicted.ann_finest_level</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-40-7.png" width="864" style="display: block; margin: auto;" />
+## Visualise annotation relasionships and quality</p>
+<pre class="r"><code>check &lt;- levels(seuInt$predicted.annotation.l1)
+p &lt;- vector(&quot;list&quot;, length(check))
+
+for(i in 1:length(p)){
+  
+  seuInt@meta.data %&gt;%
+    dplyr::filter(predicted.annotation.l1 == check[i]) %&gt;%
+    ggplot(aes(x = predicted.ann_level_3.score,
+               colour = predicted.ann_level_3)) +
+    geom_density() +
+    ggtitle(paste0(&quot;Cluster &quot;, check[i])) +
+    theme(legend.key.size = unit(4, &quot;pt&quot;)) -&gt; p1
+  
+  seuInt@meta.data %&gt;%
+    dplyr::filter(predicted.annotation.l1 == check[i]) %&gt;%
+    ggplot(aes(x = predicted.ann_level_3,
+               fill = predicted.ann_level_3)) +
+    geom_bar() +
+    geom_text(aes(label = ..count..), stat = &quot;count&quot;, 
+              vjust = -0.5, colour = &quot;black&quot;, size = 2) +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+    NoLegend() -&gt; p2  
+  
+  seuInt@meta.data %&gt;%
+    dplyr::filter(predicted.annotation.l1 == check[i]) %&gt;%
+    ggplot(aes(x = predicted.ann_finest_level.score,
+               colour = predicted.ann_finest_level)) +
+    geom_density() +
+    ggtitle(paste0(&quot;Cluster &quot;, check[i])) +
+    theme(legend.key.size = unit(4, &quot;pt&quot;)) -&gt; p3
+  
+  seuInt@meta.data %&gt;%
+    dplyr::filter(predicted.annotation.l1 == check[i]) %&gt;%
+    
+    ggplot(aes(x = predicted.ann_finest_level,
+               fill = predicted.ann_finest_level)) +
+    geom_bar() +
+    geom_text(aes(label = ..count..), stat = &quot;count&quot;, 
+              vjust = -0.5, colour = &quot;black&quot;, size = 2) +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+    NoLegend() -&gt; p4 
+  
+  seuInt@meta.data %&gt;%
+    dplyr::filter(predicted.annotation.l1 == check[i]) %&gt;%
+    ggplot(aes(x = predicted.ann_level_4.score,
+               colour = predicted.ann_level_4)) +
+    geom_density() +
+    ggtitle(paste0(&quot;Cluster &quot;, check[i])) +
+    theme(legend.key.size = unit(4, &quot;pt&quot;)) -&gt; p5
+  
+  seuInt@meta.data %&gt;%
+    dplyr::filter(predicted.annotation.l1 == check[i]) %&gt;%
+    
+    ggplot(aes(x = predicted.ann_level_4,
+               fill = predicted.ann_level_4)) +
+    geom_bar() +
+    geom_text(aes(label = ..count..), stat = &quot;count&quot;, 
+              vjust = -0.5, colour = &quot;black&quot;, size = 2) +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+    NoLegend() -&gt; p6  
+  
+  ((p1 | p2) / (p5 | p6) / (p3 | p4)) + 
+    plot_annotation(title = check[i]) &amp; 
+    theme(text = element_text(size = 8)) -&gt; p[[i]]
+}
+
+p</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-3.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-4.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-5.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-6.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-7.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-8.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-9.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-10.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-11.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-12.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[13]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-13.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[14]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-14.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[15]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-15.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[16]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-16.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[17]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-17.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[18]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-18.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[19]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-19.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[20]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-20.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[21]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-21.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[22]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-22.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[23]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-23.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[24]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-24.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[25]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-25.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[26]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-26.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[27]]</code></pre>
+<p><img src="figure/06_COMBO.clustering_annotation.Rmd/unnamed-chunk-41-27.png" width="768" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="save-data" class="section level1" number="9">
+<h1><span class="header-section-number">9</span> Save data</h1>
+<pre class="r"><code>labels &lt;- levels(factor(seuInt$predicted.ann_level_3))
+macrophages &lt;- c(&quot;Macrophages&quot;)
+tcells &lt;- c(&quot;T cell lineage&quot;, &quot;Innate lymphoid cell NK&quot;)
+lung &lt;- c(&quot;AT1&quot;, &quot;EC arterial&quot;, &quot;Rare&quot;, &quot;Secretory&quot;, &quot;Basal&quot;,
+          &quot;EC venous&quot;, &quot;Multiciliated lineage&quot;, &quot;EC capillary&quot;, 
+          &quot;Lymphatic EC mature&quot;, &quot;AT2&quot;)
+
+subList &lt;- list(macrophages = macrophages,
+                tcells = tcells, 
+                lung = lung,
+                others = labels[!labels %in% c(macrophages, tcells, lung)])
+
+Idents(seuInt) &lt;- &quot;predicted.ann_level_3&quot;
+
+for(sub in names(subList)){
+  out &lt;- here(glue(&quot;data/SCEs/05_COMBO.clustered_annotated_{sub}_diet.SEU.rds&quot;))
+  message(sub)
+  if(!file.exists(out)){
+    saveRDS(DietSeurat(subset(seuInt,
+                              idents = subList[[sub]]),
+                       assays = &quot;RNA&quot;,
+                       dimreducs = NULL,
+                       graphs = NULL), out)
+
+  }
+}</code></pre>
+</div>
+<div id="session-info" class="section level1 appendix" number="10">
+<h1><span class="header-section-number">10</span> Session info</h1>
+<summary>
+The analysis and this document were prepared using the following software (click triangle to expand)
+</summary>
+<details>
+<pre class="r"><code>sessioninfo::session_info()</code></pre>
+<pre><code>─ Session info ───────────────────────────────────────────────────────────────
+ setting  value
+ version  R version 4.1.0 (2021-05-18)
+ os       CentOS Linux 7 (Core)
+ system   x86_64, linux-gnu
+ ui       X11
+ language (EN)
+ collate  en_AU.UTF-8
+ ctype    en_AU.UTF-8
+ tz       Australia/Melbourne
+ date     2022-06-16
+ pandoc   2.17.1.1 @ /usr/lib/rstudio-server/bin/quarto/bin/ (via rmarkdown)
+
+─ Packages ───────────────────────────────────────────────────────────────────
+ ! package              * version   date (UTC) lib source
+ P abind                  1.4-5     2016-07-21 [?] CRAN (R 4.1.0)
+ P AnnotationDbi          1.56.2    2021-11-09 [?] Bioconductor
+ P AnnotationFilter       1.18.0    2021-10-26 [?] Bioconductor
+ P assertthat             0.2.1     2019-03-21 [?] CRAN (R 4.1.0)
+ P babelgene              21.4      2021-04-26 [?] CRAN (R 4.1.0)
+ P backports              1.4.1     2021-12-13 [?] CRAN (R 4.1.0)
+ P beachmat               2.10.0    2021-10-26 [?] Bioconductor
+ P beeswarm               0.4.0     2021-06-01 [?] CRAN (R 4.1.0)
+ P Biobase              * 2.54.0    2021-10-26 [?] Bioconductor
+ P BiocFileCache          2.2.0     2021-10-26 [?] Bioconductor
+ P BiocGenerics         * 0.40.0    2021-10-26 [?] Bioconductor
+ P BiocIO                 1.4.0     2021-10-26 [?] Bioconductor
+ P BiocManager            1.30.16   2021-06-15 [?] CRAN (R 4.1.0)
+ P BiocNeighbors          1.12.0    2021-10-26 [?] Bioconductor
+ P BiocParallel         * 1.28.3    2021-12-09 [?] Bioconductor
+ P BiocSingular           1.10.0    2021-10-26 [?] Bioconductor
+ P BiocStyle            * 2.22.0    2021-10-26 [?] Bioconductor
+ P biomaRt                2.50.1    2021-11-21 [?] Bioconductor
+ P Biostrings             2.62.0    2021-10-26 [?] Bioconductor
+ P bit                    4.0.4     2020-08-04 [?] CRAN (R 4.1.0)
+ P bit64                  4.0.5     2020-08-30 [?] CRAN (R 4.0.2)
+ P bitops                 1.0-7     2021-04-24 [?] CRAN (R 4.0.2)
+ P blob                   1.2.2     2021-07-23 [?] CRAN (R 4.1.0)
+ P bluster                1.4.0     2021-10-26 [?] Bioconductor
+ P bookdown               0.24      2021-09-02 [?] CRAN (R 4.1.0)
+ P broom                  0.7.11    2022-01-03 [?] CRAN (R 4.1.0)
+ P bslib                  0.3.1     2021-10-06 [?] CRAN (R 4.1.0)
+ P cachem                 1.0.6     2021-08-19 [?] CRAN (R 4.1.0)
+ P callr                  3.7.0     2021-04-20 [?] CRAN (R 4.1.0)
+ P cellranger             1.1.0     2016-07-27 [?] CRAN (R 4.1.0)
+ P checkmate              2.0.0     2020-02-06 [?] CRAN (R 4.0.2)
+ P cli                    3.1.0     2021-10-27 [?] CRAN (R 4.1.0)
+ P cluster                2.1.2     2021-04-17 [?] CRAN (R 4.1.0)
+ P clustree             * 0.4.4     2021-11-08 [?] CRAN (R 4.1.0)
+ P codetools              0.2-18    2020-11-04 [?] CRAN (R 4.1.0)
+ P colorspace             2.0-2     2021-06-24 [?] CRAN (R 4.0.2)
+ P cowplot                1.1.1     2020-12-30 [?] CRAN (R 4.0.2)
+ P crayon                 1.4.2     2021-10-29 [?] CRAN (R 4.1.0)
+ P curl                   4.3.2     2021-06-23 [?] CRAN (R 4.1.0)
+ P data.table             1.14.2    2021-09-27 [?] CRAN (R 4.1.0)
+ P DBI                    1.1.2     2021-12-20 [?] CRAN (R 4.1.0)
+ P dbplyr                 2.1.1     2021-04-06 [?] CRAN (R 4.1.0)
+ P DelayedArray           0.20.0    2021-10-26 [?] Bioconductor
+ P DelayedMatrixStats     1.16.0    2021-10-26 [?] Bioconductor
+ P deldir                 1.0-6     2021-10-23 [?] CRAN (R 4.1.0)
+ P digest                 0.6.29    2021-12-01 [?] CRAN (R 4.1.0)
+ P dplyr                * 1.0.7     2021-06-18 [?] CRAN (R 4.1.0)
+ P dqrng                  0.3.0     2021-05-01 [?] CRAN (R 4.1.0)
+ P DropletUtils         * 1.14.1    2021-11-08 [?] Bioconductor
+ P edgeR                  3.36.0    2021-10-26 [?] Bioconductor
+ P ellipsis               0.3.2     2021-04-29 [?] CRAN (R 4.0.2)
+ P ensembldb              2.18.2    2021-11-08 [?] Bioconductor
+ P evaluate               0.14      2019-05-28 [?] CRAN (R 4.0.2)
+ P fansi                  1.0.0     2022-01-10 [?] CRAN (R 4.1.0)
+ P farver                 2.1.0     2021-02-28 [?] CRAN (R 4.0.2)
+ P fastmap                1.1.0     2021-01-25 [?] CRAN (R 4.1.0)
+ P filelock               1.0.2     2018-10-05 [?] CRAN (R 4.1.0)
+ P fitdistrplus           1.1-6     2021-09-28 [?] CRAN (R 4.1.0)
+ P forcats              * 0.5.1     2021-01-27 [?] CRAN (R 4.1.0)
+ P fs                     1.5.2     2021-12-08 [?] CRAN (R 4.1.0)
+ P future                 1.23.0    2021-10-31 [?] CRAN (R 4.1.0)
+ P future.apply           1.8.1     2021-08-10 [?] CRAN (R 4.1.0)
+ P generics               0.1.1     2021-10-25 [?] CRAN (R 4.1.0)
+   GenomeInfoDb         * 1.30.1    2022-01-30 [1] Bioconductor
+ P GenomeInfoDbData       1.2.7     2021-12-21 [?] Bioconductor
+ P GenomicAlignments      1.30.0    2021-10-26 [?] Bioconductor
+ P GenomicFeatures        1.46.3    2021-12-30 [?] Bioconductor
+ P GenomicRanges        * 1.46.1    2021-11-18 [?] Bioconductor
+ P getPass                0.2-2     2017-07-21 [?] CRAN (R 4.0.2)
+ P ggbeeswarm             0.6.0     2017-08-07 [?] CRAN (R 4.1.0)
+ P ggforce                0.3.3     2021-03-05 [?] CRAN (R 4.1.0)
+ P ggplot2              * 3.3.5     2021-06-25 [?] CRAN (R 4.0.2)
+ P ggraph               * 2.0.5     2021-02-23 [?] CRAN (R 4.1.0)
+ P ggrepel                0.9.1     2021-01-15 [?] CRAN (R 4.1.0)
+ P ggridges               0.5.3     2021-01-08 [?] CRAN (R 4.1.0)
+ P git2r                  0.29.0    2021-11-22 [?] CRAN (R 4.1.0)
+ P glmGamPoi            * 1.6.0     2021-10-26 [?] Bioconductor
+ P globals                0.14.0    2020-11-22 [?] CRAN (R 4.0.2)
+ P glue                 * 1.6.0     2021-12-17 [?] CRAN (R 4.1.0)
+ P goftest                1.2-3     2021-10-07 [?] CRAN (R 4.1.0)
+ P graphlayouts           0.8.0     2022-01-03 [?] CRAN (R 4.1.0)
+ P gridExtra              2.3       2017-09-09 [?] CRAN (R 4.1.0)
+ P gtable                 0.3.0     2019-03-25 [?] CRAN (R 4.1.0)
+ P haven                  2.4.3     2021-08-04 [?] CRAN (R 4.1.0)
+ P HDF5Array              1.22.1    2021-11-14 [?] Bioconductor
+ P here                 * 1.0.1     2020-12-13 [?] CRAN (R 4.0.2)
+ P highr                  0.9       2021-04-16 [?] CRAN (R 4.1.0)
+ P hms                    1.1.1     2021-09-26 [?] CRAN (R 4.1.0)
+ P htmltools              0.5.2     2021-08-25 [?] CRAN (R 4.1.0)
+ P htmlwidgets            1.5.4     2021-09-08 [?] CRAN (R 4.1.0)
+ P httpuv                 1.6.5     2022-01-05 [?] CRAN (R 4.1.0)
+ P httr                   1.4.2     2020-07-20 [?] CRAN (R 4.1.0)
+ P ica                    1.0-2     2018-05-24 [?] CRAN (R 4.1.0)
+ P igraph                 1.2.11    2022-01-04 [?] CRAN (R 4.1.0)
+ P IRanges              * 2.28.0    2021-10-26 [?] Bioconductor
+ P irlba                  2.3.5     2021-12-06 [?] CRAN (R 4.1.0)
+ P jquerylib              0.1.4     2021-04-26 [?] CRAN (R 4.1.0)
+ P jsonlite               1.7.2     2020-12-09 [?] CRAN (R 4.0.2)
+ P KEGGREST               1.34.0    2021-10-26 [?] Bioconductor
+ P KernSmooth             2.23-20   2021-05-03 [?] CRAN (R 4.1.0)
+ P knitr                  1.37      2021-12-16 [?] CRAN (R 4.1.0)
+ P labeling               0.4.2     2020-10-20 [?] CRAN (R 4.0.2)
+ P later                  1.3.0     2021-08-18 [?] CRAN (R 4.1.0)
+ P lattice                0.20-45   2021-09-22 [?] CRAN (R 4.1.0)
+ P lazyeval               0.2.2     2019-03-15 [?] CRAN (R 4.1.0)
+ P leiden                 0.3.9     2021-07-27 [?] CRAN (R 4.1.0)
+ P lifecycle              1.0.1     2021-09-24 [?] CRAN (R 4.1.0)
+ P limma                  3.50.0    2021-10-26 [?] Bioconductor
+ P listenv                0.8.0     2019-12-05 [?] CRAN (R 4.1.0)
+ P lmtest                 0.9-39    2021-11-07 [?] CRAN (R 4.1.0)
+ P locfit                 1.5-9.4   2020-03-25 [?] CRAN (R 4.1.0)
+ P lubridate              1.8.0     2021-10-07 [?] CRAN (R 4.1.0)
+ P magrittr               2.0.1     2020-11-17 [?] CRAN (R 4.0.2)
+ P MASS                   7.3-53.1  2021-02-12 [?] CRAN (R 4.0.2)
+ P Matrix                 1.4-0     2021-12-08 [?] CRAN (R 4.1.0)
+ P MatrixGenerics       * 1.6.0     2021-10-26 [?] Bioconductor
+ P matrixStats          * 0.61.0    2021-09-17 [?] CRAN (R 4.1.0)
+ P memoise                2.0.1     2021-11-26 [?] CRAN (R 4.1.0)
+ P metapod                1.2.0     2021-10-26 [?] Bioconductor
+ P mgcv                   1.8-38    2021-10-06 [?] CRAN (R 4.1.0)
+ P mime                   0.12      2021-09-28 [?] CRAN (R 4.1.0)
+ P miniUI                 0.1.1.1   2018-05-18 [?] CRAN (R 4.1.0)
+ P modelr                 0.1.8     2020-05-19 [?] CRAN (R 4.0.2)
+ P msigdbr              * 7.4.1     2021-05-05 [?] CRAN (R 4.1.0)
+ P munsell                0.5.0     2018-06-12 [?] CRAN (R 4.1.0)
+ P nlme                   3.1-153   2021-09-07 [?] CRAN (R 4.1.0)
+ P parallelly             1.30.0    2021-12-17 [?] CRAN (R 4.1.0)
+ P patchwork            * 1.1.1     2020-12-17 [?] CRAN (R 4.0.2)
+ P pbapply                1.5-0     2021-09-16 [?] CRAN (R 4.1.0)
+ P pillar                 1.6.4     2021-10-18 [?] CRAN (R 4.1.0)
+ P pkgconfig              2.0.3     2019-09-22 [?] CRAN (R 4.1.0)
+ P plotly                 4.10.0    2021-10-09 [?] CRAN (R 4.1.0)
+ P plyr                   1.8.6     2020-03-03 [?] CRAN (R 4.0.2)
+ P png                    0.1-7     2013-12-03 [?] CRAN (R 4.1.0)
+ P polyclip               1.10-0    2019-03-14 [?] CRAN (R 4.1.0)
+ P prettyunits            1.1.1     2020-01-24 [?] CRAN (R 4.0.2)
+ P processx               3.5.2     2021-04-30 [?] CRAN (R 4.1.0)
+ P progress               1.2.2     2019-05-16 [?] CRAN (R 4.1.0)
+ P promises               1.2.0.1   2021-02-11 [?] CRAN (R 4.0.2)
+ P ProtGenerics           1.26.0    2021-10-26 [?] Bioconductor
+ P ps                     1.6.0     2021-02-28 [?] CRAN (R 4.1.0)
+ P purrr                * 0.3.4     2020-04-17 [?] CRAN (R 4.0.2)
+ P R.methodsS3            1.8.1     2020-08-26 [?] CRAN (R 4.0.2)
+ P R.oo                   1.24.0    2020-08-26 [?] CRAN (R 4.0.2)
+ P R.utils                2.11.0    2021-09-26 [?] CRAN (R 4.1.0)
+ P R6                     2.5.1     2021-08-19 [?] CRAN (R 4.1.0)
+ P RANN                   2.6.1     2019-01-08 [?] CRAN (R 4.1.0)
+ P rappdirs               0.3.3     2021-01-31 [?] CRAN (R 4.0.2)
+ P RColorBrewer           1.1-2     2014-12-07 [?] CRAN (R 4.0.2)
+ P Rcpp                   1.0.7     2021-07-07 [?] CRAN (R 4.1.0)
+ P RcppAnnoy              0.0.19    2021-07-30 [?] CRAN (R 4.1.0)
+   RCurl                  1.98-1.6  2022-02-08 [1] CRAN (R 4.1.0)
+ P readr                * 2.1.1     2021-11-30 [?] CRAN (R 4.1.0)
+ P readxl                 1.3.1     2019-03-13 [?] CRAN (R 4.1.0)
+ P renv                   0.15.0-14 2022-01-10 [?] Github (rstudio/renv@a3b90eb)
+ P reprex                 2.0.1     2021-08-05 [?] CRAN (R 4.1.0)
+ P reshape2               1.4.4     2020-04-09 [?] CRAN (R 4.1.0)
+ P restfulr               0.0.13    2017-08-06 [?] CRAN (R 4.1.0)
+ P reticulate             1.22      2021-09-17 [?] CRAN (R 4.1.0)
+ P rhdf5                  2.38.0    2021-10-26 [?] Bioconductor
+ P rhdf5filters           1.6.0     2021-10-26 [?] Bioconductor
+ P Rhdf5lib               1.16.0    2021-10-26 [?] Bioconductor
+ P rjson                  0.2.21    2022-01-09 [?] CRAN (R 4.1.0)
+ P rlang                  0.4.12    2021-10-18 [?] CRAN (R 4.1.0)
+ P rmarkdown              2.11      2021-09-14 [?] CRAN (R 4.1.0)
+ P ROCR                   1.0-11    2020-05-02 [?] CRAN (R 4.1.0)
+ P rpart                  4.1-15    2019-04-12 [?] CRAN (R 4.1.0)
+ P rprojroot              2.0.2     2020-11-15 [?] CRAN (R 4.0.2)
+ P Rsamtools              2.10.0    2021-10-26 [?] Bioconductor
+ P RSpectra               0.16-0    2019-12-01 [?] CRAN (R 4.1.0)
+ P RSQLite                2.2.9     2021-12-06 [?] CRAN (R 4.1.0)
+ P rstudioapi             0.13      2020-11-12 [?] CRAN (R 4.0.2)
+ P rsvd                   1.0.5     2021-04-16 [?] CRAN (R 4.1.0)
+ P rtracklayer            1.54.0    2021-10-26 [?] Bioconductor
+ P Rtsne                  0.15      2018-11-10 [?] CRAN (R 4.1.0)
+ P rvest                  1.0.2     2021-10-16 [?] CRAN (R 4.1.0)
+ P S4Vectors            * 0.32.3    2021-11-21 [?] Bioconductor
+ P sass                   0.4.0     2021-05-12 [?] CRAN (R 4.1.0)
+ P ScaledMatrix           1.2.0     2021-10-26 [?] Bioconductor
+ P scales               * 1.1.1     2020-05-11 [?] CRAN (R 4.0.2)
+ P scater               * 1.22.0    2021-10-26 [?] Bioconductor
+ P scattermore            0.7       2020-11-24 [?] CRAN (R 4.1.0)
+ P scran                * 1.22.1    2021-11-14 [?] Bioconductor
+ P sctransform            0.3.3     2022-01-13 [?] CRAN (R 4.1.0)
+ P scuttle              * 1.4.0     2021-10-26 [?] Bioconductor
+ P sessioninfo            1.2.2     2021-12-06 [?] CRAN (R 4.1.0)
+ P Seurat               * 4.0.6     2021-12-16 [?] CRAN (R 4.1.0)
+ P SeuratObject         * 4.0.4     2021-11-23 [?] CRAN (R 4.1.0)
+ P shiny                  1.7.1     2021-10-02 [?] CRAN (R 4.1.0)
+ P SingleCellExperiment * 1.16.0    2021-10-26 [?] Bioconductor
+ P sparseMatrixStats      1.6.0     2021-10-26 [?] Bioconductor
+ P spatstat.core          2.3-2     2021-11-26 [?] CRAN (R 4.1.0)
+ P spatstat.data          2.1-2     2021-12-17 [?] CRAN (R 4.1.0)
+ P spatstat.geom          2.3-1     2021-12-10 [?] CRAN (R 4.1.0)
+ P spatstat.sparse        2.1-0     2021-12-17 [?] CRAN (R 4.1.0)
+ P spatstat.utils         2.3-0     2021-12-12 [?] CRAN (R 4.1.0)
+ P statmod                1.4.36    2021-05-10 [?] CRAN (R 4.1.0)
+ P stringi                1.7.6     2021-11-29 [?] CRAN (R 4.1.0)
+ P stringr              * 1.4.0     2019-02-10 [?] CRAN (R 4.0.2)
+ P SummarizedExperiment * 1.24.0    2021-10-26 [?] Bioconductor
+ P survival               3.2-13    2021-08-24 [?] CRAN (R 4.1.0)
+ P tensor                 1.5       2012-05-05 [?] CRAN (R 4.1.0)
+ P tibble               * 3.1.6     2021-11-07 [?] CRAN (R 4.1.0)
+ P tidygraph              1.2.0     2020-05-12 [?] CRAN (R 4.0.2)
+ P tidyr                * 1.1.4     2021-09-27 [?] CRAN (R 4.1.0)
+ P tidyselect             1.1.1     2021-04-30 [?] CRAN (R 4.1.0)
+ P tidyverse            * 1.3.1     2021-04-15 [?] CRAN (R 4.1.0)
+ P tweenr                 1.0.2     2021-03-23 [?] CRAN (R 4.1.0)
+ P tzdb                   0.2.0     2021-10-27 [?] CRAN (R 4.1.0)
+ P utf8                   1.2.2     2021-07-24 [?] CRAN (R 4.1.0)
+ P uwot                   0.1.11    2021-12-02 [?] CRAN (R 4.1.0)
+ P vctrs                  0.3.8     2021-04-29 [?] CRAN (R 4.0.2)
+ P vipor                  0.4.5     2017-03-22 [?] CRAN (R 4.1.0)
+ P viridis                0.6.2     2021-10-13 [?] CRAN (R 4.1.0)
+ P viridisLite            0.4.0     2021-04-13 [?] CRAN (R 4.0.2)
+ P vroom                  1.5.7     2021-11-30 [?] CRAN (R 4.1.0)
+ P whisker                0.4       2019-08-28 [?] CRAN (R 4.0.2)
+ P withr                  2.4.3     2021-11-30 [?] CRAN (R 4.1.0)
+ P workflowr            * 1.7.0     2021-12-21 [?] CRAN (R 4.1.0)
+ P xfun                   0.29      2021-12-14 [?] CRAN (R 4.1.0)
+ P XML                    3.99-0.8  2021-09-17 [?] CRAN (R 4.1.0)
+ P xml2                   1.3.3     2021-11-30 [?] CRAN (R 4.1.0)
+ P xtable                 1.8-4     2019-04-21 [?] CRAN (R 4.1.0)
+ P XVector                0.34.0    2021-10-26 [?] Bioconductor
+ P yaml                   2.2.1     2020-02-01 [?] CRAN (R 4.0.2)
+ P zlibbioc               1.40.0    2021-10-26 [?] Bioconductor
+ P zoo                    1.8-9     2021-03-09 [?] CRAN (R 4.1.0)
+
+ [1] /oshlack_lab/jovana.maksimovic/projects/MCRI/melanie.neeland/paed-cf-cite-seq/renv/library/R-4.1/x86_64-pc-linux-gnu
+ [2] /config/binaries/R/4.1.0/lib64/R/library
+
+ P ── Loaded and on-disk path mismatch.
+
+──────────────────────────────────────────────────────────────────────────────</code></pre>
+</details>
+<div id="refs">
+
+</div>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.1.0 (2021-05-18)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: CentOS Linux 7 (Core)
+
+Matrix products: default
+BLAS:   /config/binaries/R/4.1.0/lib64/R/lib/libRblas.so
+LAPACK: /config/binaries/R/4.1.0/lib64/R/lib/libRlapack.so
+
+locale:
+ [1] LC_CTYPE=en_AU.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_AU.UTF-8        LC_COLLATE=en_AU.UTF-8    
+ [5] LC_MONETARY=en_AU.UTF-8    LC_MESSAGES=en_AU.UTF-8   
+ [7] LC_PAPER=en_AU.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_AU.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] msigdbr_7.4.1               BiocParallel_1.28.3        
+ [3] glmGamPoi_1.6.0             clustree_0.4.4             
+ [5] ggraph_2.0.5                patchwork_1.1.1            
+ [7] scales_1.1.1                SeuratObject_4.0.4         
+ [9] Seurat_4.0.6                scater_1.22.0              
+[11] scran_1.22.1                scuttle_1.4.0              
+[13] DropletUtils_1.14.1         SingleCellExperiment_1.16.0
+[15] SummarizedExperiment_1.24.0 Biobase_2.54.0             
+[17] GenomicRanges_1.46.1        GenomeInfoDb_1.30.1        
+[19] IRanges_2.28.0              S4Vectors_0.32.3           
+[21] BiocGenerics_0.40.0         MatrixGenerics_1.6.0       
+[23] matrixStats_0.61.0          glue_1.6.0                 
+[25] here_1.0.1                  forcats_0.5.1              
+[27] stringr_1.4.0               dplyr_1.0.7                
+[29] purrr_0.3.4                 readr_2.1.1                
+[31] tidyr_1.1.4                 tibble_3.1.6               
+[33] ggplot2_3.3.5               tidyverse_1.3.1            
+[35] BiocStyle_2.22.0            workflowr_1.7.0            
+
+loaded via a namespace (and not attached):
+  [1] rappdirs_0.3.3            rtracklayer_1.54.0       
+  [3] scattermore_0.7           R.methodsS3_1.8.1        
+  [5] bit64_4.0.5               knitr_1.37               
+  [7] irlba_2.3.5               DelayedArray_0.20.0      
+  [9] R.utils_2.11.0            data.table_1.14.2        
+ [11] rpart_4.1-15              AnnotationFilter_1.18.0  
+ [13] KEGGREST_1.34.0           RCurl_1.98-1.6           
+ [15] generics_0.1.1            GenomicFeatures_1.46.3   
+ [17] ScaledMatrix_1.2.0        callr_3.7.0              
+ [19] cowplot_1.1.1             RSQLite_2.2.9            
+ [21] RANN_2.6.1                future_1.23.0            
+ [23] bit_4.0.4                 tzdb_0.2.0               
+ [25] spatstat.data_2.1-2       xml2_1.3.3               
+ [27] lubridate_1.8.0           httpuv_1.6.5             
+ [29] assertthat_0.2.1          viridis_0.6.2            
+ [31] xfun_0.29                 hms_1.1.1                
+ [33] jquerylib_0.1.4           babelgene_21.4           
+ [35] evaluate_0.14             promises_1.2.0.1         
+ [37] progress_1.2.2            restfulr_0.0.13          
+ [39] fansi_1.0.0               dbplyr_2.1.1             
+ [41] readxl_1.3.1              igraph_1.2.11            
+ [43] DBI_1.1.2                 htmlwidgets_1.5.4        
+ [45] spatstat.geom_2.3-1       ellipsis_0.3.2           
+ [47] RSpectra_0.16-0           backports_1.4.1          
+ [49] bookdown_0.24             biomaRt_2.50.1           
+ [51] deldir_1.0-6              sparseMatrixStats_1.6.0  
+ [53] vctrs_0.3.8               ensembldb_2.18.2         
+ [55] ROCR_1.0-11               abind_1.4-5              
+ [57] cachem_1.0.6              withr_2.4.3              
+ [59] ggforce_0.3.3             vroom_1.5.7              
+ [61] checkmate_2.0.0           sctransform_0.3.3        
+ [63] GenomicAlignments_1.30.0  prettyunits_1.1.1        
+ [65] goftest_1.2-3             cluster_2.1.2            
+ [67] lazyeval_0.2.2            crayon_1.4.2             
+ [69] labeling_0.4.2            edgeR_3.36.0             
+ [71] pkgconfig_2.0.3           tweenr_1.0.2             
+ [73] ProtGenerics_1.26.0       nlme_3.1-153             
+ [75] vipor_0.4.5               rlang_0.4.12             
+ [77] globals_0.14.0            lifecycle_1.0.1          
+ [79] miniUI_0.1.1.1            filelock_1.0.2           
+ [81] BiocFileCache_2.2.0       modelr_0.1.8             
+ [83] rsvd_1.0.5                cellranger_1.1.0         
+ [85] rprojroot_2.0.2           polyclip_1.10-0          
+ [87] lmtest_0.9-39             Matrix_1.4-0             
+ [89] Rhdf5lib_1.16.0           zoo_1.8-9                
+ [91] reprex_2.0.1              beeswarm_0.4.0           
+ [93] whisker_0.4               ggridges_0.5.3           
+ [95] processx_3.5.2            rjson_0.2.21             
+ [97] png_0.1-7                 viridisLite_0.4.0        
+ [99] bitops_1.0-7              getPass_0.2-2            
+[101] R.oo_1.24.0               KernSmooth_2.23-20       
+[103] rhdf5filters_1.6.0        Biostrings_2.62.0        
+[105] blob_1.2.2                DelayedMatrixStats_1.16.0
+[107] parallelly_1.30.0         beachmat_2.10.0          
+[109] memoise_2.0.1             magrittr_2.0.1           
+[111] plyr_1.8.6                ica_1.0-2                
+[113] zlibbioc_1.40.0           compiler_4.1.0           
+[115] BiocIO_1.4.0              dqrng_0.3.0              
+[117] RColorBrewer_1.1-2        fitdistrplus_1.1-6       
+[119] Rsamtools_2.10.0          cli_3.1.0                
+[121] XVector_0.34.0            listenv_0.8.0            
+[123] pbapply_1.5-0             ps_1.6.0                 
+[125] MASS_7.3-53.1             mgcv_1.8-38              
+[127] tidyselect_1.1.1          stringi_1.7.6            
+[129] highr_0.9                 yaml_2.2.1               
+[131] BiocSingular_1.10.0       locfit_1.5-9.4           
+[133] ggrepel_0.9.1             grid_4.1.0               
+[135] sass_0.4.0                tools_4.1.0              
+[137] future.apply_1.8.1        parallel_4.1.0           
+[139] rstudioapi_0.13           bluster_1.4.0            
+[141] git2r_0.29.0              metapod_1.2.0            
+[143] gridExtra_2.3             farver_2.1.0             
+[145] Rtsne_0.15                digest_0.6.29            
+[147] BiocManager_1.30.16       shiny_1.7.1              
+[149] Rcpp_1.0.7                broom_0.7.11             
+[151] later_1.3.0               RcppAnnoy_0.0.19         
+[153] AnnotationDbi_1.56.2      httr_1.4.2               
+[155] colorspace_2.0-2          XML_3.99-0.8             
+[157] rvest_1.0.2               fs_1.5.2                 
+[159] tensor_1.5                reticulate_1.22          
+[161] splines_4.1.0             uwot_0.1.11              
+[163] statmod_1.4.36            spatstat.utils_2.3-0     
+[165] graphlayouts_0.8.0        renv_0.15.0-14           
+[167] sessioninfo_1.2.2         plotly_4.10.0            
+[169] xtable_1.8-4              jsonlite_1.7.2           
+[171] tidygraph_1.2.0           R6_2.5.1                 
+[173] pillar_1.6.4              htmltools_0.5.2          
+[175] mime_0.12                 fastmap_1.1.0            
+[177] BiocNeighbors_1.12.0      codetools_0.2-18         
+[179] utf8_1.2.2                lattice_0.20-45          
+[181] bslib_0.3.1               spatstat.sparse_2.1-0    
+[183] curl_4.3.2                ggbeeswarm_0.6.0         
+[185] leiden_0.3.9              survival_3.2-13          
+[187] limma_3.50.0              rmarkdown_2.11           
+[189] munsell_0.5.0             rhdf5_2.38.0             
+[191] GenomeInfoDbData_1.2.7    HDF5Array_1.22.1         
+[193] haven_2.4.3               reshape2_1.4.4           
+[195] gtable_0.3.0              spatstat.core_2.3-2      </code></pre>
+</div>
+</div>
+<div class="footnotes footnotes-end-of-document">
+<hr />
+<ol>
+<li id="fn1"><p>This is consistent with the use of UMI counts rather than read counts, as each transcript molecule can only produce one UMI count but can yield many reads after fragmentation.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

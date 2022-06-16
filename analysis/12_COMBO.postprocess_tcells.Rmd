@@ -1,0 +1,490 @@
+---
+title: "Analysis of scRNA-seq & CITE-seq Data Combined"
+subtitle: "Post-process T/NK Cells Sub-clustering Results"
+author: "Jovana Maksimovic"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+site: workflowr::wflow_site
+bibliography: ref.bib
+output:
+  bookdown::html_document2:
+    base_format: workflowr::wflow_html
+    toc: yes
+    toc_float: yes
+    theme: cosmo
+    highlight: textmate
+    number_sections: true
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+# Load libraries
+
+```{r, message=FALSE, echo=FALSE}
+suppressPackageStartupMessages(library(BiocStyle))
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(here))
+suppressPackageStartupMessages(library(glue))
+suppressPackageStartupMessages(library(Seurat))
+suppressPackageStartupMessages(library(patchwork))
+suppressPackageStartupMessages(library(paletteer))
+suppressPackageStartupMessages(library(tidyHeatmap))
+suppressPackageStartupMessages(library(speckle))
+suppressPackageStartupMessages(library(Cepo))
+source(here("code/utility.R"))
+source(here("code/helper_functions.R"))
+
+set.seed(42)
+options(scipen=999)
+options(future.globals.maxSize = 6500 * 1024^2)
+```
+
+# Load Data
+
+```{r, warning=FALSE, message=FALSE, fig.asp=1.25}
+out <- here("data/SCEs/06_COMBO.tcells_clustered.SEU.rds")
+seuInt <- readRDS(file = out)
+
+seuInt
+```
+# Sub-cluster annotation
+## Load manual annotations
+
+```{r}
+labels <- read_csv(here("data/TNK_subcluster_annotation_29.05.22.csv"))
+
+seuInt@meta.data %>%
+  left_join(labels %>%
+              mutate(Annotation = ifelse(is.na(Annotation),
+                                         "SUSPECT",
+                                         Annotation),
+                     Broad = ifelse(is.na(Broad),
+                                         "SUSPECT",
+                                         Broad)) %>%
+              mutate(Cluster = as.factor(Cluster),
+                     Annotation = as.factor(Annotation)),
+            by = c("integrated_snn_res.1" = "Cluster")) -> ann 
+
+ann %>% dplyr::pull(Annotation) -> seuInt$Annotation
+ann %>% dplyr::pull(Broad) -> seuInt$Broad
+
+seuInt$Annotation <- fct_drop(seuInt$Annotation)
+seuInt$Broad <- fct_drop(seuInt$Broad)
+seuInt
+```
+## Visulalise annotations
+
+```{r, fig.width=10, fig.asp=0.4}
+options(ggrepel.max.overlaps = Inf)
+DimPlot(seuInt, reduction = 'umap', label = TRUE, repel = TRUE, 
+        label.size = 2.5, group.by = "integrated_snn_res.1") + 
+  NoLegend() -> p1
+DimPlot(seuInt, reduction = 'umap', label = TRUE, repel = TRUE, 
+        label.size = 2.5, group.by = "Annotation") + 
+  NoLegend() +
+  scale_color_paletteer_d("miscpalettes::pastel") -> p2
+DimPlot(seuInt, reduction = 'umap', label = TRUE, repel = TRUE, 
+        label.size = 2.5, group.by = "Broad") + 
+  NoLegend() +
+  scale_color_paletteer_d("miscpalettes::pastel") -> p3
+
+(p1 | p2 | p3) & theme(text = element_text(size = 8),
+                  axis.text = element_text(size = 8))
+```
+
+### No. cells per cluster
+
+```{r}
+seuInt@meta.data %>%
+  ggplot(aes(x = Annotation, fill = Annotation)) +
+  geom_bar() +
+  geom_text(aes(label = ..count..), stat = "count",
+            vjust = -0.5, colour = "black", size = 2) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  NoLegend() +
+  scale_fill_paletteer_d("miscpalettes::pastel")
+
+seuInt@meta.data %>%
+  ggplot(aes(x = Broad, fill = Broad)) +
+  geom_bar() +
+  geom_text(aes(label = ..count..), stat = "count",
+            vjust = -0.5, colour = "black", size = 2) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  NoLegend() +
+  scale_fill_paletteer_d("miscpalettes::pastel")
+```
+
+### Remove SUSPECT clusters
+
+```{r}
+seuInt <- subset(seuInt, cells = which(seuInt$Annotation != "SUSPECT")) 
+seuInt$Annotation <- fct_drop(seuInt$Annotation)
+seuInt$Broad <- fct_drop(seuInt$Broad)
+
+DefaultAssay(seuInt) <- "integrated"
+seuInt <- RunPCA(seuInt, verbose = FALSE, dims = 1:30) %>%
+  RunUMAP(verbose = FALSE, dims = 1:30)
+```
+
+## Visulalise annotations
+
+```{r}
+DimPlot(seuInt, reduction = 'umap', label = TRUE, repel = FALSE, 
+        label.size = 3, group.by = "Annotation") + 
+  NoLegend() +
+  scale_color_paletteer_d("miscpalettes::pastel") +
+  xlim(c(-6, 8)) -> p2
+
+DimPlot(seuInt, reduction = 'umap', label = TRUE, repel = FALSE, 
+        label.size = 3, group.by = "Broad") + 
+  NoLegend() +
+  scale_color_paletteer_d("miscpalettes::pastel") -> p1
+
+(p1) & theme(text = element_text(size = 8),
+                  axis.text = element_text(size = 8))
+
+(p2) & theme(text = element_text(size = 8),
+                  axis.text = element_text(size = 8)) -> f3a
+f3a
+```
+
+## `Cepo` cluster marker genes 
+
+```{r}
+cepoMarkers <- Cepo(seuInt[["RNA"]]@data, 
+                   seuInt$Annotation, 
+                   exprsPct = 0.1,
+                   logfc = 1)
+
+sapply(1:ncol(cepoMarkers$stats), function(i){
+  names(sort(cepoMarkers$stats[,i], decreasing = TRUE))[1:20]
+}) -> dat
+
+colnames(dat) <- colnames(cepoMarkers$stats)
+dat %>% knitr::kable()
+```
+
+### `Cepo` marker gene dot plot
+
+Genes duplicated between clusters are excluded.
+
+```{r, fig.width=9, fig.asp=0.4}
+DefaultAssay(seuInt) <- "RNA"
+
+maxGenes <- 5
+sigGenes <- lapply(1:ncol(dat), function(i){
+  dat[,i][1:maxGenes]
+})
+sig <- unlist(sigGenes)
+geneCols <- c(rep(rep(c("blue","black"), each = maxGenes), 
+                  ceiling(ncol(dat)/2)))[1:length(sig)][!duplicated(sig)] 
+
+geneCols <- rep(paletteer_d("miscpalettes::pastel", ncol(dat)), 
+                each = maxGenes)[1:length(sig)][!duplicated(sig)] 
+
+pal <- paletteer::paletteer_d("vapoRwave::cool")
+DotPlot(seuInt,    
+        features = sig[!duplicated(sig)], 
+        group.by = "Annotation",
+        dot.scale = 2.5) + 
+  FontSize(y.text = 10, x.text = 9) + 
+  labs(y = element_blank(), x = element_blank()) + 
+  theme(axis.text.x = element_text(color = geneCols,
+                                   angle = 90,
+                                   hjust = 1,
+                                   vjust = 0.5,
+                                   face = "bold"),
+        legend.text = element_text(size = 8),
+        legend.title = element_text(size = 10)) +
+  scale_color_gradient2(low = pal[1], 
+                        mid = pal[3], 
+                        high = pal[5]) -> f3b
+f3b
+```
+
+## Visualise cytokines of interest
+
+```{r, fig.asp=0.8}
+markers <- read_csv(file = here("data",
+                                "T-NK_subclusters_cytokines.csv"),
+                    col_names = FALSE)
+p <- DotPlot(seuInt,
+             features = markers$X1,
+             cols = c("grey", "red"),
+             dot.scale = 5,
+             assay = "RNA",
+             group.by = "Annotation") +
+  theme(axis.text.x = element_text(angle = 90,
+                                   hjust = 1,
+                                   vjust = 0.5,
+                                   size = 8),
+        axis.text.y = element_text(size = 8),
+        text = element_text(size = 8)) +
+  coord_flip() +
+  labs(y = "Label", x = "Cytokine")
+
+p
+```
+
+# Load protein data
+## Add to `Seurat` object
+
+```{r}
+seuAdt <- readRDS(here("data",
+                       "SCEs",
+                       "04_COMBO.clustered_annotated_adt_diet.SEU.rds"))
+seuAdt <- subset(seuAdt, cells = colnames(seuInt))
+all(colnames(seuAdt) == colnames(seuInt))
+
+seuInt[["ADT.dsb"]] <- seuAdt[["ADT.dsb"]]
+seuInt[["ADT.raw"]] <- seuAdt[["ADT.raw"]]
+seuInt
+```
+```{r}
+rm(seuAdt)
+gc()
+```
+
+## Load protein annotations
+
+```{r, message=FALSE, warning=FALSE}
+prots <- read_csv(file = here("data",
+                              "sample_sheets",
+                              "TotalSeq-A_Universal_Cocktail_v1.0.csv")) %>%
+  dplyr::filter(grepl("^A0", id)) %>%
+  dplyr::filter(!grepl("[Ii]sotype", name)) 
+```
+## Visualise all ADTs
+
+Normalised with DSB. C133_Neeland ADT data was transferred to CF_BAL_Pilot using reference mapping and transfer.
+
+```{r, fig.asp=1}
+cbind(seuInt@meta.data, 
+      as.data.frame(t(seuInt@assays$ADT.dsb@data))) %>% 
+  dplyr::group_by(Annotation, experiment) %>% 
+  dplyr::summarize_at(.vars = prots$id, .funs = median) %>%
+  pivot_longer(c(-Annotation, -experiment), names_to = "ADT",
+               values_to = "ADT Exp.")  %>%
+  left_join(prots, by = c("ADT" = "id")) %>%
+  mutate(`Cell Label` = Annotation) %>%
+  dplyr::rename(Protein = name) |> 
+  dplyr::filter(experiment == 2) |>
+  ungroup() -> dat
+
+plot(density(dat$`ADT Exp.`))
+topMax <- 8
+abline(v = topMax, lty = 2, col = "grey")
+```
+
+```{r, fig.asp=2.5}
+dat |> heatmap(
+  .column = `Cell Label`,
+  .row = Protein,
+  .value = `ADT Exp.`,
+  scale = "none",
+  rect_gp = grid::gpar(col = "white", lwd = 1),
+  show_row_names = TRUE,
+  column_names_gp = grid::gpar(fontsize = 10),
+  column_title_gp = grid::gpar(fontsize = 12),
+  row_names_gp = grid::gpar(fontsize = 8),
+  row_title_gp = grid::gpar(fontsize = 12),
+  column_title_side = "top",
+    palette_value = circlize::colorRamp2(seq(-1, topMax, length.out = 256),
+                                         viridis::magma(256)),
+  heatmap_legend_param = list(direction = "vertical")) 
+```
+
+## Visualise ADTs of interest
+
+```{r}
+adt <- read_csv(file = here("data/Proteins_T-NK_22.04.22.csv"))
+adt <- adt[!duplicated(adt$DNA_ID),]
+  
+dat |>
+  dplyr::inner_join(adt, by = c("ADT" = "DNA_ID")) |>
+  mutate(Protein = `Name for heatmap`) |>
+  heatmap(
+    .column = Protein,
+    .row = `Cell Label`,
+    .value = `ADT Exp.`,
+    scale = "none",
+    rect_gp = grid::gpar(col = "white", lwd = 1),
+    show_row_names = TRUE,
+    column_names_gp = grid::gpar(fontsize = 10),
+    column_title_gp = grid::gpar(fontsize = 12),
+    row_names_gp = grid::gpar(fontsize = 10),
+    row_title_gp = grid::gpar(fontsize = 12),
+    column_title_side = "bottom",
+    heatmap_legend_param = list(direction = "vertical"),
+    palette_value = circlize::colorRamp2(seq(-1, topMax, length.out = 256),
+                                         viridis::magma(256)),
+    column_title_side = "bottom") |>
+  add_tile(`Cell Label`, show_legend = FALSE,
+           show_annotation_name = FALSE,
+           palette = paletteer_d("miscpalettes::pastel", 
+                                 length(levels(seuInt$Annotation)))) -> f3c
+
+wrap_heatmap(f3c)
+```
+
+# Proportions analysis
+## Load clinical information
+
+Import clinical characteristics and patient information and associate with `genetic_donor` IDs.
+
+```{r}
+info <- read.csv(file = here("data/sample_sheets/Sample_information.csv"))
+tab <- table(seuInt$HTO, seuInt$donor)
+tab <- tab[rownames(tab) != "Unknown",]
+
+apply(tab, 2, function(x){
+  names(which(x == max(x)))
+}) %>% data.frame %>%
+  dplyr::rename("HTO" = ".") %>%
+  rownames_to_column(var = "donor") %>%
+  inner_join(info, by = c("HTO" = "Sample")) %>%
+  mutate(Batch = factor(Batch)) -> info
+
+info %>% knitr::kable()
+```
+
+## Sub-cluster proportions (Broad)
+
+```{r}
+# Differences in cell type proportions
+props <- getTransformedProps(clusters = seuInt$Broad,
+                             sample = seuInt$donor, transform="asin")
+props$Proportions %>% knitr::kable()
+```
+
+### Cell proportions by donor
+
+```{r, fig.asp=1}
+props$Proportions %>%
+  data.frame %>%
+  inner_join(info, by = c("sample" = "donor")) %>%
+ggplot(aes(x = Participant, y = Freq, fill = clusters)) +
+  geom_bar(stat = "identity") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90,
+                                   vjust = 0.5,
+                                   hjust = 1),
+        legend.text = element_text(size = 8)) +
+  labs( y = "Proportion", fill = "Cell label") +
+  scale_fill_paletteer_d("miscpalettes::pastel")
+``` 
+
+### Cell proportions by donor, stratified by cell type
+
+```{r}
+props$Proportions %>%
+  data.frame %>%
+  inner_join(info, by = c("sample" = "donor")) %>%
+ggplot(aes(x = Participant, y = Freq, fill = clusters)) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~clusters, scales = "free_y") +
+  theme_classic() +
+  NoLegend() +
+  theme(axis.text.x = element_text(angle = 90,
+                                   vjust = 0.5,
+                                   hjust = 1,
+                                   size = 8),
+        strip.text = element_text(size = 10),
+        axis.text = element_text(size = 8)) +
+  labs( y = "Proportion", fill = "Cell label") +
+  scale_fill_paletteer_d("miscpalettes::pastel")
+```
+
+
+## Sub-cluster proportions (Fine)
+
+```{r}
+# Differences in cell type proportions
+props <- getTransformedProps(clusters = seuInt$Annotation,
+                             sample = seuInt$donor, transform="asin")
+props$Proportions %>% knitr::kable()
+```
+
+### Cell proportions by donor
+
+```{r, fig.asp=1}
+props$Proportions %>%
+  data.frame %>%
+  inner_join(info, by = c("sample" = "donor")) %>%
+ggplot(aes(x = Participant, y = Freq, fill = clusters)) +
+  geom_bar(stat = "identity") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90,
+                                   vjust = 0.5,
+                                   hjust = 1),
+        legend.text = element_text(size = 8)) +
+  labs(y = "Proportion", fill = "Cell label") +
+  scale_fill_paletteer_d("miscpalettes::pastel")
+``` 
+
+### Cell proportions by donor, stratified by cell type
+
+```{r, fig.asp=1, fig.width=9}
+props$Proportions %>%
+  data.frame %>%
+  inner_join(info, by = c("sample" = "donor")) %>%
+ggplot(aes(x = Participant, y = Freq, fill = clusters)) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~clusters, scales = "free_y") +
+  theme_classic() +
+  NoLegend() +
+  theme(axis.text.x = element_text(angle = 90,
+                                   vjust = 0.5,
+                                   hjust = 1,
+                                   size = 8),
+        strip.text = element_text(size = 10),
+        axis.text = element_text(size = 0)) +
+  labs(y = "Proportion", fill = "Cell label") +
+  scale_fill_paletteer_d("miscpalettes::pastel")
+```
+
+
+# Save data
+
+```{r}
+out <- here(glue("data/SCEs/06_COMBO.clean_tcells_diet.SEU.rds"))
+if(!file.exists(out)){
+  DefaultAssay(seuInt) <- "RNA"
+  saveRDS(DietSeurat(seuInt,
+                     assays = c("RNA", "ADT.dsb", "ADT.raw"),
+                     dimreducs = NULL,
+                     graphs = NULL), out)
+
+}
+```
+
+# Panel figures
+
+```{r, fig.width=9, fig.asp=1.3}
+layout = "AAAA
+          AAAA
+          AAAA
+          BBBB
+          BBBB
+          CCCC
+          CCCC
+          CCCC"
+((f3a + ggtitle("")) + 
+   f3b + 
+   wrap_heatmap(f3c)) + 
+  plot_layout(design = layout) +
+  plot_annotation(tag_levels = "A") &
+  theme(plot.tag = element_text(size = 14, face = "bold"))
+```
+
+# Session info {.appendix}
+
+<summary>The analysis and this document were prepared using the following software (click triangle to expand)</summary>
+<details>
+
+```{r}
+sessioninfo::session_info()
+```
+
+</details>

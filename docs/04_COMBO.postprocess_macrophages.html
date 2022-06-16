@@ -1,0 +1,3321 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Jovana Maksimovic" />
+
+<meta name="date" content="2022-05-19" />
+
+<title>Analysis of CF_BAL_Pilot &amp; C133_Neeland Data Combined</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">paed-cf-cite-seq</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Analysis of CF_BAL_Pilot &amp; C133_Neeland Data Combined</h1>
+<h3 class="subtitle">Post-process Macrophage Sub-clustering Results</h3>
+<h4 class="author">Jovana Maksimovic</h4>
+<h4 class="date">May 19, 2022</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2022-05-19
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>paed-cf-cite-seq/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version 1.7.0). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20210524code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20210524)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20210524code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20210524)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtreeece394b94246d8dbdc42755b9ee0a7340ffe455ftargetblankece394ba"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/ece394b94246d8dbdc42755b9ee0a7340ffe455f" target="_blank">ece394b</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtreeece394b94246d8dbdc42755b9ee0a7340ffe455ftargetblankece394ba" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/ece394b94246d8dbdc42755b9ee0a7340ffe455f" target="_blank">ece394b</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    data/CellRanger/
+    Ignored:    data/emptyDrops/bin/
+    Ignored:    renv/library/
+    Ignored:    renv/staging/
+
+Untracked files:
+    Untracked:  Rplots.pdf
+    Untracked:  analysis/03_COMBO.annotation_markers.Rmd
+    Untracked:  analysis/03_COMBO.protein_analysis.Rmd
+    Untracked:  analysis/04_COMBO.compare_annotations.Rmd
+    Untracked:  analysis/04_COMBO_expression_analysis.Rmd
+    Untracked:  analysis/scGateDB/
+    Untracked:  code/03_C133_Neeland-dropletutils.R
+    Untracked:  code/03_COMBO.proteins_geneBasis.R
+    Untracked:  code/deidentify.R
+    Untracked:  data/190930_A00152_0150_BHTYCMDSXX/
+    Untracked:  data/CITE-seq_pilot_proportions_final.csv
+    Untracked:  data/Flow_data_CITEseq_2-8.csv
+    Untracked:  data/GSE127465_RAW/
+    Untracked:  data/GSE130148_barcodes_cell_types.txt
+    Untracked:  data/GSE130148_raw_counts.RData
+    Untracked:  data/Macrophage_subcluster_annotation_110322.csv
+    Untracked:  data/Other_subcluster_annotation_110322.csv
+    Untracked:  data/Proteins_T-NK_22.04.22.csv
+    Untracked:  data/Proteins_broad_22.04.22.csv
+    Untracked:  data/Proteins_macs_22.04.22.csv
+    Untracked:  data/Proteins_other_22.04.22.csv
+    Untracked:  data/T-NK_subcluster_annotation_110322.csv
+    Untracked:  data/T-NK_subcluster_proteins.csv
+    Untracked:  data/T-NK_subcluster_proteins_110322.csv
+    Untracked:  data/T-NK_subclusters_cytokines.csv
+    Untracked:  data/T-NK_subclusters_markergenes_110322.csv
+    Untracked:  data/TNK_subcluster_annotation_09.04.22.csv
+    Untracked:  data/all_azimuth_cluster_cytokines.csv
+    Untracked:  data/all_azimuth_clusters_proteins.csv
+    Untracked:  data/cell_type_category_rna_Granulocytes_Cell.tsv
+    Untracked:  data/consolidated_markers.rds
+    Untracked:  data/gb-genes-50.rds
+    Untracked:  data/genome1K.phase3.SNP_AF5e4.chr1toX.hg38.vcf.gz
+    Untracked:  data/macrophage_subcluster_annotation_09.04.22.csv
+    Untracked:  data/macrophage_subcluster_cytokines.csv
+    Untracked:  data/macrophage_subcluster_markergenes_110322.csv
+    Untracked:  data/macrophage_subcluster_markergenes_160322.csv
+    Untracked:  data/macrophage_subcluster_proteins.csv
+    Untracked:  data/macrophage_subcluster_proteins_110322.csv
+    Untracked:  data/nCoV.all.cell.annotation.meta.txt
+    Untracked:  data/nCoV.rds
+    Untracked:  data/neutrophil.tsv
+    Untracked:  data/other_subcluster_proteins.csv
+    Untracked:  data/other_subcluster_proteins_110322.csv
+    Untracked:  data/other_subclusters_cytokines.csv
+    Untracked:  data/other_subclusters_markergenes_110322.csv
+    Untracked:  data/others_subcluster_annotation_09.04.22.csv
+    Untracked:  data/proteins_ranked.rds
+    Untracked:  data/sample_sheets/Hashtag_Feature_Ref_With_Clin.csv
+    Untracked:  data/sample_sheets/Sample_information.csv
+    Untracked:  data/sample_sheets/TotalSeq_A_Human_Universal_Cocktail_Proteins of interest_29.09.21.csv
+    Untracked:  data/sample_sheets/TotalSeq_A_Human_Universal_Cocktail_Proteins_of_interest_28.06.21.csv
+    Untracked:  output/ADT-counts.csv
+    Untracked:  output/C133_Neeland.azimuth.individual_cell_type_proportions.csv
+    Untracked:  output/C133_Neeland.azimuth.phenotype_information.csv
+    Untracked:  output/C133_Neeland.individual_cell_type_proportions.csv
+    Untracked:  output/C133_Neeland.phenotype_information.csv
+    Untracked:  output/DEGs-New/
+    Untracked:  output/DEGs/
+    Untracked:  output/glimma-plots/js/labelled-singlets-md-plot.js
+    Untracked:  output/glimma-plots/js/qc-md-plot_03_C133_Neeland.js
+    Untracked:  output/glimma-plots/js/qc-md-plot_C133_Neeland.js
+    Untracked:  output/glimma-plots/js/qc-md-plot_CF-BAL-Pilot.js
+    Untracked:  output/glimma-plots/labelled-singlets-md-plot.html
+    Untracked:  output/glimma-plots/qc-md-plot_03_C133_Neeland.html
+    Untracked:  output/glimma-plots/qc-md-plot_C133_Neeland.html
+    Untracked:  output/glimma-plots/qc-md-plot_CF-BAL-Pilot.html
+    Untracked:  output/marker-analysis-mod/
+    Untracked:  output/marker-analysis/
+    Untracked:  output/metadata.csv
+    Untracked:  output/protein_labels.pdf
+    Untracked:  scGateDB/
+    Untracked:  wflow_background.R
+
+Unstaged changes:
+    Modified:   analysis/01_C133_Neeland.azimuth.expression_differences.Rmd
+    Modified:   analysis/03_COMBO.cluster_macrophages.Rmd
+    Modified:   analysis/03_COMBO.compare_annotations.Rmd
+    Modified:   analysis/03_COMBO.proportion_analysis.Rmd
+    Modified:   analysis/04_COMBO.postprocess_all.Rmd
+    Modified:   analysis/04_COMBO.proportion_analysis.Rmd
+    Modified:   code/utility.R
+    Modified:   data/SCEs/C133_Neeland.CellRanger.SCE.rds
+    Modified:   data/SCEs/C133_Neeland.demultiplexed.SCE.rds
+    Deleted:    data/SCEs/C133_Neeland.preprocessed.SCE.hto.rds
+    Deleted:    data/SCEs/C133_Neeland.preprocessed.SCE_hto.rds
+    Deleted:    data/SCEs/C133_Neeland.preprocessed.SCE_snp.rds
+    Modified:   data/sample_sheets/TotalSeq-A_Universal_Cocktail_v1.0.csv
+    Modified:   data/vireo/C133_1/GT_donors.vireo.vcf.gz
+    Modified:   data/vireo/C133_1/_log.txt
+    Modified:   data/vireo/C133_1/donor_ids.tsv
+    Modified:   data/vireo/C133_1/fig_GT_distance_estimated.pdf
+    Modified:   data/vireo/C133_1/prob_doublet.tsv.gz
+    Modified:   data/vireo/C133_1/prob_singlet.tsv.gz
+    Modified:   data/vireo/C133_1/summary.tsv
+    Modified:   data/vireo/C133_2/GT_donors.vireo.vcf.gz
+    Modified:   data/vireo/C133_2/_log.txt
+    Modified:   data/vireo/C133_2/donor_ids.tsv
+    Modified:   data/vireo/C133_2/fig_GT_distance_estimated.pdf
+    Modified:   data/vireo/C133_2/prob_doublet.tsv.gz
+    Modified:   data/vireo/C133_2/prob_singlet.tsv.gz
+    Modified:   data/vireo/C133_2/summary.tsv
+    Modified:   output/glimma-plots/js/qc-md-plot.js
+    Modified:   output/glimma-plots/js/stripped-nuclei-md-plot.js
+    Modified:   renv.lock
+    Modified:   renv/.gitignore
+    Modified:   renv/activate.R
+    Modified:   renv/settings.dcf
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/04_COMBO.postprocess_macrophages.Rmd</code>) and HTML (<code>docs/04_COMBO.postprocess_macrophages.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/ece394b94246d8dbdc42755b9ee0a7340ffe455f/analysis/04_COMBO.postprocess_macrophages.Rmd" target="_blank">ece394b</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-19
+</td>
+<td>
+wflow_publish(c("analysis/04_COMBO.postprocess_macrophages.Rmd"))
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/c07e24c3b87cc17cb026387c6752ea3a61658d05/docs/04_COMBO.postprocess_macrophages.html" target="_blank">c07e24c</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-13
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/97919bcdb5aa9cf4daf1c5c9c83ba13689d03992/analysis/04_COMBO.postprocess_macrophages.Rmd" target="_blank">97919bc</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-13
+</td>
+<td>
+wflow_publish(c("analysis/04_COMBO.postprocess_macrophages.Rmd"))
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/8c379e5d21e0a84086bf5f9d47f1dfd58a23cdd8/docs/04_COMBO.postprocess_macrophages.html" target="_blank">8c379e5</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-09
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/9f13391db208291a3a1b6a46bd2b83e1ab208772/docs/04_COMBO.postprocess_macrophages.html" target="_blank">9f13391</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-09
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/0d5ebcf90b6a4372d61c04dea8dd29d41e7c1630/analysis/04_COMBO.postprocess_macrophages.Rmd" target="_blank">0d5ebcf</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-09
+</td>
+<td>
+wflow_publish(c("analysis/04_COMBO.postprocess_macrophages.Rmd"))
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/e80bd3297b230a1d18c373ece7e30184fa468578/docs/04_COMBO.postprocess_macrophages.html" target="_blank">e80bd32</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-06
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/4f94c381a11a99f7ea202778f222aa3119571dfd/analysis/04_COMBO.postprocess_macrophages.Rmd" target="_blank">4f94c38</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-06
+</td>
+<td>
+wflow_publish(c("analysis/04_COMBO.postprocess_macrophages.Rmd"))
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/ca819d53d09294313d6fbb6994b37ef68e277b2e/docs/04_COMBO.postprocess_macrophages.html" target="_blank">ca819d5</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-04-26
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/12be3d1db2052b2921fa41ad684e9a58d3b6d409/analysis/04_COMBO.postprocess_macrophages.Rmd" target="_blank">12be3d1</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-04-26
+</td>
+<td>
+wflow_publish("analysis/04_COMBO.postprocess_macrophages.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/dc93a22aa825dabcdd4112c89f0e2fa7255b0760/docs/04_COMBO.postprocess_macrophages.html" target="_blank">dc93a22</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-04-26
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/38e648476d1ed1b28097c8df4f7e6e1e198c6c45/analysis/04_COMBO.postprocess_macrophages.Rmd" target="_blank">38e6484</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-04-26
+</td>
+<td>
+wflow_publish(c("analysis/04_COMBO.postprocess_macrophages.Rmd"))
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/80fb348e84f0ba47cda5938ea5fd7615d1174a50/docs/04_COMBO.postprocess_macrophages.html" target="_blank">80fb348</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-04-11
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/6bcfa9bc50624b3f4b009f14f79da6cbbfc9ec89/analysis/04_COMBO.postprocess_macrophages.Rmd" target="_blank">6bcfa9b</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-04-11
+</td>
+<td>
+wflow_publish(c("analysis/04_COMBO.postprocess_macrophages.Rmd"))
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="load-libraries" class="section level1">
+<h1>Load libraries</h1>
+</div>
+<div id="load-data" class="section level1">
+<h1>Load Data</h1>
+<pre class="r"><code>out &lt;- here(&quot;data/SCEs/04_COMBO.macrophages_clustered.SEU.rds&quot;)
+seuInt &lt;- readRDS(file = out)
+
+seuInt$integrated_snn_res.2 &lt;- NULL
+seuInt$integrated_snn_res.1.1 &lt;- NULL
+seuInt$integrated_snn_res.1.2 &lt;- NULL
+seuInt$integrated_snn_res.1.5 &lt;- NULL
+seuInt</code></pre>
+<pre><code>An object of class Seurat 
+33301 features across 33161 samples within 3 assays 
+Active assay: integrated (3000 features, 3000 variable features)
+ 2 other assays present: RNA, SCT
+ 2 dimensional reductions calculated: pca, umap</code></pre>
+</div>
+<div id="sub-cluster-annotation" class="section level1">
+<h1>Sub-cluster annotation</h1>
+<div id="load-manual-annotations" class="section level2">
+<h2>Load manual annotations</h2>
+<pre class="r"><code>labels &lt;- read_csv(here(&quot;data/macrophage_subcluster_annotation_09.04.22.csv&quot;))
+
+seuInt@meta.data %&gt;%
+  left_join(labels %&gt;%
+              mutate(Annotation = ifelse(is.na(Annotation),
+                                         &quot;SUSPECT&quot;,
+                                         Annotation),
+                     Broad = ifelse(is.na(Broad),
+                                         &quot;SUSPECT&quot;,
+                                         Broad)) %&gt;%
+              mutate(Cluster = as.factor(Cluster),
+                     Annotation = as.factor(Annotation)),
+            by = c(&quot;integrated_snn_res.1&quot; = &quot;Cluster&quot;)) -&gt; ann 
+
+ann %&gt;% dplyr::pull(Annotation) -&gt; seuInt$Annotation
+ann %&gt;% dplyr::pull(Broad) -&gt; seuInt$Broad
+
+seuInt$Annotation &lt;- fct_drop(seuInt$Annotation)
+seuInt$Broad &lt;- fct_drop(seuInt$Broad)
+seuInt</code></pre>
+<pre><code>An object of class Seurat 
+33301 features across 33161 samples within 3 assays 
+Active assay: integrated (3000 features, 3000 variable features)
+ 2 other assays present: RNA, SCT
+ 2 dimensional reductions calculated: pca, umap</code></pre>
+</div>
+<div id="visulalise-annotations" class="section level2">
+<h2>Visulalise annotations</h2>
+<pre class="r"><code>options(ggrepel.max.overlaps = Inf)
+DimPlot(seuInt, reduction = &#39;umap&#39;, label = TRUE, repel = TRUE, 
+        label.size = 3, group.by = &quot;integrated_snn_res.1&quot;) + 
+  NoLegend() -&gt; p1
+DimPlot(seuInt, reduction = &#39;umap&#39;, label = TRUE, repel = TRUE, 
+        label.size = 3, group.by = &quot;Annotation&quot;) + 
+  NoLegend() +
+  scale_color_paletteer_d(&quot;miscpalettes::pastel&quot;) -&gt; p2
+
+(p1 | p2) &amp; theme(text = element_text(size = 8),
+                  axis.text = element_text(size = 8))</code></pre>
+<p><img src="figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-5-1.png" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-1">
+Past versions of unnamed-chunk-5-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-5-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/c07e24c3b87cc17cb026387c6752ea3a61658d05/docs/figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-5-1.png" target="_blank">c07e24c</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-13
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/80fb348e84f0ba47cda5938ea5fd7615d1174a50/docs/figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-5-1.png" target="_blank">80fb348</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-04-11
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>f2a &lt;- p2</code></pre>
+<div id="no.-cells-per-cluster" class="section level3">
+<h3>No. cells per cluster</h3>
+<pre class="r"><code>seuInt@meta.data %&gt;%
+  ggplot(aes(x = Annotation, fill = Annotation)) +
+  geom_bar() +
+  geom_text(aes(label = ..count..), stat = &quot;count&quot;,
+            vjust = -0.5, colour = &quot;black&quot;, size = 2) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  NoLegend() +
+  scale_fill_paletteer_d(&quot;miscpalettes::pastel&quot;)</code></pre>
+<p><img src="figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-1">
+Past versions of unnamed-chunk-6-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/80fb348e84f0ba47cda5938ea5fd7615d1174a50/docs/figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-6-1.png" target="_blank">80fb348</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-04-11
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="cepo-cluster-marker-genes" class="section level2">
+<h2><code>Cepo</code> cluster marker genes</h2>
+<pre class="r"><code>cepoMarkers &lt;- Cepo(seuInt[[&quot;RNA&quot;]]@data, 
+                   seuInt$Annotation, 
+                   exprsPct = 0.1,
+                   logfc = 1)
+
+sapply(1:ncol(cepoMarkers$stats), function(i){
+  names(sort(cepoMarkers$stats[,i], decreasing = TRUE))[1:20]
+}) -&gt; dat
+
+colnames(dat) &lt;- colnames(cepoMarkers$stats)
+dat %&gt;% knitr::kable()</code></pre>
+<table style="width:100%;">
+<colgroup>
+<col width="8%" />
+<col width="5%" />
+<col width="10%" />
+<col width="7%" />
+<col width="5%" />
+<col width="7%" />
+<col width="5%" />
+<col width="5%" />
+<col width="7%" />
+<col width="4%" />
+<col width="8%" />
+<col width="7%" />
+<col width="14%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">alveolar.macs</th>
+<th align="left">macro.CCL</th>
+<th align="left">macro.cholesterol</th>
+<th align="left">macro.ifna.b</th>
+<th align="left">macro.int</th>
+<th align="left">macro.lipid</th>
+<th align="left">macro.MT</th>
+<th align="left">macro.reg</th>
+<th align="left">macro.repair</th>
+<th align="left">macro.T</th>
+<th align="left">macro.vesicle</th>
+<th align="left">macro.viral</th>
+<th align="left">proliferating.macrophage</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">GPD1</td>
+<td align="left">TNFAIP6</td>
+<td align="left">MSMO1</td>
+<td align="left">IFI27</td>
+<td align="left">VCAN</td>
+<td align="left">MT2A</td>
+<td align="left">MT1X</td>
+<td align="left">GDF15</td>
+<td align="left">CDKN1A</td>
+<td align="left">IL32</td>
+<td align="left">AZU1</td>
+<td align="left">IFI44L</td>
+<td align="left">PCLAF</td>
+</tr>
+<tr class="even">
+<td align="left">INHBA</td>
+<td align="left">SOD2</td>
+<td align="left">FDFT1</td>
+<td align="left">IGF1</td>
+<td align="left">FCGR2B</td>
+<td align="left">MT1E</td>
+<td align="left">MT1G</td>
+<td align="left">ATF4</td>
+<td align="left">GDF15</td>
+<td align="left">TRAC</td>
+<td align="left">HP</td>
+<td align="left">IFIT1</td>
+<td align="left">MKI67</td>
+</tr>
+<tr class="odd">
+<td align="left">CA2</td>
+<td align="left">CCL4</td>
+<td align="left">INHBA</td>
+<td align="left">GPD1</td>
+<td align="left">FCN1</td>
+<td align="left">NUPR1</td>
+<td align="left">MT2A</td>
+<td align="left">CXCR4</td>
+<td align="left">MDM2</td>
+<td align="left">TRBC2</td>
+<td align="left">PLAC8</td>
+<td align="left">RSAD2</td>
+<td align="left">BIRC5</td>
+</tr>
+<tr class="even">
+<td align="left">AQP3</td>
+<td align="left">MARCKS</td>
+<td align="left">AQP3</td>
+<td align="left">INHBA</td>
+<td align="left">FPR3</td>
+<td align="left">RBP4</td>
+<td align="left">MT1E</td>
+<td align="left">RND3</td>
+<td align="left">INHBA</td>
+<td align="left">CCL5</td>
+<td align="left">IGF1</td>
+<td align="left">CXCL10</td>
+<td align="left">TYMS</td>
+</tr>
+<tr class="odd">
+<td align="left">MME</td>
+<td align="left">TNIP3</td>
+<td align="left">PCOLCE2</td>
+<td align="left">ITIH5</td>
+<td align="left">TMEM176B</td>
+<td align="left">CXCR4</td>
+<td align="left">MT1H</td>
+<td align="left">CDKN1A</td>
+<td align="left">FCN1</td>
+<td align="left">CD2</td>
+<td align="left">ITIH5</td>
+<td align="left">MX1</td>
+<td align="left">TK1</td>
+</tr>
+<tr class="even">
+<td align="left">IGF1</td>
+<td align="left">CCL20</td>
+<td align="left">RND3</td>
+<td align="left">AQP3</td>
+<td align="left">CORO1A</td>
+<td align="left">MT1X</td>
+<td align="left">MT1M</td>
+<td align="left">MAFB</td>
+<td align="left">AQP3</td>
+<td align="left">ARL4C</td>
+<td align="left">CD2</td>
+<td align="left">IFIT2</td>
+<td align="left">CENPM</td>
+</tr>
+<tr class="odd">
+<td align="left">IL1A</td>
+<td align="left">CCL4L2</td>
+<td align="left">TUBA1A</td>
+<td align="left">QSOX1</td>
+<td align="left">CCL2</td>
+<td align="left">SCD</td>
+<td align="left">MT1F</td>
+<td align="left">EMP1</td>
+<td align="left">GPD1</td>
+<td align="left">CORO1A</td>
+<td align="left">MS4A6A</td>
+<td align="left">HERC5</td>
+<td align="left">TOP2A</td>
+</tr>
+<tr class="even">
+<td align="left">APOC2</td>
+<td align="left">CCL3</td>
+<td align="left">GPD1</td>
+<td align="left">PCOLCE2</td>
+<td align="left">TMEM176A</td>
+<td align="left">CCL18</td>
+<td align="left">GPD1</td>
+<td align="left">SNHG12</td>
+<td align="left">CA2</td>
+<td align="left">GPR183</td>
+<td align="left">STMN1</td>
+<td align="left">NT5C3A</td>
+<td align="left">ASPM</td>
+</tr>
+<tr class="odd">
+<td align="left">QSOX1</td>
+<td align="left">ICAM1</td>
+<td align="left">IGF1</td>
+<td align="left">SERPING1</td>
+<td align="left">PLA2G7</td>
+<td align="left">CES1</td>
+<td align="left">AQP3</td>
+<td align="left">FABP3</td>
+<td align="left">NCF1</td>
+<td align="left">GNLY</td>
+<td align="left">IER3</td>
+<td align="left">IFITM3</td>
+<td align="left">RRM2</td>
+</tr>
+<tr class="even">
+<td align="left">ITIH5</td>
+<td align="left">C15orf48</td>
+<td align="left">RGCC</td>
+<td align="left">MCEMP1</td>
+<td align="left">MARCKS</td>
+<td align="left">ZFP36L1</td>
+<td align="left">RETN</td>
+<td align="left">SLC3A2</td>
+<td align="left">IGSF6</td>
+<td align="left">LTB</td>
+<td align="left">PCOLCE2</td>
+<td align="left">IFIT3</td>
+<td align="left">TPX2</td>
+</tr>
+<tr class="odd">
+<td align="left">MCEMP1</td>
+<td align="left">TNFAIP2</td>
+<td align="left">IL1A</td>
+<td align="left">PHLDA3</td>
+<td align="left">EMP1</td>
+<td align="left">BASP1</td>
+<td align="left">MCEMP1</td>
+<td align="left">ZFAS1</td>
+<td align="left">CD9</td>
+<td align="left">CCL4</td>
+<td align="left">ACO1</td>
+<td align="left">ISG15</td>
+<td align="left">UBE2C</td>
+</tr>
+<tr class="even">
+<td align="left">RETN</td>
+<td align="left">CCL23</td>
+<td align="left">MIR3945HG</td>
+<td align="left">IL1A</td>
+<td align="left">GPR183</td>
+<td align="left">FCGR3A</td>
+<td align="left">HP</td>
+<td align="left">CD9</td>
+<td align="left">RGCC</td>
+<td align="left">KLF6</td>
+<td align="left">G0S2</td>
+<td align="left">TNFSF10</td>
+<td align="left">CDK1</td>
+</tr>
+<tr class="odd">
+<td align="left">LTB</td>
+<td align="left">MIR3945HG</td>
+<td align="left">IGSF6</td>
+<td align="left">RND3</td>
+<td align="left">C15orf48</td>
+<td align="left">HMGB2</td>
+<td align="left">ITIH5</td>
+<td align="left">RBP4</td>
+<td align="left">HLA-DRB5</td>
+<td align="left">CXCR4</td>
+<td align="left">INHBA</td>
+<td align="left">MIR3945HG</td>
+<td align="left">HMMR</td>
+</tr>
+<tr class="even">
+<td align="left">FABP4</td>
+<td align="left">CXCL5</td>
+<td align="left">ITIH5</td>
+<td align="left">LGMN</td>
+<td align="left">SDS</td>
+<td align="left">MME</td>
+<td align="left">IFI27</td>
+<td align="left">NUPR1</td>
+<td align="left">C15orf48</td>
+<td align="left">DUSP2</td>
+<td align="left">RBP4</td>
+<td align="left">GBP1</td>
+<td align="left">CCNB2</td>
+</tr>
+<tr class="odd">
+<td align="left">RGCC</td>
+<td align="left">CXCL8</td>
+<td align="left">CKS1B</td>
+<td align="left">FABP4</td>
+<td align="left">SOCS3</td>
+<td align="left">CD2</td>
+<td align="left">QSOX1</td>
+<td align="left">PHLDA3</td>
+<td align="left">PCNA</td>
+<td align="left">IER2</td>
+<td align="left">RETN</td>
+<td align="left">IGF1</td>
+<td align="left">CENPF</td>
+</tr>
+<tr class="even">
+<td align="left">IGFBP2</td>
+<td align="left">CXCL10</td>
+<td align="left">IER3</td>
+<td align="left">LTB</td>
+<td align="left">FGL2</td>
+<td align="left">CCL3</td>
+<td align="left">IGF1</td>
+<td align="left">KLF6</td>
+<td align="left">MCEMP1</td>
+<td align="left">TNFAIP3</td>
+<td align="left">QSOX1</td>
+<td align="left">PLEKHO1</td>
+<td align="left">CDKN3</td>
+</tr>
+<tr class="odd">
+<td align="left">MRC1</td>
+<td align="left">TNFAIP3</td>
+<td align="left">G0S2</td>
+<td align="left">RGCC</td>
+<td align="left">BASP1</td>
+<td align="left">SOD2</td>
+<td align="left">C1QC</td>
+<td align="left">CA2</td>
+<td align="left">MRC1</td>
+<td align="left">RGS1</td>
+<td align="left">FGL2</td>
+<td align="left">IL1A</td>
+<td align="left">PTTG1</td>
+</tr>
+<tr class="even">
+<td align="left">ACO1</td>
+<td align="left">ACSL1</td>
+<td align="left">SCD</td>
+<td align="left">CES1</td>
+<td align="left">ZFP36L1</td>
+<td align="left">SERPING1</td>
+<td align="left">PCOLCE2</td>
+<td align="left">CES1</td>
+<td align="left">IGF1</td>
+<td align="left">TUBA1A</td>
+<td align="left">CFD</td>
+<td align="left">APOC2</td>
+<td align="left">NUSAP1</td>
+</tr>
+<tr class="odd">
+<td align="left">HP</td>
+<td align="left">CD83</td>
+<td align="left">MCEMP1</td>
+<td align="left">C1QB</td>
+<td align="left">RNASE1</td>
+<td align="left">ACO1</td>
+<td align="left">S100A8</td>
+<td align="left">DEK</td>
+<td align="left">PHLDA3</td>
+<td align="left">ZFP36L1</td>
+<td align="left">TMEM176A</td>
+<td align="left">C1QC</td>
+<td align="left">SMC4</td>
+</tr>
+<tr class="even">
+<td align="left">PHLDA3</td>
+<td align="left">CXCL9</td>
+<td align="left">CA2</td>
+<td align="left">G0S2</td>
+<td align="left">PLEKHO1</td>
+<td align="left">FPR3</td>
+<td align="left">CES1</td>
+<td align="left">MDM2</td>
+<td align="left">MME</td>
+<td align="left">FOS</td>
+<td align="left">IFI44L</td>
+<td align="left">IFI6</td>
+<td align="left">TMEM106C</td>
+</tr>
+</tbody>
+</table>
+<div id="cepo-marker-gene-dot-plot" class="section level3">
+<h3><code>Cepo</code> marker gene dot plot</h3>
+<p>Genes duplicated between clusters are excluded.</p>
+<pre class="r"><code>DefaultAssay(seuInt) &lt;- &quot;RNA&quot;
+
+maxGenes &lt;- 5
+sigGenes &lt;- lapply(1:ncol(dat), function(i){
+  dat[,i][1:maxGenes]
+})
+
+sig &lt;- unlist(sigGenes)
+geneCols &lt;- c(rep(rep(c(&quot;blue&quot;,&quot;black&quot;), each = maxGenes), 
+                  ceiling(ncol(dat)/2)))[1:length(sig)][!duplicated(sig)] 
+
+geneCols &lt;- rep(paletteer_d(&quot;miscpalettes::pastel&quot;, ncol(dat)), 
+                each = maxGenes)[1:length(sig)][!duplicated(sig)] 
+
+pal &lt;- paletteer::paletteer_d(&quot;vapoRwave::cool&quot;)
+DotPlot(seuInt,    
+        features = sig[!duplicated(sig)], 
+        group.by = &quot;Annotation&quot;,
+        dot.scale = 2.5) + 
+  FontSize(y.text = 10, x.text = 9) + 
+  labs(y = element_blank(), x = element_blank()) + 
+  theme(axis.text.x = element_text(color = geneCols,
+                                   angle = 90,
+                                   hjust = 1,
+                                   vjust = 0.5,
+                                   face = &quot;bold&quot;),
+        legend.text = element_text(size = 8),
+        legend.title = element_text(size = 10)) +
+  scale_color_gradient2(low = pal[1], 
+                        mid = pal[3], 
+                        high = pal[5]) -&gt; f2c
+f2c</code></pre>
+<p><img src="figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-8-1.png" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-1">
+Past versions of unnamed-chunk-8-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/c07e24c3b87cc17cb026387c6752ea3a61658d05/docs/figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-8-1.png" target="_blank">c07e24c</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-13
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/9f13391db208291a3a1b6a46bd2b83e1ab208772/docs/figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-8-1.png" target="_blank">9f13391</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/e80bd3297b230a1d18c373ece7e30184fa468578/docs/figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-8-1.png" target="_blank">e80bd32</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-06
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/80fb348e84f0ba47cda5938ea5fd7615d1174a50/docs/figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-8-1.png" target="_blank">80fb348</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-04-11
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="visualise-cytokines-of-interest" class="section level2">
+<h2>Visualise cytokines of interest</h2>
+<pre class="r"><code>markers &lt;- read_csv(file = here(&quot;data&quot;,
+                                &quot;macrophage_subcluster_cytokines.csv&quot;),
+                    col_names = FALSE)
+p &lt;- DotPlot(seuInt,
+             features = markers$X1,
+             cols = c(&quot;grey&quot;, &quot;red&quot;),
+             dot.scale = 5,
+             assay = &quot;RNA&quot;,
+             group.by = &quot;Annotation&quot;) +
+  theme(axis.text.x = element_text(angle = 90,
+                                   hjust = 1,
+                                   vjust = 0.5,
+                                   size = 8),
+        axis.text.y = element_text(size = 8),
+        text = element_text(size = 8)) +
+  coord_flip() +
+  labs(y = &quot;Label&quot;, x = &quot;Cytokine&quot;)
+
+p</code></pre>
+<p><img src="figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-1">
+Past versions of unnamed-chunk-9-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/9f13391db208291a3a1b6a46bd2b83e1ab208772/docs/figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-9-1.png" target="_blank">9f13391</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/e80bd3297b230a1d18c373ece7e30184fa468578/docs/figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-9-1.png" target="_blank">e80bd32</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-06
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/80fb348e84f0ba47cda5938ea5fd7615d1174a50/docs/figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-9-1.png" target="_blank">80fb348</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-04-11
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="load-protein-data" class="section level1">
+<h1>Load protein data</h1>
+<div id="add-to-seurat-object" class="section level2">
+<h2>Add to <code>Seurat</code> object</h2>
+<pre class="r"><code>seuAdt &lt;- readRDS(here(&quot;data&quot;,
+                       &quot;SCEs&quot;,
+                       &quot;04_COMBO.clustered_annotated_adt_diet.SEU.rds&quot;))
+seuAdt &lt;- subset(seuAdt, cells = colnames(seuInt))
+all(colnames(seuAdt) == colnames(seuInt))</code></pre>
+<pre><code>[1] TRUE</code></pre>
+<pre class="r"><code>seuInt[[&quot;ADT.dsb&quot;]] &lt;- seuAdt[[&quot;ADT.dsb&quot;]]
+seuInt[[&quot;ADT.raw&quot;]] &lt;- seuAdt[[&quot;ADT.raw&quot;]]
+seuInt</code></pre>
+<pre><code>An object of class Seurat 
+33623 features across 33161 samples within 5 assays 
+Active assay: RNA (15578 features, 0 variable features)
+ 4 other assays present: SCT, integrated, ADT.dsb, ADT.raw
+ 2 dimensional reductions calculated: pca, umap</code></pre>
+<pre class="r"><code>rm(seuAdt)
+gc()</code></pre>
+<pre><code>             used   (Mb) gc trigger    (Mb)   max used    (Mb)
+Ncells   13945360  744.8   24168591  1290.8   21279440  1136.5
+Vcells 1203506588 9182.1 2768779842 21124.2 2489658456 18994.6</code></pre>
+</div>
+<div id="load-protein-annotations" class="section level2">
+<h2>Load protein annotations</h2>
+<pre class="r"><code>prots &lt;- read_csv(file = here(&quot;data&quot;,
+                              &quot;sample_sheets&quot;,
+                              &quot;TotalSeq-A_Universal_Cocktail_v1.0.csv&quot;)) %&gt;%
+  dplyr::filter(grepl(&quot;^A0&quot;, id)) %&gt;%
+  dplyr::filter(!grepl(&quot;[Ii]sotype&quot;, name)) </code></pre>
+</div>
+<div id="visualise-all-adts" class="section level2">
+<h2>Visualise all ADTs</h2>
+<p>Normalised with DSB. C133_Neeland ADT data was transferred to CF_BAL_Pilot using reference mapping and transfer.</p>
+<pre class="r"><code>cbind(seuInt@meta.data, 
+           as.data.frame(t(seuInt@assays$ADT.dsb@data))) %&gt;% 
+  dplyr::filter(experiment == 2) %&gt;%
+  dplyr::group_by(Annotation) %&gt;% 
+  dplyr::summarize_at(.vars = prots$id, .funs = median) %&gt;% 
+  tibble::remove_rownames() %&gt;% 
+  tibble::column_to_rownames(&quot;Annotation&quot;) -&gt; dsb.adt.plot
+
+pheatmap::pheatmap((dsb.adt.plot), 
+                   color = viridis::viridis(25, option = &quot;B&quot;), 
+                   fontsize_row = 10, border_color = &quot;black&quot;,
+                   cellwidth = 10, cellheight = 10,
+                   labels_col = gsub(&quot;anti-human&quot;, &quot;&quot;, prots$name),
+                   main = &quot;C133_Neeland&quot;)</code></pre>
+<p><img src="figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-13-1.png" width="2400" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-1">
+Past versions of unnamed-chunk-13-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/9f13391db208291a3a1b6a46bd2b83e1ab208772/docs/figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-13-1.png" target="_blank">9f13391</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/e80bd3297b230a1d18c373ece7e30184fa468578/docs/figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-13-1.png" target="_blank">e80bd32</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-06
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/80fb348e84f0ba47cda5938ea5fd7615d1174a50/docs/figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-13-1.png" target="_blank">80fb348</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-04-11
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>cbind(seuInt@meta.data, 
+           as.data.frame(t(seuInt@assays$ADT.dsb@data))) %&gt;% 
+  dplyr::filter(experiment == 1) %&gt;%
+  dplyr::group_by(Annotation) %&gt;% 
+  dplyr::summarize_at(.vars = prots$id, .funs = median) %&gt;% 
+  tibble::remove_rownames() %&gt;% 
+  tibble::column_to_rownames(&quot;Annotation&quot;) -&gt; dsb.adt.plot
+
+pheatmap::pheatmap((dsb.adt.plot), 
+                   color = viridis::viridis(25, option = &quot;B&quot;), 
+                   fontsize_row = 10, border_color = &quot;black&quot;,
+                   cellwidth = 10, cellheight = 10,
+                   labels_col = gsub(&quot;anti-human&quot;, &quot;&quot;, prots$name),
+                   main = &quot;CF_BAL_Pilot (Transferred)&quot;)</code></pre>
+<p><img src="figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-13-2.png" width="2400" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-2">
+Past versions of unnamed-chunk-13-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/9f13391db208291a3a1b6a46bd2b83e1ab208772/docs/figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-13-2.png" target="_blank">9f13391</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/e80bd3297b230a1d18c373ece7e30184fa468578/docs/figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-13-2.png" target="_blank">e80bd32</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-06
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/80fb348e84f0ba47cda5938ea5fd7615d1174a50/docs/figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-13-2.png" target="_blank">80fb348</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-04-11
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="visualise-adts-of-interest" class="section level2">
+<h2>Visualise ADTs of interest</h2>
+<pre class="r"><code>adt &lt;- read_csv(file = here(&quot;data/Proteins_macs_22.04.22.csv&quot;))
+adt &lt;- adt[!duplicated(adt$DNA_ID),]
+  
+cbind(seuInt@meta.data, 
+      as.data.frame(t(seuInt@assays$ADT.dsb@data))) %&gt;% 
+  dplyr::group_by(Annotation, experiment) %&gt;% 
+  dplyr::summarize_at(.vars = adt$DNA_ID, .funs = median) %&gt;%
+  pivot_longer(c(-Annotation, -experiment), names_to = &quot;ADT&quot;,
+               values_to = &quot;DSB Norm. Exp.&quot;) %&gt;%
+  left_join(adt, by = c(&quot;ADT&quot; = &quot;DNA_ID&quot;)) %&gt;%
+  mutate(Annotation = as.character(Annotation)) %&gt;%
+  dplyr::rename(`Cell Label` = Annotation,
+                Protein = `Name for heatmap`) |&gt; 
+  dplyr::filter(experiment == 2) |&gt;
+  ungroup() |&gt;
+  heatmap(
+    .column = Protein,
+    .row = `Cell Label`,
+    .value = `DSB Norm. Exp.`,
+    scale = &quot;row&quot;,
+    palette_value = circlize::colorRamp2(c(-2, -1, 0, 1, 2), 
+                                         viridis::magma(5)),
+    rect_gp = grid::gpar(col = &quot;white&quot;, lwd = 1),
+    show_row_names = TRUE,
+    column_names_gp = grid::gpar(fontsize = 10),
+    column_title_gp = grid::gpar(fontsize = 12),
+    row_names_gp = grid::gpar(fontsize = 10),
+    row_title_gp = grid::gpar(fontsize = 12),
+    column_title_side = &quot;bottom&quot;) |&gt;
+  add_tile(`Cell Label`, show_legend = FALSE, 
+    show_annotation_name = FALSE,
+           palette = paletteer_d(&quot;miscpalettes::pastel&quot;, ncol(dat))) -&gt; f2d
+
+wrap_heatmap(f2d)</code></pre>
+<p><img src="figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-1">
+Past versions of unnamed-chunk-14-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-14-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/c07e24c3b87cc17cb026387c6752ea3a61658d05/docs/figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-14-1.png" target="_blank">c07e24c</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-13
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/9f13391db208291a3a1b6a46bd2b83e1ab208772/docs/figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-14-1.png" target="_blank">9f13391</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/e80bd3297b230a1d18c373ece7e30184fa468578/docs/figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-14-1.png" target="_blank">e80bd32</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="proportions-analysis" class="section level1">
+<h1>Proportions analysis</h1>
+<div id="load-clinical-information" class="section level2">
+<h2>Load clinical information</h2>
+<p>Import clinical characteristics and patient information and associate with <code>genetic_donor</code> IDs.</p>
+<pre class="r"><code>info &lt;- read.csv(file = here(&quot;data/sample_sheets/Sample_information.csv&quot;))
+tab &lt;- table(seuInt$HTO, seuInt$donor)
+
+apply(tab, 2, function(x){
+  names(which(x == max(x)))
+}) %&gt;% data.frame %&gt;%
+  dplyr::rename(&quot;HTO&quot; = &quot;.&quot;) %&gt;%
+  rownames_to_column(var = &quot;donor&quot;) %&gt;%
+  inner_join(info, by = c(&quot;HTO&quot; = &quot;Sample&quot;)) %&gt;%
+  mutate(Batch = factor(Batch)) -&gt; info
+
+info %&gt;% knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">donor</th>
+<th align="left">HTO</th>
+<th align="left">Participant</th>
+<th align="left">Sex</th>
+<th align="right">Age</th>
+<th align="left">Disease</th>
+<th align="left">Batch</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">DM</td>
+<td align="left">DM</td>
+<td align="left">B1_CF</td>
+<td align="left">M</td>
+<td align="right">2.99</td>
+<td align="left">CF</td>
+<td align="left">1</td>
+</tr>
+<tr class="even">
+<td align="left">donor_A</td>
+<td align="left">Human_HTO_8</td>
+<td align="left">L2_CF</td>
+<td align="left">M</td>
+<td align="right">5.95</td>
+<td align="left">CF</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left">donor_B</td>
+<td align="left">Human_HTO_1</td>
+<td align="left">E2_CF</td>
+<td align="left">F</td>
+<td align="right">5.99</td>
+<td align="left">CF</td>
+<td align="left">2</td>
+</tr>
+<tr class="even">
+<td align="left">donor_C</td>
+<td align="left">Human_HTO_4</td>
+<td align="left">H2_CF</td>
+<td align="left">F</td>
+<td align="right">5.89</td>
+<td align="left">CF</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left">donor_D</td>
+<td align="left">Human_HTO_6</td>
+<td align="left">J2_CF</td>
+<td align="left">M</td>
+<td align="right">5.05</td>
+<td align="left">CF</td>
+<td align="left">2</td>
+</tr>
+<tr class="even">
+<td align="left">donor_E</td>
+<td align="left">Human_HTO_3</td>
+<td align="left">G2_CF</td>
+<td align="left">F</td>
+<td align="right">4.91</td>
+<td align="left">CF</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left">donor_F</td>
+<td align="left">Human_HTO_5</td>
+<td align="left">I2_CF</td>
+<td align="left">F</td>
+<td align="right">5.93</td>
+<td align="left">CF</td>
+<td align="left">2</td>
+</tr>
+<tr class="even">
+<td align="left">donor_G</td>
+<td align="left">Human_HTO_2</td>
+<td align="left">F2_CF</td>
+<td align="left">F</td>
+<td align="right">6.02</td>
+<td align="left">CF</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left">donor_H</td>
+<td align="left">Human_HTO_7</td>
+<td align="left">K2_CF</td>
+<td align="left">M</td>
+<td align="right">4.92</td>
+<td align="left">CF</td>
+<td align="left">2</td>
+</tr>
+<tr class="even">
+<td align="left">JC</td>
+<td align="left">JC</td>
+<td align="left">C1_CF</td>
+<td align="left">M</td>
+<td align="right">2.99</td>
+<td align="left">CF</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left">JLG</td>
+<td align="left">JLG</td>
+<td align="left">A1_Ctrl</td>
+<td align="left">M</td>
+<td align="right">3.00</td>
+<td align="left">Ctrl</td>
+<td align="left">1</td>
+</tr>
+<tr class="even">
+<td align="left">LC</td>
+<td align="left">LC</td>
+<td align="left">D1_CF</td>
+<td align="left">M</td>
+<td align="right">3.03</td>
+<td align="left">CF</td>
+<td align="left">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="sub-cluster-proportions-fine" class="section level2">
+<h2>Sub-cluster proportions (Fine)</h2>
+<pre class="r"><code># Differences in cell type proportions
+props &lt;- getTransformedProps(clusters = seuInt$Annotation,
+                             sample = seuInt$donor, transform=&quot;asin&quot;)
+props$Proportions %&gt;% knitr::kable()</code></pre>
+<table>
+<colgroup>
+<col width="17%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">DM</th>
+<th align="right">donor_A</th>
+<th align="right">donor_B</th>
+<th align="right">donor_C</th>
+<th align="right">donor_D</th>
+<th align="right">donor_E</th>
+<th align="right">donor_F</th>
+<th align="right">donor_G</th>
+<th align="right">donor_H</th>
+<th align="right">JC</th>
+<th align="right">JLG</th>
+<th align="right">LC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">alveolar-macs</td>
+<td align="right">0.4932399</td>
+<td align="right">0.3169774</td>
+<td align="right">0.3410853</td>
+<td align="right">0.3930674</td>
+<td align="right">0.5194884</td>
+<td align="right">0.4650121</td>
+<td align="right">0.5254108</td>
+<td align="right">0.2891061</td>
+<td align="right">0.3908826</td>
+<td align="right">0.4349520</td>
+<td align="right">0.3991319</td>
+<td align="right">0.4029870</td>
+</tr>
+<tr class="even">
+<td align="left">macro-CCL</td>
+<td align="right">0.0430646</td>
+<td align="right">0.0215898</td>
+<td align="right">0.0455426</td>
+<td align="right">0.0333551</td>
+<td align="right">0.0219245</td>
+<td align="right">0.0162013</td>
+<td align="right">0.0267482</td>
+<td align="right">0.0614525</td>
+<td align="right">0.0160039</td>
+<td align="right">0.0914269</td>
+<td align="right">0.0164931</td>
+<td align="right">0.0197856</td>
+</tr>
+<tr class="odd">
+<td align="left">macro-cholesterol</td>
+<td align="right">0.0090135</td>
+<td align="right">0.0009814</td>
+<td align="right">0.0048450</td>
+<td align="right">0.0189666</td>
+<td align="right">0.0237515</td>
+<td align="right">0.0117201</td>
+<td align="right">0.0160489</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0281280</td>
+<td align="right">0.0083933</td>
+<td align="right">0.0126736</td>
+<td align="right">0.0227215</td>
+</tr>
+<tr class="even">
+<td align="left">macro-ifna/b</td>
+<td align="right">0.0676014</td>
+<td align="right">0.0961727</td>
+<td align="right">0.1046512</td>
+<td align="right">0.2217135</td>
+<td align="right">0.1333739</td>
+<td align="right">0.1268528</td>
+<td align="right">0.0978219</td>
+<td align="right">0.1962291</td>
+<td align="right">0.2230844</td>
+<td align="right">0.0767386</td>
+<td align="right">0.2435764</td>
+<td align="right">0.2067909</td>
+</tr>
+<tr class="odd">
+<td align="left">macro-int</td>
+<td align="right">0.1392088</td>
+<td align="right">0.3454367</td>
+<td align="right">0.1860465</td>
+<td align="right">0.0843689</td>
+<td align="right">0.0913520</td>
+<td align="right">0.0882454</td>
+<td align="right">0.0901796</td>
+<td align="right">0.2891061</td>
+<td align="right">0.0712900</td>
+<td align="right">0.0875300</td>
+<td align="right">0.1039931</td>
+<td align="right">0.0846311</td>
+</tr>
+<tr class="even">
+<td align="left">macro-lipid</td>
+<td align="right">0.0540811</td>
+<td align="right">0.1207066</td>
+<td align="right">0.2131783</td>
+<td align="right">0.0614781</td>
+<td align="right">0.0676005</td>
+<td align="right">0.1275422</td>
+<td align="right">0.1024073</td>
+<td align="right">0.0502793</td>
+<td align="right">0.0872939</td>
+<td align="right">0.1354916</td>
+<td align="right">0.0395833</td>
+<td align="right">0.0980342</td>
+</tr>
+<tr class="odd">
+<td align="left">macro-MT</td>
+<td align="right">0.0185278</td>
+<td align="right">0.0127576</td>
+<td align="right">0.0038760</td>
+<td align="right">0.0156965</td>
+<td align="right">0.0085262</td>
+<td align="right">0.0168907</td>
+<td align="right">0.0179595</td>
+<td align="right">0.0055866</td>
+<td align="right">0.0324927</td>
+<td align="right">0.0152878</td>
+<td align="right">0.0300347</td>
+<td align="right">0.0338269</td>
+</tr>
+<tr class="even">
+<td align="left">macro-reg</td>
+<td align="right">0.0050075</td>
+<td align="right">0.0009814</td>
+<td align="right">0.0038760</td>
+<td align="right">0.0006540</td>
+<td align="right">0.0024361</td>
+<td align="right">0.0055153</td>
+<td align="right">0.0011464</td>
+<td align="right">0.0006983</td>
+<td align="right">0.0290980</td>
+<td align="right">0.0041966</td>
+<td align="right">0.0048611</td>
+<td align="right">0.0030636</td>
+</tr>
+<tr class="odd">
+<td align="left">macro-repair</td>
+<td align="right">0.0500751</td>
+<td align="right">0.0078508</td>
+<td align="right">0.0281008</td>
+<td align="right">0.0274689</td>
+<td align="right">0.0182704</td>
+<td align="right">0.0258532</td>
+<td align="right">0.0152847</td>
+<td align="right">0.0223464</td>
+<td align="right">0.0174588</td>
+<td align="right">0.0314748</td>
+<td align="right">0.0229167</td>
+<td align="right">0.0119990</td>
+</tr>
+<tr class="even">
+<td align="left">macro-T</td>
+<td align="right">0.0135203</td>
+<td align="right">0.0098135</td>
+<td align="right">0.0038760</td>
+<td align="right">0.0071942</td>
+<td align="right">0.0030451</td>
+<td align="right">0.0082730</td>
+<td align="right">0.0084066</td>
+<td align="right">0.0069832</td>
+<td align="right">0.0058196</td>
+<td align="right">0.0107914</td>
+<td align="right">0.0250000</td>
+<td align="right">0.0186367</td>
+</tr>
+<tr class="odd">
+<td align="left">macro-vesicle</td>
+<td align="right">0.0560841</td>
+<td align="right">0.0049068</td>
+<td align="right">0.0048450</td>
+<td align="right">0.0248528</td>
+<td align="right">0.0353228</td>
+<td align="right">0.0168907</td>
+<td align="right">0.0213985</td>
+<td align="right">0.0048883</td>
+<td align="right">0.0038797</td>
+<td align="right">0.0137890</td>
+<td align="right">0.0401042</td>
+<td align="right">0.0431453</td>
+</tr>
+<tr class="even">
+<td align="left">macro-viral</td>
+<td align="right">0.0375563</td>
+<td align="right">0.0157017</td>
+<td align="right">0.0242248</td>
+<td align="right">0.0457816</td>
+<td align="right">0.0261876</td>
+<td align="right">0.0234402</td>
+<td align="right">0.0213985</td>
+<td align="right">0.0335196</td>
+<td align="right">0.0179437</td>
+<td align="right">0.0323741</td>
+<td align="right">0.0173611</td>
+<td align="right">0.0200408</td>
+</tr>
+<tr class="odd">
+<td align="left">proliferating-macrophage</td>
+<td align="right">0.0130195</td>
+<td align="right">0.0461237</td>
+<td align="right">0.0358527</td>
+<td align="right">0.0654022</td>
+<td align="right">0.0487211</td>
+<td align="right">0.0675629</td>
+<td align="right">0.0557891</td>
+<td align="right">0.0398045</td>
+<td align="right">0.0766246</td>
+<td align="right">0.0575540</td>
+<td align="right">0.0442708</td>
+<td align="right">0.0343375</td>
+</tr>
+</tbody>
+</table>
+<div id="cell-proportions-by-donor" class="section level3">
+<h3>Cell proportions by donor</h3>
+<pre class="r"><code>props$Proportions %&gt;%
+  data.frame %&gt;%
+  inner_join(info, by = c(&quot;sample&quot; = &quot;donor&quot;)) %&gt;%
+ggplot(aes(x = Participant, y = Freq, fill = clusters)) +
+  geom_bar(stat = &quot;identity&quot;) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90,
+                                   vjust = 0.5,
+                                   hjust = 1),
+        legend.text = element_text(size = 8)) +
+  labs( y = &quot;Proportion&quot;, fill = &quot;Cell Label&quot;) +
+  scale_fill_paletteer_d(&quot;miscpalettes::pastel&quot;)  -&gt; f2b
+f2b</code></pre>
+<p><img src="figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-17-1">
+Past versions of unnamed-chunk-17-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-17-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/c07e24c3b87cc17cb026387c6752ea3a61658d05/docs/figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-17-1.png" target="_blank">c07e24c</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-13
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/9f13391db208291a3a1b6a46bd2b83e1ab208772/docs/figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-17-1.png" target="_blank">9f13391</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="cell-proportions-by-donor-stratified-by-cell-type" class="section level3">
+<h3>Cell proportions by donor, stratified by cell type</h3>
+<pre class="r"><code>props$Proportions %&gt;%
+  data.frame %&gt;%
+  inner_join(info, by = c(&quot;sample&quot; = &quot;donor&quot;)) %&gt;%
+ggplot(aes(x = Participant, y = Freq, fill = clusters)) +
+  geom_bar(stat = &quot;identity&quot;) +
+  facet_wrap(~clusters, scales = &quot;free_y&quot;) +
+  theme_classic() +
+  NoLegend() +
+  theme(axis.text.x = element_text(angle = 90,
+                                   vjust = 0.5,
+                                   hjust = 1,
+                                   size = 8),
+        strip.text = element_text(size = 10),
+        axis.text = element_text(size = 8)) +
+  labs( y = &quot;Proportion&quot;, fill = &quot;Cell label&quot;) +
+  scale_fill_paletteer_d(&quot;miscpalettes::pastel&quot;)</code></pre>
+<p><img src="figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-18-1.png" width="864" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-18-1">
+Past versions of unnamed-chunk-18-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-18-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/c07e24c3b87cc17cb026387c6752ea3a61658d05/docs/figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-18-1.png" target="_blank">c07e24c</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-13
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/9f13391db208291a3a1b6a46bd2b83e1ab208772/docs/figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-18-1.png" target="_blank">9f13391</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/e80bd3297b230a1d18c373ece7e30184fa468578/docs/figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-18-1.png" target="_blank">e80bd32</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="statistical-analysis-of-cell-type-proportions" class="section level2">
+<h2>Statistical analysis of cell type proportions</h2>
+<p>We can set up a design matrix taking into account various aspects of the data, such as disease severity, treatment and Batch. Please note that the way that <code>propeller</code> has been designed is such that the group information is <em>always</em> first in the design matrix specification, and there is NO intercept.</p>
+<pre class="r"><code>Group &lt;- factor(info$Disease)
+Batch &lt;- factor(info$Batch)
+
+design &lt;- model.matrix(~ 0 + Group + Batch)
+colnames(design) &lt;- c(levels(Group), &quot;Batch&quot;)
+design</code></pre>
+<pre><code>   CF Ctrl Batch
+1   1    0     0
+2   1    0     1
+3   1    0     1
+4   1    0     1
+5   1    0     1
+6   1    0     1
+7   1    0     1
+8   1    0     1
+9   1    0     1
+10  1    0     0
+11  0    1     0
+12  1    0     0
+attr(,&quot;assign&quot;)
+[1] 1 1 2
+attr(,&quot;contrasts&quot;)
+attr(,&quot;contrasts&quot;)$Group
+[1] &quot;contr.treatment&quot;
+
+attr(,&quot;contrasts&quot;)$Batch
+[1] &quot;contr.treatment&quot;</code></pre>
+<div id="test-for-differences-in-proportions-between-control-and-cf" class="section level3">
+<h3>Test for differences in proportions between Control and CF</h3>
+<p>Stripchart of cell type proportion, stratified by disease status.</p>
+<pre class="r"><code>props$Proportions %&gt;% data.frame %&gt;%
+  inner_join(info,
+            by = c(&quot;sample&quot; = &quot;donor&quot;)) %&gt;%
+  ggplot(aes(x = Disease,
+             y = Freq,
+             colour = Age)) +
+  geom_jitter(stat = &quot;identity&quot;,
+              width = 0.15,
+              size = 2.25,
+              aes(shape = as.factor(Batch))) +
+  stat_summary(aes(x = Disease, y = Freq),
+               inherit.aes = FALSE,
+               fun = &quot;mean&quot;,
+               geom = &quot;crossbar&quot;,
+               size = 0.1) +
+  theme(axis.text.x = element_text(angle = 90,
+                                   hjust = 1,
+                                   vjust = 0.5),
+        legend.position = &quot;bottom&quot;,
+        legend.direction = &quot;horizontal&quot;,
+        strip.text = element_text(size = 10),
+        axis.text = element_text(size = 8)) +
+  labs(x = &quot;Disease&quot;, y = &quot;Proportion&quot;,
+       shape = &quot;Batch&quot;, colour = &quot;Age&quot;) +
+  scale_color_gradientn(colours = paletteer_d(palette = &quot;RColorBrewer::Spectral&quot;)) +
+  facet_wrap(~ clusters, scales = &quot;free_y&quot;) -&gt; p1
+
+p1</code></pre>
+<p><img src="figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-20-1.png" width="864" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-20-1">
+Past versions of unnamed-chunk-20-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-20-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/c07e24c3b87cc17cb026387c6752ea3a61658d05/docs/figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-20-1.png" target="_blank">c07e24c</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="control-versus-disease" class="section level4">
+<h4>Control versus disease</h4>
+<p>First test for differences in proportions between control and all CF samples.</p>
+<pre class="r"><code>mycontr &lt;- makeContrasts(CvCF = Ctrl-CF,
+                         levels=design)
+mycontr</code></pre>
+<pre><code>       Contrasts
+Levels  CvCF
+  CF      -1
+  Ctrl     1
+  Batch    0</code></pre>
+<pre class="r"><code>propeller.ttest(props, design, contrasts = mycontr[,1], robust=TRUE, trend=FALSE,
+                sort=TRUE) %&gt;% knitr::kable()</code></pre>
+<table>
+<colgroup>
+<col width="27%" />
+<col width="13%" />
+<col width="15%" />
+<col width="10%" />
+<col width="11%" />
+<col width="10%" />
+<col width="10%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">PropMean.CF</th>
+<th align="right">PropMean.Ctrl</th>
+<th align="right">PropRatio</th>
+<th align="right">Tstatistic</th>
+<th align="right">P.Value</th>
+<th align="right">FDR</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">macro-ifna/b</td>
+<td align="right">0.1410028</td>
+<td align="right">0.2435764</td>
+<td align="right">1.7274582</td>
+<td align="right">1.9539879</td>
+<td align="right">0.0747775</td>
+<td align="right">0.7214223</td>
+</tr>
+<tr class="even">
+<td align="left">macro-CCL</td>
+<td align="right">0.0360995</td>
+<td align="right">0.0164931</td>
+<td align="right">0.4568772</td>
+<td align="right">-1.4825812</td>
+<td align="right">0.1637336</td>
+<td align="right">0.7214223</td>
+</tr>
+<tr class="odd">
+<td align="left">macro-lipid</td>
+<td align="right">0.1016448</td>
+<td align="right">0.0395833</td>
+<td align="right">0.3894279</td>
+<td align="right">-1.3102283</td>
+<td align="right">0.2150117</td>
+<td align="right">0.7214223</td>
+</tr>
+<tr class="even">
+<td align="left">macro-T</td>
+<td align="right">0.0087600</td>
+<td align="right">0.0250000</td>
+<td align="right">2.8538932</td>
+<td align="right">1.2875118</td>
+<td align="right">0.2219761</td>
+<td align="right">0.7214223</td>
+</tr>
+<tr class="odd">
+<td align="left">macro-viral</td>
+<td align="right">0.0271063</td>
+<td align="right">0.0173611</td>
+<td align="right">0.6404833</td>
+<td align="right">-1.0437474</td>
+<td align="right">0.3169890</td>
+<td align="right">0.8241715</td>
+</tr>
+<tr class="even">
+<td align="left">proliferating-macrophage</td>
+<td align="right">0.0491629</td>
+<td align="right">0.0442708</td>
+<td align="right">0.9004930</td>
+<td align="right">0.6339119</td>
+<td align="right">0.5379272</td>
+<td align="right">0.9741147</td>
+</tr>
+<tr class="odd">
+<td align="left">macro-MT</td>
+<td align="right">0.0164935</td>
+<td align="right">0.0300347</td>
+<td align="right">1.8210055</td>
+<td align="right">0.5689954</td>
+<td align="right">0.5797585</td>
+<td align="right">0.9741147</td>
+</tr>
+<tr class="even">
+<td align="left">alveolar-macs</td>
+<td align="right">0.4156554</td>
+<td align="right">0.3991319</td>
+<td align="right">0.9602473</td>
+<td align="right">-0.5078020</td>
+<td align="right">0.6209355</td>
+<td align="right">0.9741147</td>
+</tr>
+<tr class="odd">
+<td align="left">macro-repair</td>
+<td align="right">0.0232893</td>
+<td align="right">0.0229167</td>
+<td align="right">0.9839978</td>
+<td align="right">-0.4305093</td>
+<td align="right">0.6743871</td>
+<td align="right">0.9741147</td>
+</tr>
+<tr class="even">
+<td align="left">macro-vesicle</td>
+<td align="right">0.0209094</td>
+<td align="right">0.0401042</td>
+<td align="right">1.9180005</td>
+<td align="right">0.2186615</td>
+<td align="right">0.8305551</td>
+<td align="right">0.9986873</td>
+</tr>
+<tr class="odd">
+<td align="left">macro-reg</td>
+<td align="right">0.0051521</td>
+<td align="right">0.0048611</td>
+<td align="right">0.9435203</td>
+<td align="right">0.1209972</td>
+<td align="right">0.9056776</td>
+<td align="right">0.9986873</td>
+</tr>
+<tr class="even">
+<td align="left">macro-int</td>
+<td align="right">0.1415814</td>
+<td align="right">0.1039931</td>
+<td align="right">0.7345108</td>
+<td align="right">0.0184953</td>
+<td align="right">0.9855523</td>
+<td align="right">0.9986873</td>
+</tr>
+<tr class="odd">
+<td align="left">macro-cholesterol</td>
+<td align="right">0.0131427</td>
+<td align="right">0.0126736</td>
+<td align="right">0.9643074</td>
+<td align="right">0.0016796</td>
+<td align="right">0.9986873</td>
+<td align="right">0.9986873</td>
+</tr>
+</tbody>
+</table>
+<p>There is no statistically significant difference in cell type proportions between the CF samples and the control.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="save-data" class="section level1">
+<h1>Save data</h1>
+<pre class="r"><code>out &lt;- here(glue(&quot;data/SCEs/04_COMBO.clean_macrophages_diet.SEU.rds&quot;))
+if(!file.exists(out)){
+  DefaultAssay(seuInt) &lt;- &quot;RNA&quot;
+  saveRDS(DietSeurat(seuInt,
+                     assays = c(&quot;RNA&quot;, &quot;ADT.dsb&quot;, &quot;ADT.raw&quot;),
+                     dimreducs = NULL,
+                     graphs = NULL), out)
+
+}</code></pre>
+</div>
+<div id="panel-figures" class="section level1">
+<h1>Panel figures</h1>
+<pre class="r"><code>layout = &quot;AAAABB
+          AAAABB
+          AAAABB
+          CCCCCC
+          CCCCCC
+          DDDDDD
+          DDDDDD
+          DDDDDD&quot;
+((f2a + ggtitle(&quot;&quot;)) + 
+   f2b + 
+   f2c + 
+   wrap_heatmap(f2d)) + 
+  plot_layout(design = layout) +
+  plot_annotation(tag_levels = &quot;A&quot;) &amp;
+  theme(plot.tag = element_text(size = 14, face = &quot;bold&quot;))</code></pre>
+<p><img src="figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-24-1.png" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-24-1">
+Past versions of unnamed-chunk-24-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-24-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/c07e24c3b87cc17cb026387c6752ea3a61658d05/docs/figure/04_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-24-1.png" target="_blank">c07e24c</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-05-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="session-info" class="section level1 appendix">
+<h1 class="appendix">Session info</h1>
+<summary>
+The analysis and this document were prepared using the following software (click triangle to expand)
+</summary>
+<details>
+<pre class="r"><code>sessioninfo::session_info()</code></pre>
+<pre><code>─ Session info ───────────────────────────────────────────────────────────────
+ setting  value
+ version  R version 4.1.0 (2021-05-18)
+ os       CentOS Linux 7 (Core)
+ system   x86_64, linux-gnu
+ ui       X11
+ language (EN)
+ collate  en_AU.UTF-8
+ ctype    en_AU.UTF-8
+ tz       Australia/Melbourne
+ date     2022-05-19
+ pandoc   2.14.0.3 @ /usr/lib/rstudio-server/bin/pandoc/ (via rmarkdown)
+
+─ Packages ───────────────────────────────────────────────────────────────────
+ ! package                * version    date (UTC) lib source
+ P abind                    1.4-5      2016-07-21 [?] CRAN (R 4.1.0)
+ P annotate               * 1.72.0     2021-10-26 [?] Bioconductor
+ P AnnotationDbi          * 1.56.2     2021-11-09 [?] Bioconductor
+ P AnnotationFilter       * 1.18.0     2021-10-26 [?] Bioconductor
+ P AnnotationHub          * 3.2.0      2021-10-26 [?] Bioconductor
+ P assertthat               0.2.1      2019-03-21 [?] CRAN (R 4.1.0)
+ P backports                1.4.1      2021-12-13 [?] CRAN (R 4.1.0)
+ P beachmat                 2.10.0     2021-10-26 [?] Bioconductor
+ P beeswarm                 0.4.0      2021-06-01 [?] CRAN (R 4.1.0)
+ P Biobase                * 2.54.0     2021-10-26 [?] Bioconductor
+ P BiocFileCache          * 2.2.0      2021-10-26 [?] Bioconductor
+ P BiocGenerics           * 0.40.0     2021-10-26 [?] Bioconductor
+ P BiocIO                   1.4.0      2021-10-26 [?] Bioconductor
+ P BiocManager              1.30.16    2021-06-15 [?] CRAN (R 4.1.0)
+ P BiocNeighbors            1.12.0     2021-10-26 [?] Bioconductor
+ P BiocParallel           * 1.28.3     2021-12-09 [?] Bioconductor
+ P BiocSingular             1.10.0     2021-10-26 [?] Bioconductor
+ P BiocVersion              3.14.0     2021-05-19 [?] Bioconductor
+ P biomaRt                  2.50.1     2021-11-21 [?] Bioconductor
+ P Biostrings               2.62.0     2021-10-26 [?] Bioconductor
+ P bit                      4.0.4      2020-08-04 [?] CRAN (R 4.1.0)
+ P bit64                    4.0.5      2020-08-30 [?] CRAN (R 4.0.2)
+ P bitops                   1.0-7      2021-04-24 [?] CRAN (R 4.0.2)
+ P blob                     1.2.2      2021-07-23 [?] CRAN (R 4.1.0)
+ P bluster                  1.4.0      2021-10-26 [?] Bioconductor
+ P broom                    0.7.11     2022-01-03 [?] CRAN (R 4.1.0)
+ P bslib                    0.3.1      2021-10-06 [?] CRAN (R 4.1.0)
+ P cachem                   1.0.6      2021-08-19 [?] CRAN (R 4.1.0)
+ P callr                    3.7.0      2021-04-20 [?] CRAN (R 4.1.0)
+ P caTools                  1.18.2     2021-03-28 [?] CRAN (R 4.1.0)
+ P cellranger               1.1.0      2016-07-27 [?] CRAN (R 4.1.0)
+ P Cepo                   * 1.0.0      2021-10-26 [?] Bioconductor
+ P circlize                 0.4.13     2021-06-09 [?] CRAN (R 4.1.0)
+ P cli                      3.1.0      2021-10-27 [?] CRAN (R 4.1.0)
+ P clue                     0.3-60     2021-10-11 [?] CRAN (R 4.1.0)
+ P cluster                  2.1.2      2021-04-17 [?] CRAN (R 4.1.0)
+ P clustree               * 0.4.4      2021-11-08 [?] CRAN (R 4.1.0)
+ P codetools                0.2-18     2020-11-04 [?] CRAN (R 4.1.0)
+ P colorspace               2.0-2      2021-06-24 [?] CRAN (R 4.0.2)
+ P ComplexHeatmap           2.10.0     2021-10-26 [?] Bioconductor
+ P cowplot                  1.1.1      2020-12-30 [?] CRAN (R 4.0.2)
+ P crayon                   1.4.2      2021-10-29 [?] CRAN (R 4.1.0)
+ P curl                     4.3.2      2021-06-23 [?] CRAN (R 4.1.0)
+ P data.table               1.14.2     2021-09-27 [?] CRAN (R 4.1.0)
+ P DBI                      1.1.2      2021-12-20 [?] CRAN (R 4.1.0)
+ P dbplyr                 * 2.1.1      2021-04-06 [?] CRAN (R 4.1.0)
+ P DelayedArray             0.20.0     2021-10-26 [?] Bioconductor
+ P DelayedMatrixStats       1.16.0     2021-10-26 [?] Bioconductor
+ P deldir                   1.0-6      2021-10-23 [?] CRAN (R 4.1.0)
+ P dendextend               1.15.2     2021-10-28 [?] CRAN (R 4.1.0)
+ P digest                   0.6.29     2021-12-01 [?] CRAN (R 4.1.0)
+ P doParallel               1.0.16     2020-10-16 [?] CRAN (R 4.0.2)
+ P doRNG                    1.8.2      2020-01-27 [?] CRAN (R 4.1.0)
+ P dplyr                  * 1.0.7      2021-06-18 [?] CRAN (R 4.1.0)
+ P dqrng                    0.3.0      2021-05-01 [?] CRAN (R 4.1.0)
+ P DropletUtils           * 1.14.1     2021-11-08 [?] Bioconductor
+ P DT                       0.20       2021-11-15 [?] CRAN (R 4.1.0)
+ P edgeR                  * 3.36.0     2021-10-26 [?] Bioconductor
+ P EGSEA                  * 1.22.0     2021-10-26 [?] Bioconductor
+ P EGSEAdata                1.22.0     2021-10-30 [?] Bioconductor
+ P ellipsis                 0.3.2      2021-04-29 [?] CRAN (R 4.0.2)
+ P ensembldb              * 2.18.2     2021-11-08 [?] Bioconductor
+ P evaluate                 0.14       2019-05-28 [?] CRAN (R 4.0.2)
+ P fansi                    1.0.0      2022-01-10 [?] CRAN (R 4.1.0)
+ P farver                   2.1.0      2021-02-28 [?] CRAN (R 4.0.2)
+ P fastmap                  1.1.0      2021-01-25 [?] CRAN (R 4.1.0)
+ P filelock                 1.0.2      2018-10-05 [?] CRAN (R 4.1.0)
+ P fitdistrplus             1.1-6      2021-09-28 [?] CRAN (R 4.1.0)
+ P forcats                * 0.5.1      2021-01-27 [?] CRAN (R 4.1.0)
+ P foreach                  1.5.1      2020-10-15 [?] CRAN (R 4.0.2)
+ P fs                       1.5.2      2021-12-08 [?] CRAN (R 4.1.0)
+ P future                   1.23.0     2021-10-31 [?] CRAN (R 4.1.0)
+ P future.apply             1.8.1      2021-08-10 [?] CRAN (R 4.1.0)
+ P gage                   * 2.44.0     2021-10-26 [?] Bioconductor
+ P generics                 0.1.1      2021-10-25 [?] CRAN (R 4.1.0)
+   GenomeInfoDb           * 1.30.1     2022-01-30 [1] Bioconductor
+ P GenomeInfoDbData         1.2.7      2021-12-21 [?] Bioconductor
+ P GenomicAlignments        1.30.0     2021-10-26 [?] Bioconductor
+ P GenomicFeatures        * 1.46.3     2021-12-30 [?] Bioconductor
+ P GenomicRanges          * 1.46.1     2021-11-18 [?] Bioconductor
+ P GetoptLong               1.0.5      2020-12-15 [?] CRAN (R 4.0.2)
+ P getPass                  0.2-2      2017-07-21 [?] CRAN (R 4.0.2)
+ P ggalluvial             * 0.12.3     2020-12-05 [?] CRAN (R 4.1.0)
+ P ggbeeswarm               0.6.0      2017-08-07 [?] CRAN (R 4.1.0)
+ P ggforce                  0.3.3      2021-03-05 [?] CRAN (R 4.1.0)
+ P ggplot2                * 3.3.5      2021-06-25 [?] CRAN (R 4.0.2)
+ P ggplotify              * 0.1.0      2021-09-02 [?] CRAN (R 4.1.0)
+ P ggraph                 * 2.0.5      2021-02-23 [?] CRAN (R 4.1.0)
+ P ggrepel                  0.9.1      2021-01-15 [?] CRAN (R 4.1.0)
+ P ggridges                 0.5.3      2021-01-08 [?] CRAN (R 4.1.0)
+ P git2r                    0.29.0     2021-11-22 [?] CRAN (R 4.1.0)
+ P glmGamPoi              * 1.6.0      2021-10-26 [?] Bioconductor
+ P GlobalOptions            0.1.2      2020-06-10 [?] CRAN (R 4.1.0)
+ P globals                  0.14.0     2020-11-22 [?] CRAN (R 4.0.2)
+ P globaltest               5.48.0     2021-10-26 [?] Bioconductor
+ P glue                   * 1.6.0      2021-12-17 [?] CRAN (R 4.1.0)
+ P GO.db                  * 3.14.0     2021-12-21 [?] Bioconductor
+ P goftest                  1.2-3      2021-10-07 [?] CRAN (R 4.1.0)
+ P gplots                   3.1.1      2020-11-28 [?] CRAN (R 4.0.2)
+ P graph                  * 1.72.0     2021-10-26 [?] Bioconductor
+ P graphlayouts             0.8.0      2022-01-03 [?] CRAN (R 4.1.0)
+ P gridExtra                2.3        2017-09-09 [?] CRAN (R 4.1.0)
+ P gridGraphics             0.5-1      2020-12-13 [?] CRAN (R 4.1.0)
+ P GSA                      1.03.1     2019-01-31 [?] CRAN (R 4.1.0)
+ P GSEABase               * 1.56.0     2021-10-26 [?] Bioconductor
+ P GSVA                     1.42.0     2021-10-26 [?] Bioconductor
+ P gtable                   0.3.0      2019-03-25 [?] CRAN (R 4.1.0)
+ P gtools                   3.9.2      2021-06-06 [?] CRAN (R 4.1.0)
+ P haven                    2.4.3      2021-08-04 [?] CRAN (R 4.1.0)
+ P HDF5Array                1.22.1     2021-11-14 [?] Bioconductor
+ P here                   * 1.0.1      2020-12-13 [?] CRAN (R 4.0.2)
+ P hgu133a.db               3.13.0     2022-01-24 [?] Bioconductor
+ P hgu133plus2.db           3.13.0     2022-01-24 [?] Bioconductor
+ P highr                    0.9        2021-04-16 [?] CRAN (R 4.1.0)
+ P hms                      1.1.1      2021-09-26 [?] CRAN (R 4.1.0)
+ P htmltools                0.5.2      2021-08-25 [?] CRAN (R 4.1.0)
+ P HTMLUtils                0.1.7      2015-01-17 [?] CRAN (R 4.1.0)
+ P htmlwidgets              1.5.4      2021-09-08 [?] CRAN (R 4.1.0)
+ P httpuv                   1.6.5      2022-01-05 [?] CRAN (R 4.1.0)
+ P httr                     1.4.2      2020-07-20 [?] CRAN (R 4.1.0)
+ P hwriter                  1.3.2      2014-09-10 [?] CRAN (R 4.1.0)
+ P ica                      1.0-2      2018-05-24 [?] CRAN (R 4.1.0)
+ P igraph                   1.2.11     2022-01-04 [?] CRAN (R 4.1.0)
+ P interactiveDisplayBase   1.32.0     2021-10-26 [?] Bioconductor
+ P IRanges                * 2.28.0     2021-10-26 [?] Bioconductor
+ P irlba                    2.3.5      2021-12-06 [?] CRAN (R 4.1.0)
+ P iterators                1.0.13     2020-10-15 [?] CRAN (R 4.0.2)
+ P janitor                * 2.1.0      2021-01-05 [?] CRAN (R 4.0.2)
+ P jquerylib                0.1.4      2021-04-26 [?] CRAN (R 4.1.0)
+ P jsonlite                 1.7.2      2020-12-09 [?] CRAN (R 4.0.2)
+ P KEGGdzPathwaysGEO        1.32.0     2021-10-30 [?] Bioconductor
+ P KEGGgraph                1.54.0     2021-10-26 [?] Bioconductor
+ P KEGGREST                 1.34.0     2021-10-26 [?] Bioconductor
+ P KernSmooth               2.23-20    2021-05-03 [?] CRAN (R 4.1.0)
+ P knitr                    1.37       2021-12-16 [?] CRAN (R 4.1.0)
+ P labeling                 0.4.2      2020-10-20 [?] CRAN (R 4.0.2)
+ P later                    1.3.0      2021-08-18 [?] CRAN (R 4.1.0)
+ P lattice                  0.20-45    2021-09-22 [?] CRAN (R 4.1.0)
+ P lazyeval                 0.2.2      2019-03-15 [?] CRAN (R 4.1.0)
+ P leiden                   0.3.9      2021-07-27 [?] CRAN (R 4.1.0)
+ P lifecycle                1.0.1      2021-09-24 [?] CRAN (R 4.1.0)
+ P limma                  * 3.50.0     2021-10-26 [?] Bioconductor
+ P listenv                  0.8.0      2019-12-05 [?] CRAN (R 4.1.0)
+ P lmtest                   0.9-39     2021-11-07 [?] CRAN (R 4.1.0)
+ P locfit                   1.5-9.4    2020-03-25 [?] CRAN (R 4.1.0)
+ P lubridate                1.8.0      2021-10-07 [?] CRAN (R 4.1.0)
+ P magrittr                 2.0.1      2020-11-17 [?] CRAN (R 4.0.2)
+ P MASS                     7.3-53.1   2021-02-12 [?] CRAN (R 4.0.2)
+ P mathjaxr                 1.4-0      2021-03-01 [?] CRAN (R 4.1.0)
+ P Matrix                 * 1.4-0      2021-12-08 [?] CRAN (R 4.1.0)
+ P MatrixGenerics         * 1.6.0      2021-10-26 [?] Bioconductor
+ P matrixStats            * 0.61.0     2021-09-17 [?] CRAN (R 4.1.0)
+ P memoise                  2.0.1      2021-11-26 [?] CRAN (R 4.1.0)
+ P metap                    1.7        2021-12-16 [?] CRAN (R 4.1.0)
+ P metapod                  1.2.0      2021-10-26 [?] Bioconductor
+ P mgcv                     1.8-38     2021-10-06 [?] CRAN (R 4.1.0)
+ P mime                     0.12       2021-09-28 [?] CRAN (R 4.1.0)
+ P miniUI                   0.1.1.1    2018-05-18 [?] CRAN (R 4.1.0)
+ P mnormt                   2.0.2      2020-09-01 [?] CRAN (R 4.0.2)
+ P modelr                   0.1.8      2020-05-19 [?] CRAN (R 4.0.2)
+ P multcomp                 1.4-18     2022-01-04 [?] CRAN (R 4.1.0)
+ P multtest                 2.50.0     2021-10-26 [?] Bioconductor
+ P munsell                  0.5.0      2018-06-12 [?] CRAN (R 4.1.0)
+ P mutoss                   0.1-12     2017-12-04 [?] CRAN (R 4.1.0)
+ P mvtnorm                  1.1-3      2021-10-08 [?] CRAN (R 4.1.0)
+ P nlme                     3.1-153    2021-09-07 [?] CRAN (R 4.1.0)
+ P numDeriv                 2016.8-1.1 2019-06-06 [?] CRAN (R 4.1.0)
+ P org.Hs.eg.db           * 3.14.0     2021-12-21 [?] Bioconductor
+ P org.Mm.eg.db             3.14.0     2022-01-24 [?] Bioconductor
+ P org.Rn.eg.db             3.14.0     2022-01-24 [?] Bioconductor
+ P PADOG                    1.36.0     2021-10-26 [?] Bioconductor
+ P paletteer              * 1.4.0      2021-07-20 [?] CRAN (R 4.1.0)
+ P parallelly               1.30.0     2021-12-17 [?] CRAN (R 4.1.0)
+ P patchwork              * 1.1.1      2020-12-17 [?] CRAN (R 4.0.2)
+ P pathview               * 1.34.0     2021-10-26 [?] Bioconductor
+ P pbapply                  1.5-0      2021-09-16 [?] CRAN (R 4.1.0)
+ P pheatmap               * 1.0.12     2019-01-04 [?] CRAN (R 4.1.0)
+ P pillar                   1.6.4      2021-10-18 [?] CRAN (R 4.1.0)
+ P pkgconfig                2.0.3      2019-09-22 [?] CRAN (R 4.1.0)
+ P plotly                   4.10.0     2021-10-09 [?] CRAN (R 4.1.0)
+ P plotrix                  3.8-2      2021-09-08 [?] CRAN (R 4.1.0)
+ P plyr                     1.8.6      2020-03-03 [?] CRAN (R 4.0.2)
+ P png                      0.1-7      2013-12-03 [?] CRAN (R 4.1.0)
+ P polyclip                 1.10-0     2019-03-14 [?] CRAN (R 4.1.0)
+ P prettyunits              1.1.1      2020-01-24 [?] CRAN (R 4.0.2)
+ P prismatic                1.1.0      2021-10-17 [?] CRAN (R 4.1.0)
+ P processx                 3.5.2      2021-04-30 [?] CRAN (R 4.1.0)
+ P progress                 1.2.2      2019-05-16 [?] CRAN (R 4.1.0)
+ P promises                 1.2.0.1    2021-02-11 [?] CRAN (R 4.0.2)
+ P ProtGenerics             1.26.0     2021-10-26 [?] Bioconductor
+ P ps                       1.6.0      2021-02-28 [?] CRAN (R 4.1.0)
+ P purrr                  * 0.3.4      2020-04-17 [?] CRAN (R 4.0.2)
+ P R.methodsS3              1.8.1      2020-08-26 [?] CRAN (R 4.0.2)
+ P R.oo                     1.24.0     2020-08-26 [?] CRAN (R 4.0.2)
+ P R.utils                  2.11.0     2021-09-26 [?] CRAN (R 4.1.0)
+ P R2HTML                   2.3.2      2016-06-23 [?] CRAN (R 4.1.0)
+ P R6                       2.5.1      2021-08-19 [?] CRAN (R 4.1.0)
+ P RANN                     2.6.1      2019-01-08 [?] CRAN (R 4.1.0)
+ P rappdirs                 0.3.3      2021-01-31 [?] CRAN (R 4.0.2)
+ P rbibutils                2.2.7      2021-12-07 [?] CRAN (R 4.1.0)
+ P RColorBrewer             1.1-2      2014-12-07 [?] CRAN (R 4.0.2)
+ P Rcpp                     1.0.7      2021-07-07 [?] CRAN (R 4.1.0)
+ P RcppAnnoy                0.0.19     2021-07-30 [?] CRAN (R 4.1.0)
+   RCurl                    1.98-1.6   2022-02-08 [1] CRAN (R 4.1.0)
+ P Rdpack                   2.1.3      2021-12-08 [?] CRAN (R 4.1.0)
+ P readr                  * 2.1.1      2021-11-30 [?] CRAN (R 4.1.0)
+ P readxl                   1.3.1      2019-03-13 [?] CRAN (R 4.1.0)
+ P rematch2                 2.1.2      2020-05-01 [?] CRAN (R 4.1.0)
+ P renv                     0.15.0-14  2022-01-10 [?] Github (rstudio/renv@a3b90eb)
+ P reprex                   2.0.1      2021-08-05 [?] CRAN (R 4.1.0)
+ P reshape2                 1.4.4      2020-04-09 [?] CRAN (R 4.1.0)
+ P restfulr                 0.0.13     2017-08-06 [?] CRAN (R 4.1.0)
+ P reticulate               1.22       2021-09-17 [?] CRAN (R 4.1.0)
+ P Rgraphviz                2.38.0     2021-10-26 [?] Bioconductor
+ P rhdf5                    2.38.0     2021-10-26 [?] Bioconductor
+ P rhdf5filters             1.6.0      2021-10-26 [?] Bioconductor
+ P Rhdf5lib                 1.16.0     2021-10-26 [?] Bioconductor
+ P rjson                    0.2.21     2022-01-09 [?] CRAN (R 4.1.0)
+ P rlang                    0.4.12     2021-10-18 [?] CRAN (R 4.1.0)
+ P rmarkdown                2.11       2021-09-14 [?] CRAN (R 4.1.0)
+ P rngtools                 1.5.2      2021-09-20 [?] CRAN (R 4.1.0)
+ P ROCR                     1.0-11     2020-05-02 [?] CRAN (R 4.1.0)
+ P rpart                    4.1-15     2019-04-12 [?] CRAN (R 4.1.0)
+ P rprojroot                2.0.2      2020-11-15 [?] CRAN (R 4.0.2)
+ P Rsamtools                2.10.0     2021-10-26 [?] Bioconductor
+ P RSQLite                  2.2.9      2021-12-06 [?] CRAN (R 4.1.0)
+ P rstudioapi               0.13       2020-11-12 [?] CRAN (R 4.0.2)
+ P rsvd                     1.0.5      2021-04-16 [?] CRAN (R 4.1.0)
+ P rtracklayer              1.54.0     2021-10-26 [?] Bioconductor
+ P Rtsne                    0.15       2018-11-10 [?] CRAN (R 4.1.0)
+ P rvest                    1.0.2      2021-10-16 [?] CRAN (R 4.1.0)
+ P S4Vectors              * 0.32.3     2021-11-21 [?] Bioconductor
+ P safe                     3.34.0     2021-10-26 [?] Bioconductor
+ P sandwich                 3.0-1      2021-05-18 [?] CRAN (R 4.1.0)
+ P sass                     0.4.0      2021-05-12 [?] CRAN (R 4.1.0)
+ P ScaledMatrix             1.2.0      2021-10-26 [?] Bioconductor
+ P scales                 * 1.1.1      2020-05-11 [?] CRAN (R 4.0.2)
+ P scater                 * 1.22.0     2021-10-26 [?] Bioconductor
+ P scattermore              0.7        2020-11-24 [?] CRAN (R 4.1.0)
+ P scran                  * 1.22.1     2021-11-14 [?] Bioconductor
+ P sctransform              0.3.3      2022-01-13 [?] CRAN (R 4.1.0)
+ P scuttle                * 1.4.0      2021-10-26 [?] Bioconductor
+ P sessioninfo              1.2.2      2021-12-06 [?] CRAN (R 4.1.0)
+ P Seurat                 * 4.0.6      2021-12-16 [?] CRAN (R 4.1.0)
+ P SeuratObject           * 4.0.4      2021-11-23 [?] CRAN (R 4.1.0)
+ P shape                    1.4.6      2021-05-19 [?] CRAN (R 4.1.0)
+ P shiny                    1.7.1      2021-10-02 [?] CRAN (R 4.1.0)
+ P SingleCellExperiment   * 1.16.0     2021-10-26 [?] Bioconductor
+ P sn                       2.0.1      2021-11-26 [?] CRAN (R 4.1.0)
+ P snakecase                0.11.0     2019-05-25 [?] CRAN (R 4.0.2)
+ P SparseM                * 1.81       2021-02-18 [?] CRAN (R 4.1.0)
+ P sparseMatrixStats        1.6.0      2021-10-26 [?] Bioconductor
+ P spatstat.core            2.3-2      2021-11-26 [?] CRAN (R 4.1.0)
+ P spatstat.data            2.1-2      2021-12-17 [?] CRAN (R 4.1.0)
+ P spatstat.geom            2.3-1      2021-12-10 [?] CRAN (R 4.1.0)
+ P spatstat.sparse          2.1-0      2021-12-17 [?] CRAN (R 4.1.0)
+ P spatstat.utils           2.3-0      2021-12-12 [?] CRAN (R 4.1.0)
+ P speckle                * 0.0.3      2022-03-09 [?] Github (Oshlack/speckle@fc07773)
+ P statmod                  1.4.36     2021-05-10 [?] CRAN (R 4.1.0)
+ P stringi                  1.7.6      2021-11-29 [?] CRAN (R 4.1.0)
+ P stringr                * 1.4.0      2019-02-10 [?] CRAN (R 4.0.2)
+ P SummarizedExperiment   * 1.24.0     2021-10-26 [?] Bioconductor
+ P survival                 3.2-13     2021-08-24 [?] CRAN (R 4.1.0)
+ P tensor                   1.5        2012-05-05 [?] CRAN (R 4.1.0)
+ P TFisher                  0.2.0      2018-03-21 [?] CRAN (R 4.1.0)
+ P TH.data                  1.1-0      2021-09-27 [?] CRAN (R 4.1.0)
+ P tibble                 * 3.1.6      2021-11-07 [?] CRAN (R 4.1.0)
+ P tidygraph                1.2.0      2020-05-12 [?] CRAN (R 4.0.2)
+ P tidyHeatmap            * 1.7.0      2022-05-13 [?] Github (stemangiola/tidyHeatmap@241aec2)
+ P tidyr                  * 1.1.4      2021-09-27 [?] CRAN (R 4.1.0)
+ P tidyselect               1.1.1      2021-04-30 [?] CRAN (R 4.1.0)
+ P tidyverse              * 1.3.1      2021-04-15 [?] CRAN (R 4.1.0)
+ P tmvnsim                  1.0-2      2016-12-15 [?] CRAN (R 4.1.0)
+ P topGO                  * 2.46.0     2021-10-26 [?] Bioconductor
+ P tweenr                   1.0.2      2021-03-23 [?] CRAN (R 4.1.0)
+ P tzdb                     0.2.0      2021-10-27 [?] CRAN (R 4.1.0)
+ P utf8                     1.2.2      2021-07-24 [?] CRAN (R 4.1.0)
+ P uwot                     0.1.11     2021-12-02 [?] CRAN (R 4.1.0)
+ P vctrs                    0.3.8      2021-04-29 [?] CRAN (R 4.0.2)
+ P vipor                    0.4.5      2017-03-22 [?] CRAN (R 4.1.0)
+ P viridis                  0.6.2      2021-10-13 [?] CRAN (R 4.1.0)
+ P viridisLite              0.4.0      2021-04-13 [?] CRAN (R 4.0.2)
+ P vroom                    1.5.7      2021-11-30 [?] CRAN (R 4.1.0)
+ P whisker                  0.4        2019-08-28 [?] CRAN (R 4.0.2)
+ P withr                    2.4.3      2021-11-30 [?] CRAN (R 4.1.0)
+ P workflowr              * 1.7.0      2021-12-21 [?] CRAN (R 4.1.0)
+ P xfun                     0.29       2021-12-14 [?] CRAN (R 4.1.0)
+ P XML                    * 3.99-0.8   2021-09-17 [?] CRAN (R 4.1.0)
+ P xml2                     1.3.3      2021-11-30 [?] CRAN (R 4.1.0)
+ P xtable                   1.8-4      2019-04-21 [?] CRAN (R 4.1.0)
+ P XVector                  0.34.0     2021-10-26 [?] Bioconductor
+ P yaml                     2.2.1      2020-02-01 [?] CRAN (R 4.0.2)
+ P yulab.utils              0.0.4      2021-10-09 [?] CRAN (R 4.1.0)
+ P zlibbioc                 1.40.0     2021-10-26 [?] Bioconductor
+ P zoo                      1.8-9      2021-03-09 [?] CRAN (R 4.1.0)
+
+ [1] /oshlack_lab/jovana.maksimovic/projects/MCRI/melanie.neeland/paed-cf-cite-seq/renv/library/R-4.1/x86_64-pc-linux-gnu
+ [2] /config/binaries/R/4.1.0/lib64/R/library
+
+ P ── Loaded and on-disk path mismatch.
+
+──────────────────────────────────────────────────────────────────────────────</code></pre>
+</details>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.1.0 (2021-05-18)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: CentOS Linux 7 (Core)
+
+Matrix products: default
+BLAS:   /config/binaries/R/4.1.0/lib64/R/lib/libRblas.so
+LAPACK: /config/binaries/R/4.1.0/lib64/R/lib/libRlapack.so
+
+locale:
+ [1] LC_CTYPE=en_AU.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_AU.UTF-8        LC_COLLATE=en_AU.UTF-8    
+ [5] LC_MONETARY=en_AU.UTF-8    LC_MESSAGES=en_AU.UTF-8   
+ [7] LC_PAPER=en_AU.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_AU.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] pheatmap_1.0.12             tidyHeatmap_1.7.0          
+ [3] ggplotify_0.1.0             scales_1.1.1               
+ [5] janitor_2.1.0               EGSEA_1.22.0               
+ [7] pathview_1.34.0             topGO_2.46.0               
+ [9] SparseM_1.81                GO.db_3.14.0               
+[11] gage_2.44.0                 speckle_0.0.3              
+[13] paletteer_1.4.0             BiocParallel_1.28.3        
+[15] clustree_0.4.4              ggraph_2.0.5               
+[17] glmGamPoi_1.6.0             org.Hs.eg.db_3.14.0        
+[19] ensembldb_2.18.2            AnnotationFilter_1.18.0    
+[21] GenomicFeatures_1.46.3      AnnotationHub_3.2.0        
+[23] BiocFileCache_2.2.0         dbplyr_2.1.1               
+[25] patchwork_1.1.1             edgeR_3.36.0               
+[27] limma_3.50.0                ggalluvial_0.12.3          
+[29] Matrix_1.4-0                scater_1.22.0              
+[31] Cepo_1.0.0                  GSEABase_1.56.0            
+[33] graph_1.72.0                annotate_1.72.0            
+[35] XML_3.99-0.8                AnnotationDbi_1.56.2       
+[37] scran_1.22.1                scuttle_1.4.0              
+[39] DropletUtils_1.14.1         SingleCellExperiment_1.16.0
+[41] SummarizedExperiment_1.24.0 Biobase_2.54.0             
+[43] GenomicRanges_1.46.1        GenomeInfoDb_1.30.1        
+[45] IRanges_2.28.0              S4Vectors_0.32.3           
+[47] BiocGenerics_0.40.0         MatrixGenerics_1.6.0       
+[49] matrixStats_0.61.0          glue_1.6.0                 
+[51] here_1.0.1                  forcats_0.5.1              
+[53] stringr_1.4.0               dplyr_1.0.7                
+[55] purrr_0.3.4                 readr_2.1.1                
+[57] tidyr_1.1.4                 tibble_3.1.6               
+[59] ggplot2_3.3.5               tidyverse_1.3.1            
+[61] SeuratObject_4.0.4          Seurat_4.0.6               
+[63] workflowr_1.7.0            
+
+loaded via a namespace (and not attached):
+  [1] EGSEAdata_1.22.0              PADOG_1.36.0                 
+  [3] graphlayouts_0.8.0            pbapply_1.5-0                
+  [5] lattice_0.20-45               GSVA_1.42.0                  
+  [7] haven_2.4.3                   vctrs_0.3.8                  
+  [9] mgcv_1.8-38                   blob_1.2.2                   
+ [11] survival_3.2-13               spatstat.data_2.1-2          
+ [13] later_1.3.0                   DBI_1.1.2                    
+ [15] R.utils_2.11.0                rappdirs_0.3.3               
+ [17] uwot_0.1.11                   dqrng_0.3.0                  
+ [19] zlibbioc_1.40.0               htmlwidgets_1.5.4            
+ [21] mvtnorm_1.1-3                 GlobalOptions_0.1.2          
+ [23] future_1.23.0                 leiden_0.3.9                 
+ [25] parallel_4.1.0                irlba_2.3.5                  
+ [27] tidygraph_1.2.0               Rcpp_1.0.7                   
+ [29] KernSmooth_2.23-20            DT_0.20                      
+ [31] promises_1.2.0.1              DelayedArray_0.20.0          
+ [33] fs_1.5.2                      mnormt_2.0.2                 
+ [35] digest_0.6.29                 png_0.1-7                    
+ [37] bluster_1.4.0                 sctransform_0.3.3            
+ [39] cowplot_1.1.1                 pkgconfig_2.0.3              
+ [41] DelayedMatrixStats_1.16.0     ggbeeswarm_0.6.0             
+ [43] iterators_1.0.13              reticulate_1.22              
+ [45] circlize_0.4.13               beeswarm_0.4.0               
+ [47] GetoptLong_1.0.5              xfun_0.29                    
+ [49] bslib_0.3.1                   zoo_1.8-9                    
+ [51] tidyselect_1.1.1              reshape2_1.4.4               
+ [53] ica_1.0-2                     viridisLite_0.4.0            
+ [55] rtracklayer_1.54.0            rlang_0.4.12                 
+ [57] jquerylib_0.1.4               metap_1.7                    
+ [59] RColorBrewer_1.1-2            modelr_0.1.8                 
+ [61] labeling_0.4.2                mutoss_0.1-12                
+ [63] httpuv_1.6.5                  BiocNeighbors_1.12.0         
+ [65] TH.data_1.1-0                 jsonlite_1.7.2               
+ [67] XVector_0.34.0                tmvnsim_1.0-2                
+ [69] bit_4.0.4                     mime_0.12                    
+ [71] gridExtra_2.3                 gplots_3.1.1                 
+ [73] Rsamtools_2.10.0              stringi_1.7.6                
+ [75] processx_3.5.2                spatstat.sparse_2.1-0        
+ [77] scattermore_0.7               rbibutils_2.2.7              
+ [79] yulab.utils_0.0.4             bitops_1.0-7                 
+ [81] cli_3.1.0                     Rdpack_2.1.3                 
+ [83] rhdf5filters_1.6.0            RSQLite_2.2.9                
+ [85] data.table_1.14.2             KEGGgraph_1.54.0             
+ [87] rstudioapi_0.13               org.Mm.eg.db_3.14.0          
+ [89] git2r_0.29.0                  GenomicAlignments_1.30.0     
+ [91] nlme_3.1-153                  locfit_1.5-9.4               
+ [93] listenv_0.8.0                 miniUI_0.1.1.1               
+ [95] gridGraphics_0.5-1            R.oo_1.24.0                  
+ [97] sessioninfo_1.2.2             readxl_1.3.1                 
+ [99] lifecycle_1.0.1               munsell_0.5.0                
+[101] cellranger_1.1.0              R.methodsS3_1.8.1            
+[103] hwriter_1.3.2                 caTools_1.18.2               
+[105] codetools_0.2-18              vipor_0.4.5                  
+[107] lmtest_0.9-39                 xtable_1.8-4                 
+[109] ROCR_1.0-11                   BiocManager_1.30.16          
+[111] abind_1.4-5                   farver_2.1.0                 
+[113] parallelly_1.30.0             RANN_2.6.1                   
+[115] hgu133a.db_3.13.0             BiocIO_1.4.0                 
+[117] RcppAnnoy_0.0.19              goftest_1.2-3                
+[119] cluster_2.1.2                 future.apply_1.8.1           
+[121] dendextend_1.15.2             ellipsis_0.3.2               
+[123] prettyunits_1.1.1             lubridate_1.8.0              
+[125] ggridges_0.5.3                reprex_2.0.1                 
+[127] prismatic_1.1.0               igraph_1.2.11                
+[129] multtest_2.50.0               TFisher_0.2.0                
+[131] spatstat.utils_2.3-0          htmltools_0.5.2              
+[133] org.Rn.eg.db_3.14.0           yaml_2.2.1                   
+[135] utf8_1.2.2                    plotly_4.10.0                
+[137] interactiveDisplayBase_1.32.0 withr_2.4.3                  
+[139] fitdistrplus_1.1-6            bit64_4.0.5                  
+[141] rngtools_1.5.2                doRNG_1.8.2                  
+[143] multcomp_1.4-18               foreach_1.5.1                
+[145] ProtGenerics_1.26.0           GSA_1.03.1                   
+[147] Biostrings_2.62.0             spatstat.core_2.3-2          
+[149] rsvd_1.0.5                    ScaledMatrix_1.2.0           
+[151] memoise_2.0.1                 evaluate_0.14                
+[153] globaltest_5.48.0             tzdb_0.2.0                   
+[155] callr_3.7.0                   ps_1.6.0                     
+[157] curl_4.3.2                    fansi_1.0.0                  
+[159] highr_0.9                     tensor_1.5                   
+[161] renv_0.15.0-14                cachem_1.0.6                 
+[163] deldir_1.0-6                  metapod_1.2.0                
+[165] rjson_0.2.21                  getPass_0.2-2                
+[167] ggrepel_0.9.1                 hgu133plus2.db_3.13.0        
+[169] clue_0.3-60                   rprojroot_2.0.2              
+[171] tools_4.1.0                   sass_0.4.0                   
+[173] sandwich_3.0-1                magrittr_2.0.1               
+[175] RCurl_1.98-1.6                xml2_1.3.3                   
+[177] httr_1.4.2                    assertthat_0.2.1             
+[179] rmarkdown_2.11                globals_0.14.0               
+[181] R6_2.5.1                      Rhdf5lib_1.16.0              
+[183] progress_1.2.2                KEGGREST_1.34.0              
+[185] gtools_3.9.2                  shape_1.4.6                  
+[187] statmod_1.4.36                beachmat_2.10.0              
+[189] BiocVersion_3.14.0            rematch2_2.1.2               
+[191] HDF5Array_1.22.1              BiocSingular_1.10.0          
+[193] rhdf5_2.38.0                  splines_4.1.0                
+[195] snakecase_0.11.0              colorspace_2.0-2             
+[197] generics_0.1.1                pillar_1.6.4                 
+[199] sn_2.0.1                      Rgraphviz_2.38.0             
+[201] tweenr_1.0.2                  KEGGdzPathwaysGEO_1.32.0     
+[203] GenomeInfoDbData_1.2.7        plyr_1.8.6                   
+[205] gtable_0.3.0                  rvest_1.0.2                  
+[207] restfulr_0.0.13               knitr_1.37                   
+[209] ComplexHeatmap_2.10.0         biomaRt_2.50.1               
+[211] fastmap_1.1.0                 doParallel_1.0.16            
+[213] broom_0.7.11                  filelock_1.0.2               
+[215] backports_1.4.1               plotrix_3.8-2                
+[217] R2HTML_2.3.2                  vroom_1.5.7                  
+[219] hms_1.1.1                     ggforce_0.3.3                
+[221] Rtsne_0.15                    HTMLUtils_0.1.7              
+[223] shiny_1.7.1                   polyclip_1.10-0              
+[225] grid_4.1.0                    numDeriv_2016.8-1.1          
+[227] mathjaxr_1.4-0                lazyeval_0.2.2               
+[229] whisker_0.4                   crayon_1.4.2                 
+[231] MASS_7.3-53.1                 safe_3.34.0                  
+[233] sparseMatrixStats_1.6.0       viridis_0.6.2                
+[235] rpart_4.1-15                  compiler_4.1.0               
+[237] spatstat.geom_2.3-1          </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

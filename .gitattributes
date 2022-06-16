@@ -1,0 +1,6 @@
+data/SCEs/*.rds filter=lfs diff=lfs merge=lfs -text
+data/cellsnp-lite/* filter=lfs diff=lfs merge=lfs -text
+data/cellsnp-lite/C133_1/cellSNP.* filter=lfs diff=lfs merge=lfs -text
+data/cellsnp-lite/C133_2/cellSNP.* filter=lfs diff=lfs merge=lfs -text
+data/vireo/C133_1/* filter=lfs diff=lfs merge=lfs -text
+data/vireo/C133_2/* filter=lfs diff=lfs merge=lfs -text

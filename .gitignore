@@ -1,0 +1,11 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+output/CellRanger/*.cloupe
+data/emptyDrops
+data/SCEs
+data/vireo
+data/cellsnp-lite
+data/CellRanger
+extdata/

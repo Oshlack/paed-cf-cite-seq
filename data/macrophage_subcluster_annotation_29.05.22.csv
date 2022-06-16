@@ -1,0 +1,25 @@
+Cluster,Annotation,Broad
+0,alveolar-macs,Macrophages
+1,macro-lipid,Macrophages
+2,macro-ifna/b,Macrophages
+3,alveolar-macs,Macrophages
+4,alveolar-macs,Macrophages
+5,alveolar-macs,Macrophages
+6,alveolar-macs,Macrophages
+7,macro-int,Macrophages
+8,macro-ifna/b,Macrophages
+9,macro-int,Macrophages
+10,macro-ifna/b,Macrophages
+11,macro-CCL,Macrophages
+12,macro-vesicle,Macrophages
+13,macro-int,Macrophages
+14,macro-MT,Macrophages
+15,macro-repair,Macrophages
+16,macro-viral,Macrophages
+17,proliferating-macrophage,Proliferating macrophages
+18,proliferating-macrophage,Proliferating macrophages
+19,macro-cholesterol,Macrophages
+20,macro-T,Macrophages
+21,proliferating-macrophage,Proliferating macrophages
+22,macro-interstitial,Macrophages
+23,macro-reg,Macrophages

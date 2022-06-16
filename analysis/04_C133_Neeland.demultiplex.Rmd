@@ -1,0 +1,519 @@
+---
+title: "Analysis of CITE-seq Data"
+subtitle: "Demultiplexing"
+author:
+  - name: Peter Hickey 
+    url: https://peterhickey.org
+    affiliation: Cellular Genomics Projects Team (formerly SCORE), WEHI
+    affiliation_url: https://www.wehi.edu.au/people/rory-bowden/4536/wehi-advanced-genomics-facility
+date: "`r Sys.Date()`"
+editor_options: 
+  chunk_output_type: inline
+bibliography: ref.bib
+site: workflowr::wflow_site
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+    theme: cosmo
+    number_sections: true
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+# Load libraries
+
+```{r setup}
+suppressPackageStartupMessages(library(BiocStyle))
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(here))
+suppressPackageStartupMessages(library(glue))
+suppressPackageStartupMessages(library(DropletUtils))
+suppressPackageStartupMessages(library(scran))
+suppressPackageStartupMessages(library(scater))
+suppressPackageStartupMessages(library(scuttle))
+suppressPackageStartupMessages(library(janitor))
+suppressPackageStartupMessages(library(cowplot))
+suppressPackageStartupMessages(library(patchwork))
+suppressPackageStartupMessages(library(scales))
+suppressPackageStartupMessages(library(DropletQC))
+```
+
+# Motivation
+
+Cells were obtained from 8 donors.
+We used 'cell hashing' to distinguish cells from each donor.
+Cells from each samples were labelled with a unique hashtag oligo (HTO) and then evenly mixed (i.e. 1:1:1:1:1:1:1:1 ratio) and a sample of the mixture run over 2 10x captures.
+We can additionally use the natural genetic variation between donors to distinguish cells from each donor.
+
+The aim here is to demultiplex the data so we can assign each droplet to a single donor (via its HTO and/or genetics).
+
+## Cell hashing
+
+Cell hashing uses a series of oligo-tagged antibodies (hash tag oligos, HTOs) against ubiquitously expressed surface proteins with different barcodes to uniquely label cells from distinct samples, which can be subsequently pooled in one scRNA-seq run.
+By sequencing these tags alongside the cellular transcriptome, we can assign each cell to its sample of origin, and robustly identify doublets originating from multiple samples.
+
+The aim of HTO demultiplexing is to assign each droplet to the relevant pool.
+It will also assign droplets as 'doublets' (those droplets containing multiple HTOs) or 'negative' (those droplets with insufficient HTOs).
+To demultiplex these samples we use the HTO demultiplexing routines from `r BiocStyle::Biocpkg("DropletUtils")`.
+
+## Genetic variation
+
+To demultiplex droplets from the donors we rely on the natural genetic variation of cells from different donors.
+We do not have reference genotypes from each donor, but we can still assign cells back to `donor_A`, `donor_B`, ..., `donor_H`.
+To do this, we use [**vireo** (Variational Inference for Reconstructing Ensemble Origin)](https://vireosnp.readthedocs.io/).
+
+# Setting up the data
+
+The count data were processed using **CellRanger** and the `r Biocpkg("DropletUtils")` R/Bioconductor packages.
+Empty droplets were filtered out using `emptyDrops` and samples were demultiplexed using `hashedDrops`, which can be viewed [here](../docs/03_C133_Neeland.emptyDrops.html).
+The results are available in a *SingleCellExperiment* object, along with the metadata in [`data/SCEs/03_C133_Neeland.emptyDrops.SCE.rds`](../data/SCEs/03_C133_Neeland.emptyDrops.SCE.rds).
+
+```{r}
+sce <- readRDS(here("data", "SCEs", "03_C133_Neeland.emptyDrops.SCE.rds"))
+sce
+```
+
+## DropletUtils
+
+We use the `emptyDrops()` function from the `r Biocpkg("DropletUtils")` package to test whether the expression profile for each cell barcode is significantly different from the ambient RNA pool [@lun2018distinguishing].
+This tends to be less conservative than the cell calling algorithm from the **CellRanger** pipeline, which often discards genuine cells with low RNA content (and thus low total counts).
+Any significant deviation indicates that the barcode corresponds to a cell-containing droplet.
+We call cells at a false discovery rate (FDR) of 0.1%, meaning that no more than 0.1% of our called barcodes should be empty droplets on average.
+
+# Demultiplexing with hashtag oligos (HTOs)
+
+We run `hashedDrops()` from the `r BiocStyle::Biocpkg("DropletUtils")` package to demultiplex the HTO count matrix for the subset of cell-containing libraries.
+We run this separately on each capture, which allows estimation of capture-specific ambient HTO profiles.
+`hashedDrops()` reports the likely pool of origin for each library based on its most abundant HTO after adjusting those abundances for the ambient contamination.
+The `hashedDrops()` function estimates the ambient contamination of each HTO, which is adjusted for when assigning barcodes to HTO labels.
+
+# Assign Hashing Tag Oligos (HTOs)
+
+Prepare the object.
+
+```{r}
+# Preparing HTO data -----------------------------------------------------------
+hto_counts <- counts(altExp(sce, "HTO"))
+```
+
+Demultiplex the cells using HTOs.
+
+```{r}
+# Demultiplexing HTOs (DropletUtils) -------------------------------------------
+
+confident.min <- 2
+hash_stats <- hashedDrops(hto_counts, confident.min = confident.min)
+
+hist(
+  hash_stats$LogFC,
+  xlab = "Log fold-change from best to second HTO",
+  main = "")
+abline(v = confident.min, col = "red", lty = 2, lwd = 2)
+```
+
+Numbers of cells confidently assigned to each hashtag.
+
+```{r}
+table(Raw = hash_stats$Best, Confident = hash_stats$Confident)
+```
+
+Plot HTO logFCs for all cells.
+
+```{r}
+# Doublets show up in the top-left, singlets in the bottom right.
+plot(hash_stats$LogFC, hash_stats$LogFC2, pch=".")
+points(hash_stats$LogFC[hash_stats$Confident], 
+       hash_stats$LogFC2[hash_stats$Confident], 
+       pch=".", 
+       col = "red")
+abline(v = 2, h = 2, col = "blue", lty = 2)
+```
+
+Visualise HTO demultiplexing results.
+
+```{r}
+# Visualization
+tmp <- SingleCellExperiment(
+  assays = list(counts = hto_counts),
+  colData = hash_stats)
+sf <- librarySizeFactors(counts(tmp))
+# NOTE: Kludge to workaround non-positive size factors (corresponding to
+#       droplets with zero HTO counts).
+sf <- pmax(sf, min(sf[sf > 0]))
+sizeFactors(tmp) <- sf
+tmp <- logNormCounts(tmp)
+tmp$Best <- factor(tmp$Best)
+tmp$Confident <- factor(tmp$Confident)
+tmp$Doublet <- factor(tmp$Doublet)
+
+plotHeatmap(
+  tmp,
+  rownames(tmp),
+  order_columns_by = c("Best", "Confident", "Doublet"),
+  center = TRUE,
+  symmetric = TRUE,
+  color = hcl.colors(101, "Blue-Red 3"),
+  cluster_rows = FALSE)
+```
+
+Add HTO data to SCE and save.
+
+```{r}
+# Add to SCE
+stopifnot(identical(colnames(sce), rownames(hash_stats)))
+colData(sce) <- cbind(colData(sce), hash_stats)
+sce$HTO <- factor(
+  case_when(
+    sce$Confident ~ rownames(hto_counts)[sce$Best],
+    sce$Doublet ~ "Doublet",
+    TRUE ~ "Unknown"),
+  levels = c(paste0("Human_HTO_", 1:8), "Doublet", "Unknown"))
+
+dim(sce)
+```
+
+Figure \@ref(fig:hto-demultiplexing) plots the number and proportion of droplets assigned to each HTO in each capture and if these were confidently or not confidently assigned.
+
+```{r hto-demultiplexing, fig.cap = "Number and proportion of droplets assigned to each HTO and if these were confidently or not confidently assigned overall (left) and within each capture (right)."}
+p1 <- ggcells(sce) + 
+  geom_bar(
+    aes(x = Best, fill = Confident), 
+    position = position_stack(reverse = TRUE)) + 
+  coord_flip() +
+  ylab("Number of droplets") +
+  theme_cowplot(font_size = 7)
+p2 <- ggcells(sce) + 
+  geom_bar(
+    aes(x = Best, fill = Confident), 
+    position = position_fill(reverse = TRUE)) + 
+  coord_flip() + 
+  ylab("Proportion of droplets") + 
+  theme_cowplot(font_size = 7)
+(p1 + p1 + facet_grid(~capture) + plot_layout(widths = c(1, 2))) / 
+  (p2 + p2 + facet_grid(~capture) + plot_layout(widths = c(1, 2))) +
+  plot_layout(guides = "collect")
+```
+
+# Demultiplexing cells without genotype reference
+
+The HTOs allow us to assign droplets to donors.
+However, if for some reason the HTO data were unable to match a droplet to a donor, we might still be able to use the genetic data to recover the donor identity of the droplet.
+
+## Genotyping
+
+We used [**cellsnp-lite** (`v1.2.0`)](https://github.com/single-cell-genetics/cellsnp-lite) [@Huang2020.12.31.424913] to genotype each scRNA-seq droplet at common SNPs from the 1000 Genomes Project (see [`code/cellsnp-lite.sh`](../code/cellsnp-lite.sh)).
+This gives us a cell variant call format (VCF) file with genotypes for each droplet, from which we can extract the variant-by-cell matrices of integer counts of the number of reads supporting the reference and alternative allele for each variant in each cell and the total number of reads overlapping each variant in each cell.
+
+## Assigning barcodes to donors
+
+We use [**vireo** (Variational Inference for Reconstructing Ensemble Origin)](https://vireosnp.readthedocs.io/) to assign droplets to donors, using the knowledge that there are 8 donors in the pool (see [`code/vireo.sh`](../code/vireo.sh)).
+This also identifies doublets by identifying any barcodes with genotypes from multiple donors.
+
+```{r}
+capture_names <- levels(sce$capture)
+capture_names <- setNames(capture_names, capture_names)
+
+vireo_df <- do.call(
+  rbind,
+  lapply(capture_names, function(cn) {
+    vireo_df <- read.table(
+      here("data", "vireo", cn, "donor_ids.tsv"),
+      header = TRUE)
+    vireo_df$donor_id <- paste0(cn, "_", vireo_df$donor_id)
+    captureNumber <- sub("C133_", "", cn)
+    vireo_df$colname <- paste0(captureNumber, "_", vireo_df$cell)
+    # NOTE: Reorder so matches SCE.
+    j <- match(colnames(sce)[sce$capture == cn], vireo_df$colname)
+    stopifnot(!anyNA(j))
+    vireo_df <- vireo_df[j, ]
+  }))
+```
+
+The table below summarises the genotype-based demultiplexing results.
+
+```{r}
+knitr::kable(
+  tabyl(vireo_df, donor_id) %>%
+    adorn_pct_formatting(1),
+  caption = "Assignment of droplets to donors using vireo.")
+```
+
+## Matching donors across assays
+
+The [Genotyping] and [Assigning barcodes to donors] is done independently for each capture.
+As such, there is no guarantee that `donor0` is `C133_1` is the same person as `donor0` in `C133_2`.
+We therefore then need to match donors across captures by matching their genotypes across captures.
+
+We do this by matching the donor-level genotypes from the scRNA-seq data across pairs of captures.
+
+```{r, message = FALSE, results = "hide"}
+library(vcfR)
+f1 <- here("data/vireo/C133_1/GT_donors.vireo.vcf.gz")
+f2 <- here("data/vireo/C133_2/GT_donors.vireo.vcf.gz")
+x1 <- read.vcfR(f1)
+x2 <- read.vcfR(f2)
+# Create unique ID for each locus in each capture.
+y1 <- paste(
+  x1@fix[,"CHROM"],
+  x1@fix[,"POS"],
+  x1@fix[,"REF"],
+  x1@fix[,"ALT"],
+  sep = "_")
+y2 <- paste(
+  x2@fix[,"CHROM"],
+  x2@fix[,"POS"],
+  x2@fix[,"REF"],
+  x2@fix[,"ALT"],
+  sep = "_")
+# Only keep the loci in common between the 2 captures.
+i1 <- na.omit(match(y2, y1))
+i2 <- na.omit(match(y1, y2))
+# Construct genotype matrix at common loci from the 2 captures.
+g1 <- apply(
+  x1@gt[i1, paste0("donor", 0:7)],
+  2,
+  function(x) sapply(strsplit(x, ":"), `[[`, 1))
+g2 <- apply(
+  x2@gt[i2, paste0("donor", 0:7)],
+  2,
+  function(x) sapply(strsplit(x, ":"), `[[`, 1))
+# Count number of genotype matches between pairs of donors (one from each 
+# capture) and convert to a proportion.
+donor_names <- paste0("donor", 0:7)
+z <- matrix(
+  NA_real_,
+  nrow = 8,
+  ncol = 8,
+  dimnames = list(donor_names, donor_names))
+for (i in rownames(z)) {
+  for (j in colnames(z)) {
+    z[i, j] <- sum(g1[, i] == g2[, j]) / nrow(g1)
+  }
+}
+rownames(z) <- paste0("C133_1_", rownames(z))
+colnames(z) <- paste0("C133_2_", colnames(z))
+```
+
+Figure \@ref(fig:genotype-heatmap) shows that we can easily match donors between pairs of captures by selecting the pair with the highest proportion of matching genotypes. 
+
+```{r genotype-heatmap, fig.cap = "Proportion of matching genotypes between capture `C133_1` (rows) and capture `C133_2` (columns).", fig.asp = 1}
+pheatmap::pheatmap(
+  z,
+  color = viridisLite::inferno(101),
+  cluster_rows = FALSE,
+  cluster_cols = FALSE,
+  main = "Proportion of matching genotypes")
+```
+
+The table below gives the best matches between the two captures.
+
+```{r}
+best_match_df <- data.frame(
+  C133_1 = rownames(z),
+  C133_2 = apply(
+    z, 1,
+    function(x) colnames(z)[which.max(x)]),
+  check.names = FALSE)
+best_match_df$genetic_donor <- paste0("donor_", LETTERS[1:8])
+knitr::kable(
+  dplyr::select(best_match_df, genetic_donor, everything()),
+  caption = "Best match between the scRNA-seq donor and the mini-bulk donor.",
+  row.names = FALSE)
+```
+
+Finally, the inferred donor of each cell (`genetic_donor`^[This includes barcodes labelled as 'doublets' or 'unassigned'] in the above table) is added to the *SingleCellExperiment* object.
+
+```{r}
+best_match_long_df <- tidyr::pivot_longer(
+  best_match_df,
+  c(C133_1, C133_2)) %>%
+  dplyr::select(genetic_donor, value)
+stopifnot(identical(colnames(sce), vireo_df$colname))
+# NOTE: We exclude the redundant 'cell' and 'colname' columns.
+sce$vireo <- DataFrame(
+  vireo_df[, setdiff(colnames(vireo_df), c("cell", "colname"))])
+sce$genetic_donor <- left_join(
+  vireo_df,
+  best_match_long_df, 
+  by = c("donor_id" = "value")) %>%
+  mutate(
+    genetic_donor = factor(
+      case_when(
+        is.na(genetic_donor) ~ sub("C133_[0-9]_", "", donor_id),
+        TRUE ~ genetic_donor),
+      levels = c(paste0("donor_", LETTERS[1:8]), "doublet", "unassigned"))) %>%
+  pull(genetic_donor)
+```
+
+# Summary
+
+```{r}
+# Some useful colours
+sce$colours <- S4Vectors::make_zero_col_DFrame(ncol(sce))
+
+hto_colours <- setNames(
+  palette.colors(nlevels(sce$HTO), "Paired"),
+  levels(sce$HTO))
+sce$colours$hto_colours <- hto_colours[sce$HTO]
+
+# NOTE: the 10th colour of the palette, i.e. light grey, is hard to be seen on grey-background umap, thus replaced !
+genetic_donor_colours <- setNames(
+  c(palette.colors(nlevels(sce$genetic_donor)-1, "Tableau 10"), "#000000"),
+  levels(sce$genetic_donor))
+sce$colours$genetic_donor_colours <- genetic_donor_colours[sce$genetic_donor]
+
+capture_colours <- setNames(
+  palette.colors(nlevels(sce$capture), "Accent"),
+  levels(sce$capture))
+sce$colours$capture_colours <- capture_colours[sce$capture]
+```
+
+The plan for this experiment was to devote 1/8 (12.5%) of each capture to each sample.
+Each capture was planned to have the same representation of donors.
+
+Due to the sample multiplexing strategy, most droplets should be assigned to a single `HTO` and `genetic_donor`.
+The below table shows that most droplets assigned to a single `HTO` are also assigned to a single `genetic_donor` and vice versa.
+However, there are more `Doublet` and `Unknown` droplets using the `HTO` data than from the `genetic_donor` data.
+
+<aside>
+It may pay to take a closer look at those droplets with discordant `HTO` and `genetic_donor` assignments.
+</aside>
+
+```{r}
+tabyl(
+  as.data.frame(colData(sce)[, c("HTO", "genetic_donor")]),
+  HTO,
+  genetic_donor) %>%
+  adorn_title(placement = "combined") %>%
+  adorn_totals("both") %>%
+  knitr::kable(caption = "Number of droplets assigned to each `HTO`/`donor` combination.")
+```
+
+## Breakdown by `capture`
+
+```{r}
+prop_droplets_per_genetic_donor <- as.vector(
+  table(sce$genetic_donor) / 
+    sum(!sce$genetic_donor %in% c("doublet", "unassigned")))
+```
+
+Figure \@ref(fig:breakdown-by-capture) breaks down the demultiplexing results by capture.
+In good news, we observe that:
+
+- Each capture has a very similar number of droplets.
+- Each capture has similar proportions of each donor (by HTO).
+- Each capture has similar proportions of each donor (by genetics).
+- Of those droplets that are not doublets or unassigned, the percentage that come from each donor (median = `r scales::percent(median(prop_droplets_per_genetic_donor[1:8]), 0.1)`; desired = 12.5%) is very close to the desired value (P = `r t.test(prop_droplets_per_genetic_donor[1:8], mu = 0.125)$p.value` using a two-sided t-test that the average proportion is different from 12.5%).
+
+However, in less-good news, we also observe that:
+
+- Of those droplets that are not doublets or unassigned, there is a 2-fold difference in the percentage that come from each donor (min = `r scales::percent(min(prop_droplets_per_genetic_donor[1:8]), 0.1)`; max = `r scales::percent(max(prop_droplets_per_genetic_donor[1:8]), 0.1)`)
+
+
+```{r breakdown-by-capture, fig.cap = "Breakdown of the demultiplexing results by `capture`.", fig.asp = 0.5}
+p1 <- ggcells(sce) + 
+  geom_bar(
+    aes(x = capture, fill = HTO),
+    position = position_fill(reverse = TRUE)) +
+  coord_flip() +
+  ylab("Frequency") +
+  theme_cowplot(font_size = 8) + 
+  scale_fill_manual(values = hto_colours)
+p2 <- ggcells(sce) + 
+  geom_bar(
+    aes(x = capture, fill = genetic_donor),
+    position = position_fill(reverse = TRUE)) +
+  coord_flip() +
+  ylab("Frequency") +
+  theme_cowplot(font_size = 8) + 
+  scale_fill_manual(values = genetic_donor_colours)
+p3 <- ggcells(sce) + 
+  geom_bar(aes(x = capture, fill = capture)) + 
+  coord_flip() + 
+  ylab("Number of droplets") + 
+  theme_cowplot(font_size = 8) + 
+  scale_fill_manual(values = capture_colours) +
+  guides(fill = FALSE)
+p1 + p2 + p3 + plot_layout(guides = "collect")
+```
+
+## Breakdown by `HTO`
+
+Figure \@ref(fig:breakdown-by-hto) breaks down the demultiplexing results by HTO.
+In good news, we observe that:
+
+- The proportion of droplets from each `HTO` are very similar across captures.
+- Almost all droplets assigned to each `HTO` are also assigned to a single `genetic_donor`.
+
+```{r breakdown-by-hto, fig.cap = "Breakdown of the demultiplexing results by `HTO`."}
+p1 <- ggcells(sce) + 
+  geom_bar(
+    aes(x = HTO, fill = genetic_donor),
+    position = position_fill(reverse = TRUE)) +
+  coord_flip() +
+  ylab("Frequency") +
+  theme_cowplot(font_size = 8) + 
+  scale_fill_manual(values = genetic_donor_colours)
+p2 <- ggcells(sce) + 
+  geom_bar(aes(x = HTO, fill = HTO)) + 
+  coord_flip() + 
+  ylab("Number of droplets") + 
+  theme_cowplot(font_size = 8) + 
+  scale_fill_manual(values = hto_colours) +
+  guides(fill = FALSE)
+(p1 + p1 + facet_grid(~capture) + plot_layout(widths = c(1, 2))) /
+  (p2 + p2 + facet_grid(~capture) + plot_layout(widths = c(1, 2))) +
+  plot_layout(guides = "collect")
+```
+
+## Breakdown by `genetic_donor`
+
+Figure \@ref(fig:breakdown-by-genetic-donor) breaks down the demultiplexing results by `genetic_donor`.
+In good news, we observe that:
+
+- The proportion of droplets from each `genetic_donor` are mostly very similar across captures.
+- Almost all droplets assigned to each `genetic_donor` are also assigned to a single `HTO`.
+
+```{r breakdown-by-genetic-donor, fig.cap = "Breakdown of the demultiplexing results by `genetic_donor`."}
+p1 <- ggcells(sce) + 
+  geom_bar(
+    aes(x = genetic_donor, fill = HTO),
+    position = position_fill(reverse = TRUE)) +
+  coord_flip() +
+  ylab("Frequency") +
+  theme_cowplot(font_size = 8) + 
+  scale_fill_manual(values = hto_colours)
+p2 <- ggcells(sce) + 
+  geom_bar(aes(x = genetic_donor, fill = genetic_donor)) + 
+  coord_flip() + 
+  ylab("Number of droplets") + 
+  theme_cowplot(font_size = 8) + 
+  scale_fill_manual(values = genetic_donor_colours) +
+  guides(fill = FALSE)
+(p1 + p1 + facet_grid(~capture) + plot_layout(widths = c(1, 2))) /
+  (p2 + p2 + facet_grid(~capture) + plot_layout(widths = c(1, 2))) +
+  plot_layout(guides = "collect")
+```
+
+# Save data
+
+```{r}
+out <- here("data",
+            "SCEs", 
+            "03_C133_Neeland.demultiplexed.SCE.rds")
+
+if(!file.exists(out)) saveRDS(sce, out)
+```
+
+# Session info {.appendix}
+
+<summary>The analysis and this document were prepared using the following software (click triangle to expand)</summary>
+<details>
+
+```{r}
+sessioninfo::session_info()
+```

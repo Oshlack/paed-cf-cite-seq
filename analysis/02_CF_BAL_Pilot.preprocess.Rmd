@@ -1,0 +1,636 @@
+---
+title: "Analysis of scRNA-seq Data"
+subtitle: "Preprocessing"
+author: "Jovana Maksimovic (modified from code by Peter Hickey & William Ho)"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+site: workflowr::wflow_site
+bibliography: ref.bib
+output:
+  bookdown::html_document2:
+    base_format: workflowr::wflow_html
+    toc: yes
+    toc_float: yes
+    theme: cosmo
+    highlight: textmate
+    number_sections: true
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+# Load libraries
+
+```{r setup}
+suppressPackageStartupMessages(library(BiocStyle))
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(here))
+suppressPackageStartupMessages(library(glue))
+suppressPackageStartupMessages(library(DropletUtils))
+suppressPackageStartupMessages(library(scran))
+suppressPackageStartupMessages(library(scater))
+suppressPackageStartupMessages(library(scuttle))
+suppressPackageStartupMessages(library(janitor))
+suppressPackageStartupMessages(library(cowplot))
+suppressPackageStartupMessages(library(patchwork))
+suppressPackageStartupMessages(library(scales))
+suppressPackageStartupMessages(library(DropletQC))
+suppressPackageStartupMessages(library(EnsDb.Hsapiens.v86))
+suppressPackageStartupMessages(library(ensembldb))
+```
+
+# Load data
+
+```{r}
+sce <- readRDS(
+  here("data", "SCEs", "04_CF_BAL_Pilot.emptyDrops.SCE.rds"))
+```
+
+```{r}
+# Some useful colours
+capture_colours <- setNames(
+  scales::hue_pal()(length(levels(sce$capture))),
+  unique(levels(sce$capture)))
+```
+
+```{r experiment-by-capture, fig.cap = "Breakdown of the samples by `capture`."}
+p1 <- ggcells(sce) + 
+  geom_bar(
+    aes(x = capture, fill = capture))  +
+  geom_text(stat='count', aes(x = capture, label=..count..), 
+            hjust=1.5, size=3) +
+  coord_flip() +
+  scale_color_manual(values = capture_colours) +
+  ylab("No. cells") +
+    theme_cowplot(font_size = 10)
+p1 
+```
+
+## Add gene-based annotation
+
+Having quantified gene expression against the Ensembl gene annotation, we have Ensembl-style identifiers for the genes. 
+These identifiers are used as they are unambiguous and highly stable. 
+However, they are difficult to interpret compared to the gene symbols which are more commonly used in the literature.
+Given the Ensembl identifiers, we obtain the corresponding gene symbols using annotation packages available through Bioconductor.
+Henceforth, we will use gene symbols (where available) to refer to genes in our analysis and otherwise use the Ensembl-style gene identifiers^[Some care is taken to account for missing and duplicate gene symbols; missing symbols are replaced with the Ensembl identifier and duplicated symbols are concatenated with the (unique) Ensembl identifiers.].
+
+```{r, warning=FALSE, message=FALSE}
+rownames(sce) <- uniquifyFeatureNames(rowData(sce)$ID, rowData(sce)$Symbol)
+# Add chromosome location so we can filter on mitochondrial genes.
+location <- mapIds(
+  x = EnsDb.Hsapiens.v86,
+  # NOTE: Need to remove gene version number prior to lookup.
+  keys = rowData(sce)$ID,
+  keytype = "GENEID",
+  column = "SEQNAME")
+rowData(sce)$CHR <- location
+# Additional gene metadata from ENSEMBL and NCBI
+# NOTE: These columns were customised for this project.
+ensdb_columns <- c(
+  "GENEBIOTYPE", "GENENAME", "GENESEQSTART", "GENESEQEND", "SEQNAME", "SYMBOL")
+names(ensdb_columns) <- paste0("ENSEMBL.", ensdb_columns)
+stopifnot(all(ensdb_columns %in% columns(EnsDb.Hsapiens.v86)))
+ensdb_df <- DataFrame(
+  lapply(ensdb_columns, function(column) {
+    mapIds(
+      x = EnsDb.Hsapiens.v86,
+      keys = rowData(sce)$ID,
+      keytype = "GENEID",
+      column = column,
+      multiVals = "CharacterList")
+  }),
+  row.names = rowData(sce)$ID)
+# NOTE: Can't look up GENEID column with GENEID key, so have to add manually.
+ensdb_df$ENSEMBL.GENEID <- rowData(sce)$ID
+# NOTE: Homo.sapiens combines org.Hs.eg.db and
+#       TxDb.Hsapiens.UCSC.hg19.knownGene (as well as others) and therefore
+#       uses entrez gene and RefSeq based data.
+library(Homo.sapiens)
+# NOTE: These columns were customised for this project.
+ncbi_columns <- c(
+  # From TxDB: None required
+  # From OrgDB
+  "ALIAS", "ENTREZID", "GENENAME", "REFSEQ", "SYMBOL")
+names(ncbi_columns) <- paste0("NCBI.", ncbi_columns)
+stopifnot(all(ncbi_columns %in% columns(Homo.sapiens)))
+ncbi_df <- DataFrame(
+  lapply(ncbi_columns, function(column) {
+    mapIds(
+      x = Homo.sapiens,
+      keys = rowData(sce)$ID,
+      keytype = "ENSEMBL",
+      column = column,
+      multiVals = "CharacterList")
+  }),
+  row.names = rowData(sce)$ID)
+rowData(sce) <- cbind(rowData(sce), ensdb_df, ncbi_df)
+# Some useful gene sets
+mito_set <- rownames(sce)[which(rowData(sce)$CHR == "MT")]
+ribo_set <- grep("^RP(S|L)", rownames(sce), value = TRUE)
+# NOTE: A more curated approach for identifying ribosomal protein genes
+#       (https://github.com/Bioconductor/OrchestratingSingleCellAnalysis-base/blob/ae201bf26e3e4fa82d9165d8abf4f4dc4b8e5a68/feature-selection.Rmd#L376-L380)
+library(msigdbr)
+c2_sets <- msigdbr(species = "Homo sapiens", category = "C2")
+ribo_set <- union(
+  ribo_set,
+  c2_sets[c2_sets$gs_name == "KEGG_RIBOSOME", ]$human_gene_symbol)
+is_ribo <- rownames(sce) %in% ribo_set
+sex_set <- rownames(sce)[any(rowData(sce)$ENSEMBL.SEQNAME %in% c("X", "Y"))]
+pseudogene_set <- rownames(sce)[
+  any(grepl("pseudogene", rowData(sce)$ENSEMBL.GENEBIOTYPE))]
+
+head(rowData(sce)) %>%
+  knitr::kable()
+```
+
+# Quality control
+
+## Define the quality control metrics
+
+Low-quality cells need to be removed to ensure that technical effects do not distort downstream analysis results.
+We use several quality control (QC) metrics to measure the quality of the cells:
+
+- `sum`: This measures the library size of the cells, which is the total sum of counts across both genes and spike-in transcripts. We want cells to have high library sizes as this means more RNA has been successfully captured during library preparation. 
+- `detected`: This is the number of expressed features^[The number of expressed features refers to the number of genes which have non-zero counts (i.e. they have been identified in the cell at least once)] in each cell. Cells with few expressed features are likely to be of poor quality, as the diverse transcript population has not been successful captured. 
+- `subsets_Mito_percent`: This measures the proportion of UMIs which are mapped to mitochondrial RNA. If there is a higher than expected proportion of mitochondrial RNA this is often symptomatic of a cell which is under stress and is therefore of low quality and will not be used for the analysis. 
+- `subsets_Ribo_percent`: This measures the proportion of UMIs which are mapped to ribosomal protein genes. If there is a higher than expected proportion of ribosomal protein gene expression this is often symptomatic of a cell which is of compromised quality and we may want to exclude it from the analysis. 
+- `zero_percent`: This measures the proportion of zero counts in each cell. If there is a higher than expected proportion of zero count this is potentially indicative of a poor quality cell and we may want to exclude it from the analysis. 
+
+In summary, we aim to identify cells with low library sizes, few expressed genes, and very high percentages of mitochondrial gene expression.
+
+```{r, results = "hide"}
+is_mito <- rownames(sce) %in% mito_set
+summary(is_mito)
+is_ribo <- rownames(sce) %in% ribo_set
+summary(is_ribo)
+sce <- addPerCellQC(
+  sce, 
+  subsets = list(Mito = which(is_mito), Ribo = which(is_ribo)))
+```
+
+```{r}
+sce$zero_percent <- colSums(counts(sce) == 0)/nrow(sce)
+summary(sce$zero_percent)
+```
+
+### Visualise the QC metrics
+
+Figure \@ref(fig:qcplot-by-capture) shows that the vast majority of samples are good-quality:
+
+- The median library size is around `r number(median(sce$sum), accuracy = 100, big.mark = ",")`
+- The median number of genes detected is around `r number(median(sce$detected), accuracy = 100, big.mark = ",")`.
+- The median percentage of UMIs that are mapped to mitochondrial RNA is around  `r percent(median(sce$subsets_Mito_percent), scale = 1)`
+- The median percentage of UMIs that are mapped to ribosomal RNA is around  `r percent(median(sce$subsets_Ribo_percent), scale = 1)`
+
+```{r qcplot-by-capture, fig.cap = "Distributions of various QC metrics for all cells in the dataset.", fig.asp = 2 / 3}
+p1 <- plotColData(
+  sce,
+  "sum",
+  x = "capture",
+  colour_by = "capture",
+  point_size = 0.5) +
+  scale_y_log10() +
+  scale_colour_manual(values = capture_colours) +
+  theme(axis.text.x = element_blank()) +
+  annotation_logticks(
+    sides = "l",
+    short = unit(0.03, "cm"),
+    mid = unit(0.06, "cm"),
+    long = unit(0.09, "cm"))
+p2 <- plotColData(
+  sce,
+  "detected",
+  x = "capture",
+  colour_by = "capture",
+  point_size = 0.5) +
+  scale_colour_manual(values = capture_colours) +
+  theme(axis.text.x = element_blank())
+p3 <- plotColData(
+  sce,
+  "subsets_Mito_percent",
+  x = "capture",
+  colour_by = "capture",
+  point_size = 0.5) +
+  scale_colour_manual(values = capture_colours) +
+  theme(axis.text.x = element_blank())
+p4 <- plotColData(
+  sce,
+  "subsets_Ribo_percent",
+  x = "capture",
+  colour_by = "capture",
+  point_size = 0.5) +
+  scale_colour_manual(values = capture_colours) +
+  theme(axis.text.x = element_blank())
+p5 <- plotColData(
+  sce,
+  "zero_percent",
+  x = "capture",
+  colour_by = "capture",
+  point_size = 0.5) +
+  scale_colour_manual(values = capture_colours) +
+  theme(axis.text.x = element_blank())
+((p1 + p2) / (p3 + p4 + p5)) + plot_layout(guides = "collect")
+```
+
+```{r sumdetected-by-capture, fig.cap = "Distributions of library size versus no. genes detected by capture.", fig.asp = 2 / 3}
+p1 <- plotColData(
+  sce,
+  "detected",
+  x = "sum",
+  other_fields = c("capture"),
+  colour_by = "capture",
+  point_size = 0.5) +
+  theme(axis.text.x = element_blank()) +
+  scale_color_manual(values = capture_colours) +
+  facet_wrap(vars(capture), ncol = 2)
+p1
+```
+
+```{r detectedmito-by-capture, fig.cap = "Distributions of no. genes detected versus mitochondrial percentage coloured by zero percentage.", fig.asp = 2 / 3}
+p1 <- plotColData(
+  sce,
+  "subsets_Mito_percent",
+  x = "detected",
+  other_fields = c("capture"),
+  colour_by = "zero_percent",
+  point_size = 0.5) +
+  theme(axis.text.x = element_blank()) +
+  facet_wrap(vars(capture), ncol = 2)
+p1
+```
+
+```{r detectedribo-by-capture, fig.cap = "Distributions of no. genes detected versus ribosomal percentage coloured by zero percentage.", fig.asp = 2 / 3}
+p1 <- plotColData(
+  sce,
+  "subsets_Ribo_percent",
+  x = "detected",
+  other_fields = c("capture"),
+  colour_by = "zero_percent",
+  point_size = 0.5) +
+  theme(axis.text.x = element_blank()) +
+  facet_wrap(vars(capture), ncol = 2)
+p1
+```
+
+## Identify outliers by each metric
+
+Filtering on the mitochondrial proportion can identify stressed/damaged cells and so we seek to identify droplets with unusually large mitochondrial proportions (i.e. outliers). Outlier thresholds are defined based on the median absolute deviation (MADs) from the median value of the metric across all cells. Here, we opt to use `capture`-specific thresholds to account for `capture`-specific differences
+
+```{r}
+sce$batch <- sce$capture
+
+mito_drop <- isOutlier(
+  metric = sce$subsets_Mito_percent, 
+  nmads = 3, 
+  type = "higher",
+  batch = sce$batch)
+
+mito_drop_df <- data.frame(
+  sample = factor(
+    colnames(attributes(mito_drop)$thresholds),
+    levels(sce$batch)),
+  lower = attributes(mito_drop)$thresholds["higher", ])
+
+ribo_drop <- isOutlier(
+  metric = sce$subsets_Ribo_percent, 
+  nmads = 3, 
+  type = "higher",
+  batch = sce$batch)
+
+ribo_drop_df <- data.frame(
+  sample = factor(
+    colnames(attributes(ribo_drop)$thresholds),
+    levels(sce$batch)),
+  lower = attributes(ribo_drop)$thresholds["higher", ])
+```
+
+The following table summarises the QC cutoffs:
+
+```{r}
+qc_cutoffs_df <- dplyr::inner_join(mito_drop_df, ribo_drop_df, by = "sample")
+colnames(qc_cutoffs_df) <- c("batch", "%mito", "%ribo")
+inner_join(
+  qc_cutoffs_df,
+  distinct(as.data.frame(colData(sce)[, c("batch"), drop = FALSE])),
+  by = "batch") %>%
+  dplyr::select(batch, everything()) %>%
+  arrange(batch) %>%
+  knitr::kable(caption = "Sample-specific QC metric cutoffs", digits = 1)
+```
+
+The vast majority of cells are retained for all samples.
+
+```{r}
+sce_pre_QC_outlier_removal <- sce
+keep <- !mito_drop
+sce_pre_QC_outlier_removal$keep <- keep
+sce <- sce[, keep]
+
+data.frame(
+  ByMito = tapply(
+    mito_drop, 
+    sce_pre_QC_outlier_removal$batch, 
+    sum,
+    na.rm = TRUE),
+  Remaining = as.vector(unname(table(sce$batch))),
+  PercRemaining = round(
+    100 * as.vector(unname(table(sce$batch))) /
+      as.vector(
+        unname(
+          table(sce_pre_QC_outlier_removal$batch))), 1)) %>%
+  tibble::rownames_to_column("batch") %>%
+  dplyr::arrange(dplyr::desc(PercRemaining)) %>%
+  knitr::kable(
+    caption = "Number of cells removed by each QC step and the number of cells remaining.")
+```
+
+### Check for removal of biologically relevant subpopulations
+
+The biggest practical concern during QC is whether an entire cell type is inadvertently discarded.
+There is always some risk of this occurring as the QC metrics are never fully independent of biological state.
+We can diagnose cell type loss by looking for systematic differences in gene expression between the discarded and retained cells.
+
+```{r, message=FALSE, warning=FALSE}
+lost <- calculateAverage(counts(sce_pre_QC_outlier_removal)[, !keep])
+kept <- calculateAverage(counts(sce_pre_QC_outlier_removal)[, keep])
+library(edgeR)
+logged <- cpm(cbind(lost, kept), log = TRUE, prior.count = 2)
+logFC <- logged[, 1] - logged[, 2]
+abundance <- rowMeans(logged)
+```
+
+If the discarded pool is enriched for a certain cell type, we should observe increased expression of the corresponding marker genes.
+Figure \@ref(fig:qc-md-plot-CF-BAL-Pilot) shows the result of this analysis, indicating that the systematically upregulated genes are mitochondrial transcripts and that the systematically downregulated genes are largely ribosomal protein genes. This suggests that the QC step did not inadvertently filter out an entire biologically relevant subpopulation. 
+
+```{r qc-md-plot-CF-BAL-Pilot, fig.cap = "Log-fold change in expression in the discarded cells compared to the retained cells. Each point represents a gene with mitochondrial transcripts in blue and ribosomal protein genes in orange. Dashed red lines indicate $|logFC| = 1", fig.asp = 0.7}
+is_mito <- rownames(sce) %in% mito_set
+is_ribo <- rownames(sce) %in% ribo_set
+par(mfrow = c(1, 1))
+plot(
+  abundance,
+  logFC,
+  xlab = "Average count",
+  ylab = "Log-FC (lost/kept)",
+  pch = 16)
+points(
+  abundance[is_mito],
+  logFC[is_mito],
+  col = "dodgerblue",
+  pch = 16,
+  cex = 1)
+points(
+  abundance[is_ribo],
+  logFC[is_ribo],
+  col = "orange",
+  pch = 16,
+  cex = 1)
+abline(h = c(-1, 1), col = "red", lty = 2)
+```
+
+Another concern is whether the cells removed during QC preferentially derive from particular experimental groups.
+Reassuringly, Figure \@ref(fig:barplot-highlighting-outliers) shows that this is not the case.
+
+```{r barplot-highlighting-outliers, fig.cap = "Droplets removed during QC, stratified by `Sample`. ", fig.asp=1}
+ggcells(sce_pre_QC_outlier_removal) +
+  geom_bar(aes(x = capture, fill = keep)) + 
+  ylab("Number of droplets") + 
+  theme_cowplot(font_size = 7) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  facet_grid(capture ~ ., scales = "free_y")
+```
+
+Finally, Figure \@ref(fig:qcplot-highlighting-outliers) compares the QC metrics of the discarded and retained droplets.
+
+```{r qcplot-highlighting-outliers, fig.cap = "Distribution of QC metrics for each sample in the dataset. Each point represents a cell and is colored according to whether it was discarded during the QC process. Note that a cell will only be kept if it passes the relevant threshold for all QC metrics.", fig.asp=2/3}
+p1 <- plotColData(
+  sce_pre_QC_outlier_removal,
+  "sum",
+  x = "capture",
+  colour_by = "keep",
+  point_size = 0.5) +
+  scale_y_log10() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  annotation_logticks(
+    sides = "l",
+    short = unit(0.03, "cm"),
+    mid = unit(0.06, "cm"),
+    long = unit(0.09, "cm"))
+p2 <- plotColData(
+  sce_pre_QC_outlier_removal,
+  "detected",
+  x = "capture",
+  colour_by = "keep",
+  point_size = 0.5) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+p3 <- plotColData(
+  sce_pre_QC_outlier_removal,
+  "subsets_Mito_percent",
+  x = "capture",
+  colour_by = "keep",
+  point_size = 0.5) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+p4 <- plotColData(
+  sce_pre_QC_outlier_removal,
+  "subsets_Ribo_percent",
+  x = "capture",
+  colour_by = "keep",
+  point_size = 0.5) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+p5 <- plotColData(
+  sce_pre_QC_outlier_removal,
+  "zero_percent",
+  x = "capture",
+  colour_by = "keep",
+  point_size = 0.5) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+((p1 + p2) / (p3 + p4 + p5))+ plot_layout(guides = "collect")
+```
+
+## QC summary
+
+We had already removed droplets that have unusually small library sizes or number of genes detected by the process of identifying empty droplets.
+We have now further removed droplets whose mitochondrial proportions we deem to be an outlier.
+
+To conclude, Figure \@ref(fig:qcplot-post-outlier-removal) shows that following QC that most samples have similar QC metrics, as is to be expected, and Figure \@ref(fig:experiment-by-capture-postqc) summarises the experimental design following QC.
+
+```{r qcplot-post-outlier-removal, fig.cap = "Distributions of various QC metrics for all cells in the dataset passing QC. This includes the library sizes and proportion of reads mapped to mitochondrial genes.", fig.asp = 2 / 3}
+p1 <- plotColData(
+  sce,
+  "sum",
+  x = "capture",
+  colour_by = "capture",
+  point_size = 0.5) +
+  scale_y_log10() +
+  scale_colour_manual(values = capture_colours) +
+  theme(axis.text.x = element_blank()) +
+  annotation_logticks(
+    sides = "l",
+    short = unit(0.03, "cm"),
+    mid = unit(0.06, "cm"),
+    long = unit(0.09, "cm"))
+p2 <- plotColData(
+  sce,
+  "detected",
+  x = "capture",
+  colour_by = "capture",
+  point_size = 0.5) +
+  scale_colour_manual(values = capture_colours) +
+  theme(axis.text.x = element_blank())
+p3 <- plotColData(
+  sce,
+  "subsets_Mito_percent",
+  x = "capture",
+  colour_by = "capture",
+  point_size = 0.5) +
+  scale_colour_manual(values = capture_colours) +
+  theme(axis.text.x = element_blank())
+p4 <- plotColData(
+  sce,
+  "subsets_Ribo_percent",
+  x = "capture",
+  colour_by = "capture",
+  point_size = 0.5) +
+  scale_colour_manual(values = capture_colours) +
+  theme(axis.text.x = element_blank())
+p5 <- plotColData(
+  sce,
+  "zero_percent",
+  x = "capture",
+  colour_by = "capture",
+  point_size = 0.5) +
+  scale_colour_manual(values = capture_colours) +
+  theme(axis.text.x = element_blank())
+((p1 + p2) / (p3 + p4 + p5)) + plot_layout(guides = "collect")
+```
+
+```{r experiment-by-capture-postqc, fig.cap = "Breakdown of the samples following QC."}
+p1 <- ggcells(sce) + 
+  geom_bar(
+    aes(x = capture, fill = capture)) +
+  geom_text(stat='count', aes(x = capture, label=..count..), 
+            hjust=1.5, size=3) +
+  coord_flip() +
+  ylab("No. cells") +
+  theme_cowplot(font_size = 10) + 
+  scale_fill_manual(values = capture_colours) 
+
+p1
+```
+
+# Identify further empty droplets using `DropletQC`
+
+`DropletQC` calculates, for every requested cell barcode in a provided scRNA-seq BAM file, the nuclear fraction score:
+
+`nuclear fraction = intronic reads / (intronic  reads  +  exonic  reads)`
+
+The score captures the proportion of reads from intronic regions. These RNA fragments originate from unspliced (nuclear) pre-mRNA, hence the name “nuclear fraction”. This score can be used to help identify:
+
+1. “Empty” droplets containing ambient RNA: low nuclear fraction score and low UMI count
+2. Droplets containing damaged cells: high nuclear fraction score and low UMI count
+
+```{r, message=FALSE, warning=FALSE}
+out <- here("data/SCEs/03_CF_BAL_Pilot.nuclear_fraction_calls.rds")
+capture_names <- levels(sce$capture)
+
+if(!file.exists(out)){
+  folder <- here()
+  
+  nf <- lapply(capture_names, function(cn){
+    message(cn)
+    bam <- file.path(folder, 
+                     "data/190930_A00152_0150_BHTYCMDSXX/GE",
+                     cn, cn,
+                     "outs/per_sample_outs",
+                     cn,
+                     "count/sample_alignments.bam")
+    bai <- file.path(folder, 
+                     "data/190930_A00152_0150_BHTYCMDSXX/GE",
+                     cn, cn,
+                     "outs/per_sample_outs",
+                     cn,
+                     "count/sample_alignments.bam.bai")
+    nuclear_fraction_tags(bam = bam,
+                          bam_index = bai,
+                          verbose = FALSE,
+                          barcodes = sce[["Barcode"]][sce$Sample == cn])
+  })
+  names(nf) <- capture_names
+  
+  dplyr::bind_rows(lapply(nf, 
+                          tibble::rownames_to_column, 
+                          var = "barcode")) %>%
+    dplyr::mutate(cell = paste(rep(seq_along(nf), 
+                                   vapply(nf, nrow, 1L)),
+                               barcode, sep = "_")) -> nf_dat
+  saveRDS(nf_dat, file = out)
+  
+} else {
+  nf_dat <- readRDS(out)
+  
+}
+```
+
+## Visualise the results
+
+Figure \@ref(fig:dropletqc-results) shows that a distinct population of additional empty droplets has been identified by `DropletQC`. These will be tagged for downstream removal.
+
+```{r, fig.asp=1}
+colData(sce) %>% 
+  data.frame %>% 
+  rownames_to_column(var = "cell") %>%
+  inner_join(nf_dat %>% 
+               dplyr::select(cell, nuclear_fraction)) %>%
+  column_to_rownames(var = "cell") %>%
+  DataFrame -> colData(sce)
+  
+ed <- lapply(capture_names, function(cn){
+  identify_empty_drops(nf_umi = colData(sce) %>% data.frame %>%
+                         dplyr::filter(capture == cn) %>%
+                         dplyr::select(nuclear_fraction, sum),
+                       include_plot = TRUE,
+                       umi_rescue = 10^2.5,
+                       nf_rescue = 0.02)
+})
+```
+Add `DropletQC` calls to `colData`.
+
+```{r dropletqc-results, fig.cap = "DropletQC results across all captures."}
+colData(sce) %>% 
+  data.frame %>% 
+  rownames_to_column(var = "cell") %>%
+  inner_join(ed %>% bind_rows %>%
+               rownames_to_column(var = "cell")) %>%
+  column_to_rownames(var = "cell") %>%
+  DataFrame -> colData(sce)
+
+p <- ggcells(sce, aes(x = nuclear_fraction, y = sum)) +
+  aes(colour = cell_status) +
+  geom_point(size = 1, alpha = 0.5) +
+  scale_y_log10() +
+  facet_wrap(~Sample)
+p
+```
+
+```{r}
+plotColData(sce, x = "Sample", 
+            y = "sum",
+            colour_by = "cell_status") +
+  scale_y_log10()
+```
+# Save data
+
+```{r}
+out <- here("data", "SCEs", "04_CF_BAL_Pilot.preprocessed.SCE.rds") 
+if(!file.exists(out)) saveRDS(sce, out)
+```
+
+# Session info {.appendix}
+
+<summary>The analysis and this document were prepared using the following software (click triangle to expand)</summary>
+<details>
+
+```{r}
+sessioninfo::session_info()
+```
+
+</details>

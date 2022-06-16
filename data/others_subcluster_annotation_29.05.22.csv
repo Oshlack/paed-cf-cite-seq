@@ -1,0 +1,25 @@
+Cluster,Annotation,Broad
+0,B cells,B cells
+1,basal cell,Epithelial
+2,cDC2,Dendritic
+3,basal cell,Epithelial
+4,goblet/club cell,Epithelial
+5,endothelial cell,Endothelial
+6,cDC2,Dendritic
+7,ciliated cell,Epithelial
+8,B cells,B cells
+9,monocytes,Monocytes
+10,B cells,B cells
+11,neutrophil-like,Neutrophils
+12,monocytes,Monocytes
+13,migratory DC,Dendritic
+14,plasmacytoid DC,Dendritic
+15,cDC2,Dendritic
+16,cDC1,Dendritic
+17,B cells,B cells
+18,tracheobronchial goblet/club cells,Epithelial
+19,dividing B cells,B cells
+20,ciliated cell,Epithelial
+21,mast cells,Mast cells
+22,,
+23,plasma B cells,B cells

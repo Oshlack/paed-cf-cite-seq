@@ -1,0 +1,20 @@
+Cluster,Annotation,Broad
+0,CD4 T cells,CD4 T
+1,CD8 Trm,CD8 T
+2,innate lymphocyte,Innate lymphocyte
+3,CD8 Trm,CD8 T
+4,CD4 T cells,CD4 T
+5,,
+6,CD4 T cells,CD4 T
+7,CD8-GZMK,CD8 T
+8,NK T cells,NK T
+9,CD4 T cells,CD4 T
+10,NK cells,NK cells
+11,CD4 Treg,CD4 T
+12,gammadelta T cells,Gamma delta T
+13,CD4 NFKB,CD4 T
+14,CD4 IFN,CD4 T
+15,,
+16,NK cells,NK cells
+17,proliferating NK/T cells,Proliferating NK/T
+18,CD4 TFH,CD4 T

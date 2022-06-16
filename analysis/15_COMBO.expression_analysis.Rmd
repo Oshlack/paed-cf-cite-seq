@@ -1,0 +1,762 @@
+---
+title: "Analysis of scRNA-seq & CITE-seq Data Combined"
+subtitle: "Differential Gene Expression Analysis"
+author: "Jovana Maksimovic"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+site: workflowr::wflow_site
+bibliography: ref.bib
+output:
+  bookdown::html_document2:
+    base_format: workflowr::wflow_html
+    toc: yes
+    toc_float: yes
+    theme: cosmo
+    highlight: textmate
+    number_sections: true
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+# Load libraries
+
+```{r, message=FALSE, warning=FALSE}
+suppressPackageStartupMessages(library(BiocStyle))
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(here))
+suppressPackageStartupMessages(library(glue))
+suppressPackageStartupMessages(library(DropletUtils))
+suppressPackageStartupMessages(library(scran))
+suppressPackageStartupMessages(library(scater))
+suppressPackageStartupMessages(library(scuttle))
+suppressPackageStartupMessages(library(Seurat))
+suppressPackageStartupMessages(library(patchwork))
+suppressPackageStartupMessages(library(clustree))
+suppressPackageStartupMessages(library(glmGamPoi))
+suppressPackageStartupMessages(library(BiocParallel))
+suppressPackageStartupMessages(library(paletteer))
+suppressPackageStartupMessages(library(glmGamPoi))
+suppressPackageStartupMessages(library(tidyHeatmap))
+suppressPackageStartupMessages(library(edgeR))
+suppressPackageStartupMessages(library(limma))
+suppressPackageStartupMessages(library(org.Hs.eg.db))
+suppressPackageStartupMessages(library(EGSEA))
+suppressPackageStartupMessages(library(TxDb.Hsapiens.UCSC.hg38.knownGene))
+suppressPackageStartupMessages(library(missMethyl))
+source(here("code/utility.R"))
+source(here("code/helper_functions.R"))
+
+set.seed(42)
+options(scipen=0)
+options(future.globals.maxSize = 6500 * 1024^2)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+    echo = TRUE,
+    message = FALSE,
+    warning = FALSE
+)
+```
+
+## Load Data
+
+```{r}
+seu1 <- readRDS(here("data/SCEs/06_COMBO.clean_macrophages_diet.SEU.rds"))
+seu2 <- readRDS(here("data/SCEs/06_COMBO.clean_tcells_diet.SEU.rds"))
+seu3 <- readRDS(here("data/SCEs/06_COMBO.clean_others_diet.SEU.rds"))
+seu <- merge(seu1, y = c(seu2, seu3))
+```
+
+```{r, echo=FALSE}
+# cleanup obsolete objects
+rm(seu1, seu2, seu3)
+gc()
+```
+
+## Load clinical information
+
+Import clinical characteristics and patient information and associate with `genetic_donor` IDs.
+
+```{r}
+info <- read.csv(file = here("data/sample_sheets/Sample_information.csv"))
+tab <- table(seu$HTO, seu$donor)
+
+apply(tab, 2, function(x){
+  names(which(x == max(x)))
+}) %>% data.frame %>%
+  dplyr::rename("HTO" = ".") %>%
+  rownames_to_column(var = "donor") %>%
+  inner_join(info, by = c("HTO" = "Sample")) %>%
+  mutate(Batch = factor(Batch)) -> info
+
+info %>% knitr::kable()
+```
+
+# Differences in gene expression
+## Test for DGE within cell types
+
+```{r}
+seu@meta.data %>%
+  left_join(info, by = c("donor" = "donor")) -> mdata
+
+# Create single cell experiment object
+sce <- SingleCellExperiment(assays = list(counts = seu[["RNA"]]@counts), 
+                            colData = mdata)
+```
+
+### Add gene annotation
+
+```{r}
+columns(org.Hs.eg.db)
+ann <- AnnotationDbi:::select(org.Hs.eg.db,
+                              keys = rownames(sce),
+                              columns=c("SYMBOL",
+                                        "ENTREZID",
+                                        "ENSEMBL",
+                                        "GENENAME",
+                                        "CHR"),
+                              keytype = "SYMBOL")
+m <- match(rownames(sce), ann$SYMBOL)
+ann <- ann[m,]
+all(ann$SYMBOL == rownames(sce))
+```
+
+```{r}
+rowData(sce) <- DataFrame(ann)
+```
+
+Heatmap showing the abundance of cells with each combination of donor (row) 
+and cell type label (column). The color scale represents the log2-count for each 
+combination.
+
+```{r}
+table(sce$donor, sce$Broad) %>% data.frame %>%
+  dplyr::rename(donor = Var1, `Cell Label` = Var2) %>%
+  inner_join(info) %>%
+  mutate(`Log2 No. Cells` = log2(Freq + 1),
+         Batch = as.factor(Batch)) %>%
+  as_tibble %>%
+  heatmap(.row = Participant, 
+          .column = `Cell Label`,
+          .value = `Log2 No. Cells`,
+          scale = "none") %>%
+  add_tile(Batch) %>%
+  add_tile(Sex) %>%
+  add_tile(Age) 
+```
+
+# Create pseudobulk samples
+
+Using 'label' and 'sample' as our two factors; each column of the output
+corresponds to one unique combination of these two factors.
+
+```{r}
+summed <- aggregateAcrossCells(sce, 
+                               id = colData(sce)[, c("Broad", "donor")])
+summed
+```
+
+```{r dgelist}
+y.pb <- DGEList(counts(summed), 
+                samples = colData(summed))
+y.pb
+```
+
+```{r, fig.asp=1}
+dims <- list(c(1,2), c(2:3), c(3,4), c(4,5))
+p <- vector("list", length(dims))
+
+for(i in 1:length(dims)){
+  mds <- plotMDS(cpm(y.pb[, y.pb$samples$Broad == "Macrophages"], log=TRUE), 
+                 gene.selection = "common",
+                 plot = FALSE, dim.plot = dims[[i]])
+  
+  data.frame(x = mds$x, 
+             y = mds$y,
+             sample = rownames(mds$distance.matrix.squared)) %>%
+    left_join(rownames_to_column(y.pb$samples, var = "sample")) %>%
+    mutate(Batch = as.factor(Batch))-> dat
+  
+  p[[i]] <- ggplot(dat, aes(x = x, y = y, 
+                            shape = Batch,
+                            color = Disease))+
+    geom_point(size = 3) +
+    labs(x = glue("Principal Component {dims[[i]][1]}"),
+         y = glue("Principal Component {dims[[i]][2]}"),
+         colour = "Disease",
+         shape = "Batch") +
+    theme(legend.direction = "horizontal",
+          legend.text = element_text(size = 8),
+          legend.title = element_text(size = 9),
+          axis.text = element_text(size = 8),
+          axis.title = element_text(size = 9))  +
+    scale_colour_brewer(palette = "Set1") 
+}
+
+wrap_plots(p, cols = 2) + plot_layout(guides = "collect") &
+  theme(legend.position = "bottom") 
+```
+
+# Differential expression analysis within cell types
+
+This analysis was adapted from [this](https://bphipson.github.io/Human_Development_snRNAseq/) 
+analysis of single nuclei RNAseq data from human heart samples.
+
+
+```{r}
+y.pb$samples %>%
+  mutate(cell_label = fct_recode(Broad,
+                                 Macr = "Macrophages",
+                                 PMacr = "Proliferating macrophages",
+                                 B = "B cells",
+                                 CD4 = "CD4 T",
+                                 CD8 = "CD8 T",
+                                 GDT = "Gamma delta T",
+                                 Mast = "Mast cells",
+                                 NK = "NK cells",
+                                 NKT = "NK T",
+                                 IL = "Innate lymphocyte",
+                                 Neu = "Neutrophils",
+                                 Mono = "Monocytes",
+                                 Epi = "Epithelial",
+                                 PNKT = "Proliferating NK/T",
+                                 Dend = "Dendritic",
+                                 Endo = "Endothelial"
+                                 )) -> y.pb$samples
+
+newgrp <- paste(y.pb$sample$cell_label, y.pb$samples$Disease, sep=".")
+newgrp <- factor(newgrp)
+
+design <- model.matrix(~ 0 + newgrp)
+colnames(design) <- levels(newgrp)
+
+keep <- filterByExpr(y.pb, design = design)
+y <- y.pb[keep,]
+summary(keep)
+```
+
+
+```{r}
+v <- voom(y, design, plot = TRUE, 
+          normalize.method = "cyclicloess")
+fit <- lmFit(v, design)
+
+y <- calcNormFactors(y) # add normalisation factors for downstream visualization
+```
+
+```{r}
+y$samples %>% dplyr::select(Broad,
+                            Disease,
+                            ncells) %>%
+  group_by(Broad, Disease) %>%
+  summarise(agg = sum(ncells),
+            ind = n()) %>%
+  dplyr::rename(cell = Broad,
+                grp = Disease) -> dat
+
+ggplot(dat, aes(x = cell,  y = ind, fill = grp)) +
+  geom_bar(stat = "identity", position = "stack") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
+  labs(y = "No. individuals", x = "Cell type", fill = "Disease") +
+  geom_text(size = 3, position = position_stack(vjust = 0.5),
+            aes(label = agg))
+```
+
+### Overall DEG summary
+
+```{r}
+cont <- makeContrasts(Macr.CvCF = Macr.Ctrl - Macr.CF,
+                      B.CvCF = B.Ctrl - B.CF,
+                      CD4.CvCF = CD4.Ctrl - CD4.CF,
+                      CD8.CvCF = CD8.Ctrl - CD8.CF,
+                      Den.CvCF = Dend.Ctrl - Dend.CF,
+                      Epi.CvCF = Epi.Ctrl - Epi.CF,
+                      GDT.CvCF = GDT.Ctrl - GDT.CF,
+                      Mast.CvCF = Mast.Ctrl - Mast.CF,
+                      Mono.CvCF = Mono.Ctrl - Mono.CF,
+                      Neu.CvCF = Neu.Ctrl - Neu.CF,
+                      NK.CvCF = NK.Ctrl - NK.CF,
+                      NKT.CvCF = NKT.Ctrl - NKT.CF,
+                      PNKT.CvCF = PNKT.Ctrl - PNKT.CF,
+                      IL.CvCF = IL.Ctrl - IL.CF,
+                      PMacr.CvCF = PMacr.Ctrl - PMacr.CF,
+                      levels = design)
+
+cont.fit <- contrasts.fit(fit, contrasts = cont)
+fit2 <- eBayes(cont.fit, robust = TRUE)
+
+summary(decideTests(fit2))
+```
+
+### TREAT DEG summary
+
+This tests for DEGs relative to a logFC threshold of 0.5
+
+```{r}
+fit.treat <- treat(fit2, lfc = 0.5)
+dt <- decideTests(fit.treat)
+summary(dt)
+```
+
+```{r}
+pal <- paletteer::paletteer_d("RColorBrewer::Set1", 2)
+names(pal) <- c("Up", "Down")
+
+summary(dt) %>% 
+  data.frame %>%
+  dplyr::rename(Direction = Var1, Cell = Var2) %>%
+  dplyr::filter(Direction != "NotSig") %>%
+  mutate(Cell = gsub(".CvCF", "", Cell)) %>%
+  ggplot(aes(x = Cell, y = Freq, fill = Direction)) +
+  geom_bar(position = "dodge", stat = "identity") +
+  geom_text(aes(label = Freq), stat = "identity",
+            position = position_dodge(width = .9),
+            vjust = -0.5, colour = "black", size = 2) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90,
+                                   vjust = 0.5,
+                                   hjust = 1)) +
+  labs(y = "No. DGE (FDR < 0.05)") +
+  scale_fill_manual(values = pal)
+```
+
+## Macrophages 
+### Mean-Difference plot of DEGs
+
+```{r, fig.asp=0.7}
+dat <- data.frame(x = fit.treat$Amean, 
+                  y = fit.treat$coefficients[,1],
+                  status = as.factor(as.vector(dt[,1]))) %>%
+  rownames_to_column(var = "gene") %>%
+  mutate(status = ifelse(status == 1, "Up",
+                         ifelse(status == -1, "Down",
+                                "NotSig"))) %>%
+  mutate(status = as.factor(status)) %>%
+  mutate(status = fct_relevel(status, "NotSig", after = Inf)) %>%
+  arrange(desc(status))
+
+pal <- c(paletteer::paletteer_d("RColorBrewer::Set1")[1:2], "grey")
+names(pal) <- c("Up", "Down", "NotSig")
+ggplot(dat, aes(x = x, y = y, colour = status)) +
+  geom_point() +
+  ggrepel::geom_text_repel(data = dat[dat$status != "NotSig",], 
+                  aes(x = x, y = y, label = gene), 
+                  max.overlaps = 20, size = 2, colour = "black") +
+  scale_colour_manual(values = pal) +
+  labs(x = "Average-log-expression", 
+       y = "Log-fold-change",
+       colour = "FDR < 0.05") 
+```
+
+```{r}
+topTreat(fit.treat, coef = 1, num = Inf) %>% 
+  mutate(sig = ifelse(adj.P.Val <= 0.05, "<= 0.05", "> 0.05")) %>%
+  rownames_to_column(var = "SYMBOL") %>%
+  left_join(dt[,1] %>% 
+              data.frame %>%
+              rownames_to_column(var = "SYMBOL") %>%
+              dplyr::rename(status = "Macr.CvCF")) %>%
+    mutate(status = ifelse(status == 1, "Up",
+                         ifelse(status == -1, "Down",
+                                "NotSig"))) %>%
+  mutate(status = as.factor(status)) %>%
+  mutate(status = fct_relevel(status, "NotSig", after = Inf)) -> dat
+
+ggplot(dat, aes(x = logFC, y = -log10(P.Value), color = status)) +
+  geom_point(alpha = 0.75) +
+  ggrepel::geom_text_repel(data = subset(dat, adj.P.Val < 0.05), 
+            aes(x = logFC, y = -log10(P.Value), 
+                label = SYMBOL), 
+            size = 2, colour = "black", max.overlaps = 20) +
+  labs(x = expression(~log[2]~"(Fold Change)"), 
+       y = expression(~-log[10]~"(P-value)"),
+       colour = "FDR < 0.05") +
+  theme_classic() +
+  scale_colour_manual(values = pal) -> f5a
+f5a
+```
+
+### Top DEGs
+
+```{r, results='asis', fig.asp = 1}
+dirName <- here("output/DEGs")
+if(!dir.exists(dirName)) dir.create(dirName)
+
+top <- topTreat(fit.treat, coef = 1, n = Inf, p.value = 0.05)
+knitr::kable(top, digits = 10)
+
+write.csv(top, file = glue("{dirName}/DEGs-{colnames(cont)[1]}.csv"))
+```
+
+```{r}
+## calculate gene lengths
+ex <- exonsBy(TxDb.Hsapiens.UCSC.hg38.knownGene, "gene")
+## reduce to longest exon extents
+ex <- reduce(ex)
+## compute exon lengths, by gene
+exlen <- relist(width(unlist(ex)), ex)
+## add them up
+exlens <- sapply(exlen, sum)
+
+## create full annotation
+ann <- rowData(summed) %>% 
+  data.frame %>%
+  right_join(data.frame(SYMBOL = rownames(y))) %>%
+  right_join(exlens %>% 
+               data.frame %>% 
+               rownames_to_column(var = "ENTREZID") %>% 
+               dplyr::rename(Length = "."))
+
+gsAnnots <- buildIdx(entrezIDs = ann$ENTREZID, 
+                     species = "human",
+                     msigdb.gsets = c("c2","c5"))
+
+react <- gsaseq(ann$ENTREZID[ann$SYMBOL %in% rownames(top)], 
+                universe = ann$ENTREZID, 
+                collection = gsAnnots$c2@original[grep("REACTOME", 
+                                                       names(gsAnnots$c2@original))],
+                gene.length = ann$Length)
+```
+
+```{r}
+go <- gsaseq(ann$ENTREZID[ann$SYMBOL %in% rownames(top)], 
+             universe = ann$ENTREZID, 
+             collection = gsAnnots$c5@original,
+             gene.length = ann$Length)
+
+topGSA(react) %>% knitr::kable()
+topGSA(go) %>% knitr::kable()
+
+write_csv(topGSA(react, number = 100) %>% data.frame, 
+          file = glue("{dirName}/REACTOME-{colnames(cont)[1]}.csv"))
+write_csv(topGSA(go, number = 100) %>% data.frame, 
+          file = glue("{dirName}/GO-{colnames(cont)[1]}.csv"))
+```
+
+```{r, fig.asp=2}
+exp <- cpm(y, log = TRUE)
+exp <- exp[rownames(exp) %in% rownames(top), 
+           y$samples$Broad == "Macrophages"]
+
+dat <- exp %>% 
+  data.frame %>% 
+  rownames_to_column(var = "Gene") %>% 
+  pivot_longer(-Gene, 
+               names_to = "ID", 
+               values_to = "Log2 CPM") %>%
+  left_join(rownames_to_column(y$samples, var = "ID")) %>%
+  mutate(`Z-score` = `Log2 CPM`)
+
+
+dat %>%
+  mutate(Batch = as.factor(Batch)) %>%
+  as_tibble %>%
+  heatmap(.row = Gene,
+          .column = Participant,
+          .value = `Z-score`,
+          .scale = "row",
+          show_column_names = TRUE,
+          column_title_side = "top",
+          row_names_gp = grid::gpar(fontsize = 7),
+          column_names_gp = grid::gpar(fontsize = 10),
+          palette_value = circlize::colorRamp2(seq(-5, 5, length.out = 256),
+                                               viridis::magma(256)),
+          heatmap_legend_param = list(direction = "horizontal")) %>%
+  add_tile(Disease, size = unit(0.25, "cm"), 
+           annotation_name_gp = grid::gpar(fontsize = 9),
+           annotation_legend_param = list(direction = "horizontal")) %>%
+  add_tile(Sex, size = unit(0.25, "cm"), 
+           annotation_name_gp = grid::gpar(fontsize = 9),
+           annotation_legend_param = list(direction = "horizontal")) %>%
+  add_tile(Age, size = unit(0.25, "cm"), 
+           annotation_name_gp = grid::gpar(fontsize = 9),
+           annotation_legend_param = list(direction = "horizontal")) %>%
+  add_tile(Batch, size = unit(0.25, "cm"), 
+           annotation_name_gp = grid::gpar(fontsize = 9),
+           annotation_legend_param = list(direction = "horizontal")) %>%
+  as_ComplexHeatmap() %>%
+  ComplexHeatmap::draw(heatmap_legend_side = "bottom",  
+                       annotation_legend_side = "bottom") -> f5b
+```
+
+
+```{r, fig.asp=9, message=FALSE}
+p <- vector("list", nrow(top))
+
+for(i in 1:length(p)){
+p[[i]] <- ggplot(data = subset(dat, dat$Gene == rownames(top)[i]), 
+       aes(x = Disease, y = `Log2 CPM`)) +
+  geom_jitter(width = 0.25) +
+  labs(x = "Disease", y = "Log2 CPM") +
+  ggtitle(rownames(top)[i]) +
+  theme(plot.title = element_text(size = 8),
+        plot.subtitle = element_text(size = 7),
+        axis.title = element_text(size = 8),
+        axis.text.x = element_text(size = 7))
+}
+
+wrap_plots(p, guides = "collect", ncol = 3) & 
+  theme(legend.position = "bottom")
+```
+
+## B cells
+### Mean-Difference plot of DEGs
+
+```{r, fig.asp=0.7}
+dat <- data.frame(x = fit.treat$Amean, 
+                  y = fit.treat$coefficients[,2],
+                  status = as.factor(as.vector(dt[,2]))) %>%
+  rownames_to_column(var = "gene") %>%
+  mutate(status = ifelse(status == 1, "Up",
+                         ifelse(status == -1, "Down",
+                                "NotSig"))) %>%
+  mutate(status = as.factor(status)) %>%
+  mutate(status = fct_relevel(status, "NotSig", after = Inf)) %>%
+  arrange(desc(status))
+
+pal <- c(paletteer::paletteer_d("RColorBrewer::Set1")[1:2], "grey")
+names(pal) <- c("Up", "Down", "NotSig")
+ggplot(dat, aes(x = x, y = y, colour = status)) +
+  geom_point() +
+  ggrepel::geom_text_repel(data = dat[dat$status != "NotSig",], 
+                  aes(x = x, y = y, label = gene), 
+                  max.overlaps = 20, size = 2, colour = "black") +
+  scale_colour_manual(values = pal) +
+  labs(x = "Average-log-expression", 
+       y = "Log-fold-change",
+       colour = "FDR < 0.05") 
+```
+
+```{r}
+topTreat(fit.treat, coef = 2, num = Inf) %>% 
+  mutate(sig = ifelse(adj.P.Val <= 0.05, "<= 0.05", "> 0.05")) %>%
+  rownames_to_column(var = "SYMBOL") %>%
+  left_join(dt[,2] %>% 
+              data.frame %>%
+              rownames_to_column(var = "SYMBOL") %>%
+              dplyr::rename(status = "B.CvCF")) %>%
+    mutate(status = ifelse(status == 1, "Up",
+                         ifelse(status == -1, "Down",
+                                "NotSig"))) %>%
+  mutate(status = as.factor(status)) %>%
+  mutate(status = fct_relevel(status, "NotSig", after = Inf)) -> dat
+
+ggplot(dat, aes(x = logFC, y = -log10(P.Value), color = status)) +
+  geom_point(alpha = 0.75) +
+  ggrepel::geom_text_repel(data = subset(dat, adj.P.Val < 0.05), 
+            aes(x = logFC, y = -log10(P.Value), 
+                label = SYMBOL), 
+            size = 2, colour = "black", max.overlaps = 15) +
+  labs(x = expression(~log[2]~"(Fold Change)"), 
+       y = expression(~-log[10]~"(P-value)"),
+       colour = "FDR < 0.05") +
+  theme_classic() +
+  scale_colour_manual(values = pal) 
+```
+
+### Top DEGs
+
+```{r, results='asis', fig.asp = 1}
+dirName <- here("output/DEGs")
+if(!dir.exists(dirName)) dir.create(dirName)
+
+top <- topTreat(fit.treat, coef = 2, n = Inf, p.value = 0.05)
+knitr::kable(top, digits = 10)
+
+write.csv(top, file = glue("{dirName}/DEGs-{colnames(cont)[2]}.csv"))
+```
+
+```{r}
+go <- gsaseq(ann$ENTREZID[ann$SYMBOL %in% rownames(top)], 
+             universe = ann$ENTREZID, 
+             collection = gsAnnots$c5@original,
+             gene.length = ann$Length)
+
+topGSA(react) %>% knitr::kable()
+topGSA(go) %>% knitr::kable()
+
+write_csv(topGSA(react, number = 100) %>% data.frame, 
+          file = glue("{dirName}/REACTOME-{colnames(cont)[2]}.csv"))
+write_csv(topGSA(go, number = 100) %>% data.frame, 
+          file = glue("{dirName}/GO-{colnames(cont)[2]}.csv"))
+```
+
+
+```{r, fig.asp=6, message=FALSE}
+exp <- cpm(y, log = TRUE)
+exp <- exp[rownames(exp) %in% rownames(top), 
+           y$samples$Broad == "B cells"]
+
+dat <- exp %>% 
+  data.frame %>% 
+  rownames_to_column(var = "Gene") %>% 
+  pivot_longer(-Gene, 
+               names_to = "ID", 
+               values_to = "Log2 CPM") %>%
+  left_join(rownames_to_column(y$samples, var = "ID")) %>%
+  mutate(`Z-score` = `Log2 CPM`)
+
+p <- vector("list", nrow(top))
+
+for(i in 1:length(p)){
+p[[i]] <- ggplot(data = subset(dat, dat$Gene == rownames(top)[i]), 
+       aes(x = Disease, y = `Log2 CPM`)) +
+  geom_jitter(width = 0.25) +
+  labs(x = "Disease", y = "Log2 CPM") +
+  ggtitle(rownames(top)[i]) +
+  theme(plot.title = element_text(size = 8),
+        plot.subtitle = element_text(size = 7),
+        axis.title = element_text(size = 8),
+        axis.text.x = element_text(size = 7))
+}
+
+wrap_plots(p, guides = "collect", ncol = 3) & 
+  theme(legend.position = "bottom")
+```
+
+## Epithelial 
+### Mean-Difference plot of DEGs
+
+```{r, fig.asp=0.7}
+dat <- data.frame(x = fit.treat$Amean, 
+                  y = fit.treat$coefficients[,6],
+                  status = as.factor(as.vector(dt[,6]))) %>%
+  rownames_to_column(var = "gene") %>%
+  mutate(status = ifelse(status == 1, "Up",
+                         ifelse(status == -1, "Down",
+                                "NotSig"))) %>%
+  mutate(status = as.factor(status)) %>%
+  mutate(status = fct_relevel(status, "NotSig", after = Inf)) %>%
+  arrange(desc(status))
+
+pal <- c(paletteer::paletteer_d("RColorBrewer::Set1")[1:2], "grey")
+names(pal) <- c("Up", "Down", "NotSig")
+ggplot(dat, aes(x = x, y = y, colour = status)) +
+  geom_point() +
+  ggrepel::geom_text_repel(data = dat[dat$status != "NotSig",], 
+                  aes(x = x, y = y, label = gene), 
+                  max.overlaps = 20, size = 2, colour = "black") +
+  scale_colour_manual(values = pal) +
+  labs(x = "Average-log-expression", 
+       y = "Log-fold-change",
+       colour = "FDR < 0.05") 
+```
+
+```{r}
+topTreat(fit.treat, coef = 6, num = Inf) %>% 
+  mutate(sig = ifelse(adj.P.Val <= 0.05, "<= 0.05", "> 0.05")) %>%
+  rownames_to_column(var = "SYMBOL") %>%
+  left_join(dt[,6] %>% 
+              data.frame %>%
+              rownames_to_column(var = "SYMBOL") %>%
+              dplyr::rename(status = "Epi.CvCF")) %>%
+    mutate(status = ifelse(status == 1, "Up",
+                         ifelse(status == -1, "Down",
+                                "NotSig"))) %>%
+  mutate(status = as.factor(status)) %>%
+  mutate(status = fct_relevel(status, "NotSig", after = Inf)) -> dat
+
+ggplot(dat, aes(x = logFC, y = -log10(P.Value), color = status)) +
+  geom_point(alpha = 0.75) +
+  ggrepel::geom_text_repel(data = subset(dat, adj.P.Val < 0.05), 
+            aes(x = logFC, y = -log10(P.Value), 
+                label = SYMBOL), 
+            size = 2, colour = "black", max.overlaps = 15) +
+  labs(x = expression(~log[2]~"(Fold Change)"), 
+       y = expression(~-log[10]~"(P-value)"),
+       colour = "FDR < 0.05") +
+  theme_classic() +
+  scale_colour_manual(values = pal) 
+```
+
+### Top DEGs
+
+```{r, results='asis', fig.asp = 1}
+dirName <- here("output/DEGs")
+if(!dir.exists(dirName)) dir.create(dirName)
+
+top <- topTreat(fit.treat, coef = 6, n = Inf, p.value = 0.05)
+knitr::kable(top, digits = 10)
+
+write.csv(top, file = glue("{dirName}/DEGs-{colnames(cont)[6]}.csv"))
+```
+
+```{r}
+go <- gsaseq(ann$ENTREZID[ann$SYMBOL %in% rownames(top)], 
+             universe = ann$ENTREZID, 
+             collection = gsAnnots$c5@original,
+             gene.length = ann$Length)
+
+topGSA(react) %>% knitr::kable()
+topGSA(go) %>% knitr::kable()
+
+write_csv(topGSA(react, number = 100) %>% data.frame, 
+          file = glue("{dirName}/REACTOME-{colnames(cont)[6]}.csv"))
+write_csv(topGSA(go, number = 100) %>% data.frame, 
+          file = glue("{dirName}/GO-{colnames(cont)[6]}.csv"))
+```
+
+
+```{r, fig.asp=4, message=FALSE}
+exp <- cpm(y, log = TRUE)
+exp <- exp[rownames(exp) %in% rownames(top), 
+           y$samples$Broad == "Epithelial"]
+
+dat <- exp %>% 
+  data.frame %>% 
+  rownames_to_column(var = "Gene") %>% 
+  pivot_longer(-Gene, 
+               names_to = "ID", 
+               values_to = "Log2 CPM") %>%
+  left_join(rownames_to_column(y$samples, var = "ID")) %>%
+  mutate(`Z-score` = `Log2 CPM`)
+
+p <- vector("list", 50)
+
+for(i in 1:length(p)){
+p[[i]] <- ggplot(data = subset(dat, dat$Gene == rownames(top)[i]), 
+       aes(x = Disease, y = `Log2 CPM`)) +
+  geom_jitter(width = 0.25) +
+  labs(x = "Disease", y = "Log2 CPM") +
+  ggtitle(rownames(top)[i]) +
+  theme(plot.title = element_text(size = 8),
+        plot.subtitle = element_text(size = 7),
+        axis.title = element_text(size = 8),
+        axis.text.x = element_text(size = 7))
+}
+
+wrap_plots(p, guides = "collect", ncol = 3) & 
+  theme(legend.position = "bottom")
+```
+
+# Panel figures
+
+```{r, fig.asp=1.5, fig.width=10}
+layout = "AABB
+          AABB
+          ##BB
+          ##BB
+          ##BB"
+
+(f5a + theme(legend.position = "bottom",
+             legend.direction = "horizontal")) +
+  wrap_elements(grid::grid.grabExpr(ComplexHeatmap::draw(f5b))) + 
+  plot_layout(design = layout) +
+  plot_annotation(tag_levels = "A") &
+  theme(plot.tag = element_text(size = 14, face = "bold"))
+
+```
+
+# Session info {.appendix}
+
+<summary>The analysis and this document were prepared using the following software (click triangle to expand)</summary>
+<details>
+
+```{r}
+sessioninfo::session_info()
+```
+
+
+

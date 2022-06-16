@@ -1,0 +1,4388 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Jovana Maksimovic" />
+
+<meta name="date" content="2022-03-29" />
+
+<title>Analysis of CF_BAL_Pilot &amp; C133_Neeland Data Combined</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">paed-cf-cite-seq</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Analysis of CF_BAL_Pilot &amp; C133_Neeland Data Combined</h1>
+<h3 class="subtitle">Macrophage Sub-clustering</h3>
+<h4 class="author">Jovana Maksimovic</h4>
+<h4 class="date">March 29, 2022</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2022-03-29
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>paed-cf-cite-seq/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version 1.7.0). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20210524code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20210524)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20210524code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20210524)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree25de35dfb2127dc1a855e29c8367f9df128aa8bftargetblank25de35da"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/25de35dfb2127dc1a855e29c8367f9df128aa8bf" target="_blank">25de35d</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree25de35dfb2127dc1a855e29c8367f9df128aa8bftargetblank25de35da" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/25de35dfb2127dc1a855e29c8367f9df128aa8bf" target="_blank">25de35d</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    data/CellRanger/
+    Ignored:    data/emptyDrops/bin/
+    Ignored:    renv/library/
+    Ignored:    renv/staging/
+
+Untracked files:
+    Untracked:  Rplots.pdf
+    Untracked:  analysis/03_COMBO.annotation_markers.Rmd
+    Untracked:  analysis/03_COMBO.compare_annotations.Rmd
+    Untracked:  analysis/03_COMBO.protein_analysis.Rmd
+    Untracked:  analysis/scGateDB/
+    Untracked:  code/03_C133_Neeland-dropletutils.R
+    Untracked:  code/03_COMBO.proteins_geneBasis.R
+    Untracked:  data/190930_A00152_0150_BHTYCMDSXX/
+    Untracked:  data/Flow_data_CITEseq_2-8.csv
+    Untracked:  data/GSE127465_RAW/
+    Untracked:  data/GSE130148_barcodes_cell_types.txt
+    Untracked:  data/GSE130148_raw_counts.RData
+    Untracked:  data/Macrophage_subcluster_annotation_110322.csv
+    Untracked:  data/Other_subcluster_annotation_110322.csv
+    Untracked:  data/T-NK_subcluster_annotation_110322.csv
+    Untracked:  data/T-NK_subcluster_proteins.csv
+    Untracked:  data/T-NK_subcluster_proteins_110322.csv
+    Untracked:  data/T-NK_subclusters_cytokines.csv
+    Untracked:  data/T-NK_subclusters_markergenes_110322.csv
+    Untracked:  data/all_azimuth_cluster_cytokines.csv
+    Untracked:  data/all_azimuth_clusters_proteins.csv
+    Untracked:  data/cell_type_category_rna_Granulocytes_Cell.tsv
+    Untracked:  data/consolidated_markers.rds
+    Untracked:  data/gb-genes-50.rds
+    Untracked:  data/genome1K.phase3.SNP_AF5e4.chr1toX.hg38.vcf.gz
+    Untracked:  data/macrophage_subcluster_cytokines.csv
+    Untracked:  data/macrophage_subcluster_markergenes_110322.csv
+    Untracked:  data/macrophage_subcluster_markergenes_160322.csv
+    Untracked:  data/macrophage_subcluster_proteins.csv
+    Untracked:  data/macrophage_subcluster_proteins_110322.csv
+    Untracked:  data/neutrophil.tsv
+    Untracked:  data/other_subcluster_proteins.csv
+    Untracked:  data/other_subcluster_proteins_110322.csv
+    Untracked:  data/other_subclusters_cytokines.csv
+    Untracked:  data/other_subclusters_markergenes_110322.csv
+    Untracked:  data/proteins_ranked.rds
+    Untracked:  data/sample_sheets/Hashtag_Feature_Ref_With_Clin.csv
+    Untracked:  data/sample_sheets/TotalSeq_A_Human_Universal_Cocktail_Proteins of interest_29.09.21.csv
+    Untracked:  data/sample_sheets/TotalSeq_A_Human_Universal_Cocktail_Proteins_of_interest_28.06.21.csv
+    Untracked:  output/ADT-counts.csv
+    Untracked:  output/C133_Neeland.azimuth.individual_cell_type_proportions.csv
+    Untracked:  output/C133_Neeland.azimuth.phenotype_information.csv
+    Untracked:  output/C133_Neeland.individual_cell_type_proportions.csv
+    Untracked:  output/C133_Neeland.phenotype_information.csv
+    Untracked:  output/DEGs/
+    Untracked:  output/glimma-plots/js/labelled-singlets-md-plot.js
+    Untracked:  output/glimma-plots/js/qc-md-plot_03_C133_Neeland.js
+    Untracked:  output/glimma-plots/js/qc-md-plot_C133_Neeland.js
+    Untracked:  output/glimma-plots/js/qc-md-plot_CF-BAL-Pilot.js
+    Untracked:  output/glimma-plots/labelled-singlets-md-plot.html
+    Untracked:  output/glimma-plots/qc-md-plot_03_C133_Neeland.html
+    Untracked:  output/glimma-plots/qc-md-plot_C133_Neeland.html
+    Untracked:  output/glimma-plots/qc-md-plot_CF-BAL-Pilot.html
+    Untracked:  output/marker-analysis-mod/
+    Untracked:  output/marker-analysis/
+    Untracked:  output/metadata.csv
+    Untracked:  output/protein_labels.pdf
+    Untracked:  scGateDB/
+    Untracked:  wflow_background.R
+
+Unstaged changes:
+    Modified:   analysis/03_COMBO.cluster_others.Rmd
+    Modified:   analysis/03_COMBO.cluster_tcells.Rmd
+    Modified:   analysis/03_COMBO.proportion_analysis.Rmd
+    Modified:   data/SCEs/C133_Neeland.CellRanger.SCE.rds
+    Modified:   data/SCEs/C133_Neeland.demultiplexed.SCE.rds
+    Deleted:    data/SCEs/C133_Neeland.preprocessed.SCE.hto.rds
+    Deleted:    data/SCEs/C133_Neeland.preprocessed.SCE_hto.rds
+    Deleted:    data/SCEs/C133_Neeland.preprocessed.SCE_snp.rds
+    Modified:   data/sample_sheets/TotalSeq-A_Universal_Cocktail_v1.0.csv
+    Modified:   data/vireo/C133_1/GT_donors.vireo.vcf.gz
+    Modified:   data/vireo/C133_1/_log.txt
+    Modified:   data/vireo/C133_1/donor_ids.tsv
+    Modified:   data/vireo/C133_1/fig_GT_distance_estimated.pdf
+    Modified:   data/vireo/C133_1/prob_doublet.tsv.gz
+    Modified:   data/vireo/C133_1/prob_singlet.tsv.gz
+    Modified:   data/vireo/C133_1/summary.tsv
+    Modified:   data/vireo/C133_2/GT_donors.vireo.vcf.gz
+    Modified:   data/vireo/C133_2/_log.txt
+    Modified:   data/vireo/C133_2/donor_ids.tsv
+    Modified:   data/vireo/C133_2/fig_GT_distance_estimated.pdf
+    Modified:   data/vireo/C133_2/prob_doublet.tsv.gz
+    Modified:   data/vireo/C133_2/prob_singlet.tsv.gz
+    Modified:   data/vireo/C133_2/summary.tsv
+    Modified:   output/glimma-plots/js/qc-md-plot.js
+    Modified:   output/glimma-plots/js/stripped-nuclei-md-plot.js
+    Modified:   renv/.gitignore
+    Modified:   renv/activate.R
+    Modified:   renv/settings.dcf
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/03_COMBO.cluster_macrophages.Rmd</code>) and HTML (<code>docs/03_COMBO.cluster_macrophages.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/25de35dfb2127dc1a855e29c8367f9df128aa8bf/analysis/03_COMBO.cluster_macrophages.Rmd" target="_blank">25de35d</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-29
+</td>
+<td>
+wflow_publish(c("analysis/03_COMBO.cluster_macrophages.Rmd"))
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/7f1e9b1af781c815004b8303917bfda7eeb88f49/docs/03_COMBO.cluster_macrophages.html" target="_blank">7f1e9b1</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/2f77d60d4f5e1983aec8788a4eda92eba02ea445/analysis/03_COMBO.cluster_macrophages.Rmd" target="_blank">2f77d60</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-16
+</td>
+<td>
+wflow_publish(c("analysis/03_COMBO.cluster_macrophages.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/185d5b14ea507ebab5b7ac6f48c495b24236e008/docs/03_COMBO.cluster_macrophages.html" target="_blank">185d5b1</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-15
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/0412600dd8e5fa21665f11e83c9289c51f4648e4/analysis/03_COMBO.cluster_macrophages.Rmd" target="_blank">0412600</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-15
+</td>
+<td>
+wflow_publish(c("analysis/03_COMBO.cluster_macrophages.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f6c2b9d225fe25d45c6d9a2b69452c164ce1e592/analysis/03_COMBO.cluster_macrophages.Rmd" target="_blank">f6c2b9d</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-15
+</td>
+<td>
+wflow_publish(c("analysis/03_COMBO.cluster_macrophages.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/ab46324e231c83506732cac0cbff8bd30e6d1948/docs/03_COMBO.cluster_macrophages.html" target="_blank">ab46324</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-15
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/9c8348fa4eb9db26da2c4607cb8474bfc4f960a6/analysis/03_COMBO.cluster_macrophages.Rmd" target="_blank">9c8348f</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-15
+</td>
+<td>
+wflow_publish(c("analysis/03_COMBO.cluster_macrophages.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/dc2eab6a0d0ab6b6753832f462ca5565018f2655/docs/03_COMBO.cluster_macrophages.html" target="_blank">dc2eab6</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-11
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/675e9a832d09101ed2bc29988a9753847259f039/analysis/03_COMBO.cluster_macrophages.Rmd" target="_blank">675e9a8</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-11
+</td>
+<td>
+wflow_publish(c("analysis/03_COMBO.cluster_macrophages.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/bdb80904399f44dd713655b3f91387b1c0ee7e8f/analysis/03_COMBO.cluster_macrophages.Rmd" target="_blank">bdb8090</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-11
+</td>
+<td>
+wflow_publish(c("analysis/03_COMBO.cluster_macrophages.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f76baad311273d6cfcb905a51a0be78785108cfe/docs/03_COMBO.cluster_macrophages.html" target="_blank">f76baad</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-11
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/c74f6a85d995305d9973c0caca514be395e6b21e/analysis/03_COMBO.cluster_macrophages.Rmd" target="_blank">c74f6a8</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-11
+</td>
+<td>
+wflow_publish(c("analysis/03_COMBO.cluster_macrophages.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/189c3ac4bd2c6a6b7762bee41c5e82497a4341e1/docs/03_COMBO.cluster_macrophages.html" target="_blank">189c3ac</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-10
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/be95112b1922a44a9ad082698952778bbbbabfdf/analysis/03_COMBO.cluster_macrophages.Rmd" target="_blank">be95112</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-10
+</td>
+<td>
+wflow_publish(c("analysis/03_COMBO.cluster_macrophages.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/2fd8a274e7b651a90a05f6bb7a8a5d5f3ffb07c9/analysis/03_COMBO.cluster_macrophages.Rmd" target="_blank">2fd8a27</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-10
+</td>
+<td>
+wflow_publish(c("analysis/03_COMBO.cluster_macrophages.Rmd",
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="load-libraries" class="section level1">
+<h1>Load libraries</h1>
+</div>
+<div id="load-data" class="section level1">
+<h1>Load Data</h1>
+<p>Load the clustered and labelled CF_BAL_Pilot and C133_Neeland data.</p>
+<pre class="r"><code>seu &lt;- readRDS(file = here(&quot;data/SCEs/03_COMBO.clustered_annotated_macrophages_diet.SEU.rds&quot;))
+DefaultAssay(seu) &lt;- &quot;RNA&quot;
+entrez &lt;- select(org.Hs.eg.db, columns = c(&quot;ENTREZID&quot;,&quot;SYMBOL&quot;), 
+                 keys = keys(org.Hs.eg.db)) 
+entrez &lt;- entrez[!is.na(entrez$ENTREZID),]
+seu &lt;- seu[rownames(seu) %in% entrez$SYMBOL,]</code></pre>
+</div>
+<div id="subcluster-macrophages" class="section level1">
+<h1>Subcluster macrophages</h1>
+<p>Normalise and integrate data.</p>
+<pre class="r"><code>out &lt;- here(&quot;data/SCEs/03_COMBO.macrophages_integrated.SEU.rds&quot;)
+
+if(!file.exists(out)){ 
+  seuInt &lt;- intDat(seu, type = &quot;RNA&quot;, 
+                   reference = unique(seu$capture[seu$experiment == 1]))
+  saveRDS(seuInt, file = out)
+  
+} else {
+  seuInt &lt;- readRDS(file = out)
+  
+}</code></pre>
+<p>Visualise the data.</p>
+<pre class="r"><code>seuInt &lt;- RunPCA(seuInt, verbose = FALSE, dims = 1:30) %&gt;%
+  RunUMAP(verbose = FALSE, dims = 1:30)</code></pre>
+<pre class="r"><code>DimPlot(seuInt, group.by = &quot;experiment&quot;, combine = FALSE)</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-1">
+Past versions of unnamed-chunk-6-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/189c3ac4bd2c6a6b7762bee41c5e82497a4341e1/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-6-1.png" target="_blank">189c3ac</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="clustering" class="section level1">
+<h1>Clustering</h1>
+<div id="perform-linear-dimensional-reduction" class="section level2">
+<h2>Perform Linear Dimensional Reduction</h2>
+<pre class="r"><code>p1 &lt;- DimPlot(seuInt, reduction = &quot;pca&quot;, group.by = &quot;donor&quot;)
+p2 &lt;- DimPlot(seuInt, reduction = &quot;pca&quot;, dims = c(1,3), group.by = &quot;donor&quot;)
+p3 &lt;- DimPlot(seuInt, reduction = &quot;pca&quot;, dims = c(2,3), group.by = &quot;donor&quot;)
+p4 &lt;- DimPlot(seuInt, reduction = &quot;pca&quot;, dims = c(3,4), group.by = &quot;donor&quot;)
+
+((p1 | p2) / (p3 | p4)) + plot_layout(guides = &quot;collect&quot;) &amp;
+  theme(legend.text = element_text(size = 8),
+        plot.title = element_text(size = 10),
+        axis.title = element_text(size = 9),
+        axis.text = element_text(size = 8))</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-1">
+Past versions of unnamed-chunk-7-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/189c3ac4bd2c6a6b7762bee41c5e82497a4341e1/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-7-1.png" target="_blank">189c3ac</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>DimHeatmap(seuInt, dims = 1:30, cells = 500, balanced = TRUE)</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-8-1.png" width="864" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-1">
+Past versions of unnamed-chunk-8-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/189c3ac4bd2c6a6b7762bee41c5e82497a4341e1/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-8-1.png" target="_blank">189c3ac</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="determine-the-dimensionality-of-the-dataset" class="section level2">
+<h2>Determine the ‘Dimensionality’ of the Dataset</h2>
+<pre class="r"><code>ElbowPlot(seuInt, ndims = 30)</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-1">
+Past versions of unnamed-chunk-9-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/189c3ac4bd2c6a6b7762bee41c5e82497a4341e1/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-9-1.png" target="_blank">189c3ac</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="cluster-the-cells" class="section level1">
+<h1>Cluster the Cells</h1>
+<p>Examine cluster number and size with respect to resolution.</p>
+<pre class="r"><code>out &lt;- here(&quot;data/SCEs/03_COMBO.macrophages_clustered.SEU.rds&quot;)
+
+if(!file.exists(out)){
+  seuInt &lt;- FindNeighbors(seuInt, reduction = &quot;pca&quot;, dims = 1:30)
+  seuInt &lt;- FindClusters(seuInt, algorithm = 3, 
+                         resolution = seq(0.1, 1, by = 0.1))
+  seuInt &lt;- RunUMAP(seuInt, dims = 1:10)
+  saveRDS(seuInt, file = out)
+  
+} else {
+  seuInt &lt;- readRDS(file = out)
+  
+}
+
+clustree::clustree(seuInt)</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-1">
+Past versions of unnamed-chunk-10-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/189c3ac4bd2c6a6b7762bee41c5e82497a4341e1/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-10-1.png" target="_blank">189c3ac</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Choose a resolution. Visualise UMAP.</p>
+<pre class="r"><code>options(ggrepel.max.overlaps = Inf)
+grp &lt;- &quot;integrated_snn_res.1&quot;
+DimPlot(seuInt, reduction = &#39;umap&#39;, label = TRUE, repel = FALSE, 
+        label.size = 2.5, group.by = grp) + NoLegend()</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-1">
+Past versions of unnamed-chunk-11-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/189c3ac4bd2c6a6b7762bee41c5e82497a4341e1/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-11-1.png" target="_blank">189c3ac</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="examine-clusters" class="section level2">
+<h2>Examine clusters</h2>
+<p>Visualise quality metrics by cluster.</p>
+<pre class="r"><code>seuInt@meta.data %&gt;%
+  ggplot(aes(x = integrated_snn_res.1,
+             y = predicted.annotation.l1.score,
+             fill = integrated_snn_res.1)) +
+  geom_violin(scale = &quot;width&quot;) +
+  NoLegend() -&gt; p1
+
+seuInt@meta.data %&gt;%
+  ggplot(aes(x = integrated_snn_res.1,
+             y = nCount_RNA,
+             fill = integrated_snn_res.1)) +
+  geom_violin(scale = &quot;area&quot;) +
+  scale_y_log10() +
+  NoLegend() -&gt; p2
+
+seuInt@meta.data %&gt;%
+  ggplot(aes(x = integrated_snn_res.1,
+             y = nFeature_RNA,
+             fill = integrated_snn_res.1)) +
+  geom_violin(scale = &quot;area&quot;) +
+  scale_y_log10() +
+  NoLegend() -&gt; p3
+
+seuInt@meta.data %&gt;%
+  ggplot(aes(x = integrated_snn_res.1,
+             y = subsets_Mito_percent,
+             fill = integrated_snn_res.1)) +
+  geom_violin(scale = &quot;area&quot;) +
+  scale_y_log10() +
+  NoLegend() -&gt; p4
+
+((p1 | p2) / (p3 | p4)) &amp; theme(text = element_text(size = 8))</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-1">
+Past versions of unnamed-chunk-12-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/189c3ac4bd2c6a6b7762bee41c5e82497a4341e1/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-12-1.png" target="_blank">189c3ac</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="identify-cluster-marker-genes" class="section level1">
+<h1>Identify Cluster Marker Genes</h1>
+<div id="test-for-marker-genes-using-limma" class="section level2">
+<h2>Test for Marker Genes using <em>limma</em></h2>
+<pre class="r"><code># limma-trend for DE
+Idents(seuInt) &lt;- grp
+counts &lt;- as.matrix(seuInt[[&quot;RNA&quot;]]@counts)
+
+y.org &lt;- DGEList(counts)
+logcounts &lt;- normCounts(y.org, log = TRUE, prior.count = 0.5)
+
+maxclust &lt;- length(levels(Idents(seuInt))) - 1
+
+clustgrp &lt;- paste0(&quot;c&quot;, Idents(seuInt))
+clustgrp &lt;- factor(clustgrp, levels = paste0(&quot;c&quot;, 0:maxclust))
+donor &lt;- seuInt$donor
+
+design &lt;- model.matrix(~ 0 + clustgrp + donor)
+colnames(design)[1:(length(levels(clustgrp)))] &lt;- levels(clustgrp)
+
+# Create contrast matrix
+mycont &lt;- matrix(NA, ncol = length(levels(clustgrp)), 
+                 nrow = length(levels(clustgrp)))
+rownames(mycont) &lt;- colnames(mycont) &lt;- levels(clustgrp)
+diag(mycont) &lt;- 1
+mycont[upper.tri(mycont)] &lt;- -1/(length(levels(factor(clustgrp))) - 1)
+mycont[lower.tri(mycont)] &lt;- -1/(length(levels(factor(clustgrp))) - 1)
+
+# Fill out remaining rows with 0s
+zero.rows &lt;- matrix(0, ncol = length(levels(clustgrp)),
+                    nrow = (ncol(design) - length(levels(clustgrp))))
+fullcont &lt;- rbind(mycont, zero.rows)
+rownames(fullcont) &lt;- colnames(design)
+
+fit &lt;- lmFit(logcounts, design)
+fit.cont &lt;- contrasts.fit(fit, contrasts = fullcont)
+fit.cont &lt;- eBayes(fit.cont, trend = TRUE, robust = TRUE)
+
+summary(decideTests(fit.cont))</code></pre>
+<pre><code>          c0    c1    c2    c3    c4    c5    c6    c7    c8    c9   c10   c11
+Down    3486  2137  6379  3205  2021  3857  2007  3361  1601  5238  1991  2540
+NotSig  8875 10435  7408  8752 10532  7024  9713 10158 10589  7768 11379 11597
+Up      3217  3006  1791  3621  3025  4697  3858  2059  3388  2572  2208  1441
+         c12   c13   c14   c15   c16   c17   c18   c19   c20   c21   c22   c23
+Down    1977  1139 11280  1227  1002  1885   618   996   401  1644  5206  1156
+NotSig 11743 11218  3544 12805 12469 10974  9701 12614 11714  8191  8416 12507
+Up      1858  3221   754  1546  2107  2719  5259  1968  3463  5743  1956  1915</code></pre>
+</div>
+<div id="test-relative-to-a-threshold-treat" class="section level2">
+<h2>Test relative to a threshold (TREAT)</h2>
+<pre class="r"><code>tr &lt;- treat(fit.cont, fc = 1.5)
+dt &lt;- decideTests(tr)
+summary(dt)</code></pre>
+<pre><code>          c0    c1    c2    c3    c4    c5    c6    c7    c8    c9   c10   c11
+Down       2     0    45     8     2     7     5    39     2   190     2     1
+NotSig 15560 15568 15489 15514 15560 15534 15538 15506 15546 15271 15544 15499
+Up        16    10    44    56    16    37    35    33    30   117    32    78
+         c12   c13   c14   c15   c16   c17   c18   c19   c20   c21   c22   c23
+Down       7     2  2927     0     0    12     1     1     0    52   346   106
+NotSig 15542 15540 12649 15571 15494 15521 15363 15543 15531 14876 15076 15339
+Up        29    36     2     7    84    45   214    34    47   650   156   133</code></pre>
+<div id="mean-difference-plots-per-cluster" class="section level3">
+<h3>Mean-difference Plots per Cluster</h3>
+<pre class="r"><code>par(mfrow=c(3,3))
+
+for(i in 1:ncol(mycont)){
+  plotMD(tr, coef = i, status = dt[,i], hl.cex = 0.5)
+  abline(h = 0, col = &quot;lightgrey&quot;)
+  lines(lowess(tr$Amean, tr$coefficients[,i]), lwd = 1.5, col = 4)
+}</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-15-1">
+Past versions of unnamed-chunk-15-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-15-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/189c3ac4bd2c6a6b7762bee41c5e82497a4341e1/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-15-1.png" target="_blank">189c3ac</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-15-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-15-2">
+Past versions of unnamed-chunk-15-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-15-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/189c3ac4bd2c6a6b7762bee41c5e82497a4341e1/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-15-2.png" target="_blank">189c3ac</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-15-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-15-3">
+Past versions of unnamed-chunk-15-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-15-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/189c3ac4bd2c6a6b7762bee41c5e82497a4341e1/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-15-3.png" target="_blank">189c3ac</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="export-marker-genes-per-cluster" class="section level2">
+<h2>Export Marker Genes per cluster</h2>
+<pre class="r"><code>options(scipen=-1, digits = 6)
+contnames &lt;- colnames(mycont)
+dirName &lt;- here(&quot;output/marker-analysis/03-COMBO-macrophages&quot;)
+if(!dir.exists(dirName)) dir.create(dirName)
+
+getCols &lt;- setNames(c(&quot;SYMBOL&quot;,&quot;ENTREZID&quot;),c(&quot;SYMBOL&quot;,&quot;ENTREZID&quot;))
+tr$genes &lt;- data.frame(
+  lapply(getCols, function(column) {
+    mapIds(
+      x = org.Hs.eg.db,
+      keys = rownames(tr),
+      keytype = &quot;SYMBOL&quot;,
+      column = column)
+  }),
+  row.names = rownames(tr))
+
+gsAnnots &lt;- buildIdx(entrezIDs = tr$genes$ENTREZID, species = &quot;human&quot;,
+                     msigdb.gsets = c(&quot;c2&quot;,&quot;c5&quot;))</code></pre>
+<pre><code>[1] &quot;Loading MSigDB Gene Sets ... &quot;
+[1] &quot;Loaded gene sets for the collection c2 ...&quot;
+[1] &quot;Indexed the collection c2 ...&quot;
+[1] &quot;Created annotation for the collection c2 ...&quot;
+[1] &quot;Loaded gene sets for the collection c5 ...&quot;
+[1] &quot;Indexed the collection c5 ...&quot;
+[1] &quot;Created annotation for the collection c5 ...&quot;
+[1] &quot;Building KEGG pathways annotation object ... &quot;</code></pre>
+<pre class="r"><code>reactomeIdx &lt;-gsAnnots$c2@idx[grep(&quot;REACTOME&quot;, 
+                                   names(gsAnnots$c2@idx))]
+
+for(i in 1:length(contnames)){
+  top &lt;- topTreat(tr, coef = i, n = Inf)
+  top &lt;- top[top$logFC &gt; 0, ]
+  
+  write.csv(top[1:100, ],
+            file = glue(&quot;{dirName}/up-cluster-{contnames[i]}.csv&quot;))
+  
+  cameraPR(tr$t[,i], reactomeIdx) %&gt;%
+    rownames_to_column(var = &quot;Pathway&quot;) %&gt;%
+    slice_head(n = 20) %&gt;%
+    write_csv(file = here(glue(&quot;{dirName}/REACTOME-cluster-{contnames[i]}.csv&quot;)))
+}</code></pre>
+</div>
+<div id="cluster-marker-gene-dot-plot" class="section level2">
+<h2>Cluster marker gene dot plot</h2>
+<p>Genes duplicated between clusters are excluded.</p>
+<pre class="r"><code>sig.genes &lt;- vector(&quot;list&quot;, ncol(tr))
+p &lt;- vector(&quot;list&quot;,length(sig.genes))
+DefaultAssay(seuInt) &lt;- &quot;RNA&quot;
+
+for(i in 1:length(sig.genes)){
+  top &lt;- topTreat(tr, coef = i, n = Inf)
+  sig.genes[[i]] &lt;- rownames(top)[top$logFC &gt; 0][1:10]
+}
+
+sig &lt;- unlist(sig.genes)
+geneCols &lt;- c(rep(rep(c(&quot;grey&quot;,&quot;black&quot;), each = 10), ncol(tr)/2), 
+              rep(&quot;grey&quot;, 10))[!duplicated(sig)] 
+
+DotPlot(seuInt,    features = sig[!duplicated(sig)], 
+                    group.by = &quot;integrated_snn_res.1&quot;,
+                    cols = c(&quot;lightgrey&quot;, &quot;red&quot;),
+                    dot.scale = 3) + 
+    RotatedAxis() + 
+    FontSize(y.text = 8, x.text = 12) + 
+    labs(y = element_blank(), x = element_blank()) + 
+    coord_flip() + 
+  theme(axis.text.y = element_text(color = geneCols)) +
+  ggtitle(&quot;Top 10 cluster marker genes without duplicates&quot;)</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-17-1">
+Past versions of unnamed-chunk-17-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-17-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/189c3ac4bd2c6a6b7762bee41c5e82497a4341e1/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-17-1.png" target="_blank">189c3ac</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="sub-cluster-annotation" class="section level1">
+<h1>Sub-cluster annotation</h1>
+<div id="load-manual-annotations" class="section level2">
+<h2>Load manual annotations</h2>
+<pre class="r"><code>labels &lt;- read_csv(here(&quot;data/Macrophage_subcluster_annotation_110322.csv&quot;))
+
+seuInt@meta.data %&gt;%
+  left_join(labels %&gt;% 
+              mutate(Annotation = ifelse(is.na(Annotation), 
+                                         &quot;SUSPECT&quot;, 
+                                         Annotation)) %&gt;%
+              mutate(Cluster = as.factor(Cluster),
+                     Annotation = as.factor(Annotation)), 
+            by = c(&quot;integrated_snn_res.1&quot; = &quot;Cluster&quot;)) %&gt;%
+  dplyr::pull(Annotation) -&gt; seuInt$Annotation
+
+#seuInt &lt;- subset(seuInt, cells = which(seuInt$Annotation != &quot;SUSPECT&quot;))
+seuInt$Annotation &lt;- fct_drop(seuInt$Annotation)
+seuInt</code></pre>
+<pre><code>An object of class Seurat 
+33270 features across 32797 samples within 3 assays 
+Active assay: RNA (15578 features, 0 variable features)
+ 2 other assays present: SCT, integrated
+ 2 dimensional reductions calculated: pca, umap</code></pre>
+<pre class="r"><code>seuInt@meta.data %&gt;%
+  ggplot(aes(x = Annotation, fill = Annotation)) +
+  geom_bar() +
+  geom_text(aes(label = ..count..), stat = &quot;count&quot;, 
+            vjust = -0.5, colour = &quot;black&quot;, size = 2) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  NoLegend()</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-19-1">
+Past versions of unnamed-chunk-19-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-19-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/dc2eab6a0d0ab6b6753832f462ca5565018f2655/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-19-1.png" target="_blank">dc2eab6</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f76baad311273d6cfcb905a51a0be78785108cfe/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-19-1.png" target="_blank">f76baad</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/189c3ac4bd2c6a6b7762bee41c5e82497a4341e1/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-19-1.png" target="_blank">189c3ac</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="examine-manual-vs.-reference-cluster-annotations" class="section level3">
+<h3>Examine manual vs. reference cluster annotations</h3>
+<pre class="r"><code>azimuth_results &lt;- readRDS(file = here(&quot;data/SCEs/03_COMBO.clustered_azimuth_v2.SEU.Rds&quot;))
+azimuth_results$pred.df$cell &lt;- NULL
+seuInt &lt;- AddMetaData(object = seuInt, metadata = azimuth_results$pred.df)</code></pre>
+<pre class="r"><code>check &lt;- levels(seuInt$integrated_snn_res.1)
+p &lt;- vector(&quot;list&quot;, length(check))
+
+for(i in 1:length(p)){
+  
+  seuInt@meta.data %&gt;%
+    dplyr::filter(integrated_snn_res.1 == check[i]) %&gt;%
+    ggplot(aes(x = predicted.annotation.l1.score,
+               colour = predicted.annotation.l1)) +
+    geom_density() +
+    ggtitle(paste0(&quot;Cluster &quot;, check[i])) +
+    theme(legend.key.size = unit(4, &quot;pt&quot;)) -&gt; p1
+  
+  seuInt@meta.data %&gt;%
+    dplyr::filter(integrated_snn_res.1 == check[i]) %&gt;%
+    
+    ggplot(aes(x = predicted.annotation.l1,
+               fill = predicted.annotation.l1)) +
+    geom_bar() +
+    geom_text(aes(label = ..count..), stat = &quot;count&quot;, 
+              vjust = -0.5, colour = &quot;black&quot;, size = 2) +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+    NoLegend() -&gt; p2  
+  
+  seuInt@meta.data %&gt;%
+    dplyr::filter(integrated_snn_res.1 == check[i]) %&gt;%
+    ggplot(aes(x = predicted.ann_finest_level.score,
+               colour = predicted.ann_finest_level)) +
+    geom_density() +
+    ggtitle(paste0(&quot;Cluster &quot;, check[i])) +
+    theme(legend.key.size = unit(4, &quot;pt&quot;)) -&gt; p3
+  
+  seuInt@meta.data %&gt;%
+    dplyr::filter(integrated_snn_res.1 == check[i]) %&gt;%
+    
+    ggplot(aes(x = predicted.ann_finest_level,
+               fill = predicted.ann_finest_level)) +
+    geom_bar() +
+    geom_text(aes(label = ..count..), stat = &quot;count&quot;, 
+              vjust = -0.5, colour = &quot;black&quot;, size = 2) +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+    NoLegend() -&gt; p4 
+  
+  seuInt@meta.data %&gt;%
+    dplyr::filter(integrated_snn_res.1 == check[i]) %&gt;%
+    ggplot(aes(x = predicted.ann_level_4.score,
+               colour = predicted.ann_level_4)) +
+    geom_density() +
+    ggtitle(paste0(&quot;Cluster &quot;, check[i])) +
+    theme(legend.key.size = unit(4, &quot;pt&quot;)) -&gt; p5
+  
+  seuInt@meta.data %&gt;%
+    dplyr::filter(integrated_snn_res.1 == check[i]) %&gt;%
+    
+    ggplot(aes(x = predicted.ann_level_4,
+               fill = predicted.ann_level_4)) +
+    geom_bar() +
+    geom_text(aes(label = ..count..), stat = &quot;count&quot;, 
+              vjust = -0.5, colour = &quot;black&quot;, size = 2) +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+    NoLegend() -&gt; p6  
+  
+  ((p1 | p2) / (p5 | p6) / (p3 | p4)) + 
+    plot_annotation(title = paste0(&quot;Manual annotation: &quot;, 
+                                   unique(seuInt$Annotation[seuInt$integrated_snn_res.1 == check[i]]))) &amp; 
+    theme(text = element_text(size = 8)) -&gt; p[[i]]
+}
+
+p</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-21-1">
+Past versions of unnamed-chunk-21-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-21-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/185d5b14ea507ebab5b7ac6f48c495b24236e008/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-1.png" target="_blank">185d5b1</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/ab46324e231c83506732cac0cbff8bd30e6d1948/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-1.png" target="_blank">ab46324</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/dc2eab6a0d0ab6b6753832f462ca5565018f2655/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-1.png" target="_blank">dc2eab6</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-11
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-2.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-21-2">
+Past versions of unnamed-chunk-21-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-21-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/185d5b14ea507ebab5b7ac6f48c495b24236e008/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-2.png" target="_blank">185d5b1</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-3.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-4.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-5.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-6.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-7.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-8.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-9.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-10.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-11.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-12.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[13]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-13.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[14]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-14.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[15]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-15.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[16]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-16.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[17]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-17.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[18]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-18.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[19]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-19.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[20]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-20.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[21]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-21.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[22]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-22.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[23]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-23.png" width="768" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[24]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-21-24.png" width="768" style="display: block; margin: auto;" /></p>
+</div>
+<div id="save-data" class="section level3">
+<h3>Save data</h3>
+<pre class="r"><code>seuInt &lt;- subset(seuInt, cells = which(seuInt$Annotation != &quot;SUSPECT&quot;))
+seuInt$Annotation &lt;- fct_drop(seuInt$Annotation)
+
+out &lt;- here(glue(&quot;data/SCEs/03_COMBO.clean_macrophages_diet.SEU.rds&quot;))
+if(!file.exists(out)){
+  saveRDS(DietSeurat(seuInt,
+                     assays = &quot;RNA&quot;,
+                     dimreducs = NULL,
+                     graphs = NULL), out)
+  
+}</code></pre>
+</div>
+</div>
+<div id="visualise-manual-annotations" class="section level2">
+<h2>Visualise manual annotations</h2>
+<pre class="r"><code>grp &lt;- &quot;integrated_snn_res.1&quot;
+DimPlot(seuInt, reduction = &#39;umap&#39;, label = TRUE, repel = TRUE, 
+        label.size = 2.5, group.by = grp) + NoLegend()</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-23-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-23-1">
+Past versions of unnamed-chunk-23-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-23-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/185d5b14ea507ebab5b7ac6f48c495b24236e008/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-23-1.png" target="_blank">185d5b1</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/ab46324e231c83506732cac0cbff8bd30e6d1948/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-23-1.png" target="_blank">ab46324</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/dc2eab6a0d0ab6b6753832f462ca5565018f2655/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-23-1.png" target="_blank">dc2eab6</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f76baad311273d6cfcb905a51a0be78785108cfe/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-23-1.png" target="_blank">f76baad</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-11
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>DimPlot(seuInt, reduction = &#39;umap&#39;, label = TRUE, repel = TRUE, 
+        label.size = 2.5, group.by = &quot;Annotation&quot;) + NoLegend()</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-23-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="sub-cluster-proportions" class="section level2">
+<h2>Sub-cluster proportions</h2>
+<pre class="r"><code># Differences in cell type proportions
+props &lt;- getTransformedProps(clusters = seuInt$Annotation, 
+                             sample = seuInt$donor, transform=&quot;asin&quot;)
+props$Proportions %&gt;% knitr::kable()</code></pre>
+<table style="width:100%;">
+<colgroup>
+<col width="18%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">DM</th>
+<th align="right">donor_A</th>
+<th align="right">donor_B</th>
+<th align="right">donor_C</th>
+<th align="right">donor_D</th>
+<th align="right">donor_E</th>
+<th align="right">donor_F</th>
+<th align="right">donor_G</th>
+<th align="right">donor_H</th>
+<th align="right">JC</th>
+<th align="right">JLG</th>
+<th align="right">LC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">alveolar-macs</td>
+<td align="right">0.496588</td>
+<td align="right">0.346872</td>
+<td align="right">0.346195</td>
+<td align="right">0.403270</td>
+<td align="right">0.525456</td>
+<td align="right">0.476658</td>
+<td align="right">0.525545</td>
+<td align="right">0.287962</td>
+<td align="right">0.403053</td>
+<td align="right">0.440342</td>
+<td align="right">0.407646</td>
+<td align="right">0.405391</td>
+</tr>
+<tr class="even">
+<td align="left">macro-CCL</td>
+<td align="right">0.040945</td>
+<td align="right">0.028540</td>
+<td align="right">0.055734</td>
+<td align="right">0.029292</td>
+<td align="right">0.021370</td>
+<td align="right">0.014391</td>
+<td align="right">0.023366</td>
+<td align="right">0.055075</td>
+<td align="right">0.012214</td>
+<td align="right">0.094904</td>
+<td align="right">0.019471</td>
+<td align="right">0.013867</td>
+</tr>
+<tr class="odd">
+<td align="left">macro-cholesterol</td>
+<td align="right">0.008924</td>
+<td align="right">0.001098</td>
+<td align="right">0.009646</td>
+<td align="right">0.019755</td>
+<td align="right">0.026398</td>
+<td align="right">0.011232</td>
+<td align="right">0.020990</td>
+<td align="right">0.000787</td>
+<td align="right">0.029008</td>
+<td align="right">0.007934</td>
+<td align="right">0.014469</td>
+<td align="right">0.023199</td>
+</tr>
+<tr class="even">
+<td align="left">macro-ifna/b</td>
+<td align="right">0.074016</td>
+<td align="right">0.105379</td>
+<td align="right">0.113612</td>
+<td align="right">0.225477</td>
+<td align="right">0.134507</td>
+<td align="right">0.129168</td>
+<td align="right">0.100594</td>
+<td align="right">0.205350</td>
+<td align="right">0.231552</td>
+<td align="right">0.079341</td>
+<td align="right">0.248839</td>
+<td align="right">0.208787</td>
+</tr>
+<tr class="odd">
+<td align="left">macro-int</td>
+<td align="right">0.115486</td>
+<td align="right">0.277717</td>
+<td align="right">0.117899</td>
+<td align="right">0.070845</td>
+<td align="right">0.078567</td>
+<td align="right">0.076869</td>
+<td align="right">0.071287</td>
+<td align="right">0.237608</td>
+<td align="right">0.062087</td>
+<td align="right">0.071407</td>
+<td align="right">0.086995</td>
+<td align="right">0.077631</td>
+</tr>
+<tr class="even">
+<td align="left">macro-lipid</td>
+<td align="right">0.063517</td>
+<td align="right">0.133919</td>
+<td align="right">0.237942</td>
+<td align="right">0.066076</td>
+<td align="right">0.071653</td>
+<td align="right">0.131625</td>
+<td align="right">0.110099</td>
+<td align="right">0.084972</td>
+<td align="right">0.094148</td>
+<td align="right">0.139762</td>
+<td align="right">0.036977</td>
+<td align="right">0.106661</td>
+</tr>
+<tr class="odd">
+<td align="left">macro-MT</td>
+<td align="right">0.020997</td>
+<td align="right">0.015368</td>
+<td align="right">0.005359</td>
+<td align="right">0.013624</td>
+<td align="right">0.007542</td>
+<td align="right">0.016848</td>
+<td align="right">0.018614</td>
+<td align="right">0.005507</td>
+<td align="right">0.035115</td>
+<td align="right">0.018309</td>
+<td align="right">0.031261</td>
+<td align="right">0.035381</td>
+</tr>
+<tr class="even">
+<td align="left">macro-reg</td>
+<td align="right">0.004199</td>
+<td align="right">0.001098</td>
+<td align="right">0.003215</td>
+<td align="right">0.000681</td>
+<td align="right">0.000629</td>
+<td align="right">0.004212</td>
+<td align="right">0.000792</td>
+<td align="right">0.000787</td>
+<td align="right">0.001527</td>
+<td align="right">0.002136</td>
+<td align="right">0.003037</td>
+<td align="right">0.000518</td>
+</tr>
+<tr class="odd">
+<td align="left">macro-repair</td>
+<td align="right">0.054593</td>
+<td align="right">0.008782</td>
+<td align="right">0.035370</td>
+<td align="right">0.029292</td>
+<td align="right">0.021999</td>
+<td align="right">0.026676</td>
+<td align="right">0.020594</td>
+<td align="right">0.026751</td>
+<td align="right">0.019338</td>
+<td align="right">0.033262</td>
+<td align="right">0.026259</td>
+<td align="right">0.014256</td>
+</tr>
+<tr class="even">
+<td align="left">macro-T</td>
+<td align="right">0.012598</td>
+<td align="right">0.013172</td>
+<td align="right">0.003215</td>
+<td align="right">0.006812</td>
+<td align="right">0.003771</td>
+<td align="right">0.008424</td>
+<td align="right">0.008713</td>
+<td align="right">0.007868</td>
+<td align="right">0.006616</td>
+<td align="right">0.010986</td>
+<td align="right">0.024830</td>
+<td align="right">0.019570</td>
+</tr>
+<tr class="odd">
+<td align="left">macro-vesicle</td>
+<td align="right">0.057218</td>
+<td align="right">0.004391</td>
+<td align="right">0.008574</td>
+<td align="right">0.023161</td>
+<td align="right">0.033941</td>
+<td align="right">0.016146</td>
+<td align="right">0.017822</td>
+<td align="right">0.005507</td>
+<td align="right">0.004580</td>
+<td align="right">0.013427</td>
+<td align="right">0.039657</td>
+<td align="right">0.042250</td>
+</tr>
+<tr class="even">
+<td align="left">macro-viral</td>
+<td align="right">0.033071</td>
+<td align="right">0.010977</td>
+<td align="right">0.023580</td>
+<td align="right">0.043597</td>
+<td align="right">0.026398</td>
+<td align="right">0.020007</td>
+<td align="right">0.020594</td>
+<td align="right">0.034618</td>
+<td align="right">0.016285</td>
+<td align="right">0.028685</td>
+<td align="right">0.015005</td>
+<td align="right">0.017496</td>
+</tr>
+<tr class="odd">
+<td align="left">proliferating-macrophage</td>
+<td align="right">0.017848</td>
+<td align="right">0.052689</td>
+<td align="right">0.039657</td>
+<td align="right">0.068120</td>
+<td align="right">0.047769</td>
+<td align="right">0.067743</td>
+<td align="right">0.060990</td>
+<td align="right">0.047207</td>
+<td align="right">0.084478</td>
+<td align="right">0.059506</td>
+<td align="right">0.045552</td>
+<td align="right">0.034992</td>
+</tr>
+</tbody>
+</table>
+<div id="cell-proportions-by-donor" class="section level3">
+<h3>Cell proportions by donor</h3>
+<pre class="r"><code>props$Proportions %&gt;%
+  data.frame %&gt;%
+ggplot(aes(x = sample, y = Freq, fill = clusters)) +
+  geom_bar(stat = &quot;identity&quot;) +
+  theme(axis.text.x = element_text(angle = 90, 
+                                   vjust = 0.5, 
+                                   hjust = 1),
+        legend.text = element_text(size = 8)) +
+  labs(x = &quot;Donor&quot;, y = &quot;Proportion&quot;, fill = &quot;Cell label&quot;)</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-25-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-25-1">
+Past versions of unnamed-chunk-25-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-25-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/185d5b14ea507ebab5b7ac6f48c495b24236e008/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-25-1.png" target="_blank">185d5b1</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/ab46324e231c83506732cac0cbff8bd30e6d1948/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-25-1.png" target="_blank">ab46324</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/dc2eab6a0d0ab6b6753832f462ca5565018f2655/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-25-1.png" target="_blank">dc2eab6</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f76baad311273d6cfcb905a51a0be78785108cfe/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-25-1.png" target="_blank">f76baad</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/189c3ac4bd2c6a6b7762bee41c5e82497a4341e1/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-25-1.png" target="_blank">189c3ac</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-10
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="cell-proportions-by-donor-stratified-by-cell-type" class="section level3">
+<h3>Cell proportions by donor, stratified by cell type</h3>
+<pre class="r"><code>props$Proportions %&gt;%
+  data.frame %&gt;%
+ggplot(aes(x = sample, y = Freq, fill = clusters)) +
+  geom_bar(stat = &quot;identity&quot;) +
+  facet_wrap(~clusters, scales = &quot;free_y&quot;) +
+  NoLegend() +
+  theme(axis.text.x = element_text(angle = 90, 
+                                   vjust = 0.5, 
+                                   hjust = 1,
+                                   size = 7),
+        strip.text = element_text(size = 6),
+        axis.text = element_text(size = 6)) +
+  labs(x = &quot;Donor&quot;, y = &quot;Proportion&quot;, fill = &quot;Cell label&quot;)</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-26-1.png" width="864" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-26-1">
+Past versions of unnamed-chunk-26-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-26-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/7f1e9b1af781c815004b8303917bfda7eeb88f49/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-26-1.png" target="_blank">7f1e9b1</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-16
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/185d5b14ea507ebab5b7ac6f48c495b24236e008/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-26-1.png" target="_blank">185d5b1</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/dc2eab6a0d0ab6b6753832f462ca5565018f2655/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-26-1.png" target="_blank">dc2eab6</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f76baad311273d6cfcb905a51a0be78785108cfe/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-26-1.png" target="_blank">f76baad</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-11
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="visualise-cytokines-of-interest" class="section level2">
+<h2>Visualise cytokines of interest</h2>
+<pre class="r"><code>markers &lt;- read_csv(file = here(&quot;data&quot;, 
+                                &quot;macrophage_subcluster_cytokines.csv&quot;),
+                    col_names = FALSE)
+p &lt;- DotPlot(seuInt, 
+             features = markers$X1,
+             cols = c(&quot;grey&quot;, &quot;red&quot;),
+             dot.scale = 5,
+             assay = &quot;RNA&quot;,
+             group.by = &quot;Annotation&quot;) +
+  theme(axis.text.x = element_text(angle = 90, 
+                                   hjust = 1, 
+                                   vjust = 0.5,
+                                   size = 8),
+        axis.text.y = element_text(size = 8),
+        text = element_text(size = 8)) +
+  coord_flip() +
+  labs(y = &quot;Cluster&quot;, x = &quot;Cytokine&quot;)
+
+p</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-27-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-27-1">
+Past versions of unnamed-chunk-27-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-27-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/185d5b14ea507ebab5b7ac6f48c495b24236e008/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-27-1.png" target="_blank">185d5b1</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/ab46324e231c83506732cac0cbff8bd30e6d1948/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-27-1.png" target="_blank">ab46324</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/dc2eab6a0d0ab6b6753832f462ca5565018f2655/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-27-1.png" target="_blank">dc2eab6</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-11
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="visualise-marker-genes" class="section level2">
+<h2>Visualise marker genes</h2>
+<pre class="r"><code>markers &lt;- read_csv(file = here(&quot;data&quot;, 
+                                &quot;macrophage_subcluster_markergenes_160322.csv&quot;))
+p &lt;- DotPlot(seuInt, 
+             features = markers$Markers[!duplicated(markers$Markers)],
+             cols = c(&quot;grey&quot;, &quot;red&quot;),
+             dot.scale = 5,
+             assay = &quot;RNA&quot;,
+             group.by = &quot;Annotation&quot;) +
+  theme(axis.text.x = element_text(angle = 90, 
+                                   hjust = 1, 
+                                   vjust = 0.5,
+                                   size = 8),
+        axis.text.y = element_text(size = 8),
+        text = element_text(size = 8)) +
+  coord_flip() +
+  labs(y = &quot;Cluster&quot;, x = &quot;Gene&quot;)
+
+p</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-28-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>p &lt;- vector(&quot;list&quot;, length(unique(markers$Label)))
+for(i in 1:length(p)){
+  p[[i]] &lt;- DotPlot(seuInt, 
+                    features = unique(markers$Markers[markers$Label %in% 
+                                                 unique(markers$Label)[i]]),
+                    cols = c(&quot;grey&quot;, &quot;red&quot;),
+                    dot.scale = 5,
+                    assay = &quot;RNA&quot;,
+                    group.by = &quot;Annotation&quot;) +
+    theme(axis.text.x = element_text(angle = 90, 
+                                     hjust = 1, 
+                                     vjust = 0.5,
+                                     size = 8),
+          axis.text.y = element_text(size = 8),
+          text = element_text(size = 8)) +
+    coord_flip() +
+    labs(y = &quot;Cluster&quot;, x = &quot;Gene&quot;) +
+    ggtitle(unique(markers$Label)[i])
+}
+
+p</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-29-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-29-1">
+Past versions of unnamed-chunk-29-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-29-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/ab46324e231c83506732cac0cbff8bd30e6d1948/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-29-1.png" target="_blank">ab46324</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/dc2eab6a0d0ab6b6753832f462ca5565018f2655/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-29-1.png" target="_blank">dc2eab6</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-11
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-29-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-29-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-29-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-29-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-29-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-29-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-29-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-29-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-29-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-29-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-29-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[13]]</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-29-13.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="add-protein-data" class="section level2">
+<h2>Add protein data</h2>
+<p>Separate out the C133_Neeland data and add the protein marker (ADT) data.</p>
+<pre class="r"><code># Load C133_Neeland ADT data 
+sceNeeland &lt;- readRDS(here(&quot;data&quot;, &quot;SCEs&quot;, 
+                           &quot;03_C133_Neeland.preprocessed.SCE.rds&quot;))
+
+# Extract C133_Neeland RNA data from Seurat object
+seuNeeland &lt;- seuInt[, seuInt$experiment == 2] 
+# Create cell ID that matched SCE object
+sceNeeland$ID &lt;- paste0(&quot;B-&quot;, colnames(sceNeeland))
+
+# Check that all cells in Seurat object are also in SCE object
+all(colnames(seuNeeland) %in% sceNeeland$ID)</code></pre>
+<pre><code>[1] TRUE</code></pre>
+<pre class="r"><code># Match up and subset Seurat and SCE objects 
+m &lt;- match(colnames(seuNeeland), sceNeeland$ID)
+sceNeeland &lt;- sceNeeland[, m]
+
+# Check that cell IDs match
+all(colnames(seuNeeland) == sceNeeland$ID)</code></pre>
+<pre><code>[1] TRUE</code></pre>
+<pre class="r"><code># Change SCE cell IDs so that they are consistent with combined data
+colnames(sceNeeland) &lt;- sceNeeland$ID
+
+# Update meta data in SCE object
+colData(sceNeeland) &lt;- DataFrame(seuNeeland@meta.data)
+
+# Add ADT data to Seurat object
+# Create a new assay to store ADT information
+adt &lt;- CreateAssayObject(counts = counts(altExp(sceNeeland, &quot;ADT&quot;)))
+
+# add this assay to the previously created Seurat object
+seuNeeland[[&quot;ADT&quot;]] &lt;- adt
+
+# Validate that the object now contains multiple assays
+seuNeeland</code></pre>
+<pre><code>An object of class Seurat 
+33454 features across 13513 samples within 4 assays 
+Active assay: RNA (15578 features, 0 variable features)
+ 3 other assays present: SCT, integrated, ADT
+ 2 dimensional reductions calculated: pca, umap</code></pre>
+<pre><code>             used    (Mb) gc trigger    (Mb)   max used    (Mb)
+Ncells   14658100   782.9   24151770  1289.9   24151770  1289.9
+Vcells 3103029114 23674.3 6664804863 50848.5 5553934421 42373.2</code></pre>
+</div>
+<div id="add-protein-annotations" class="section level2">
+<h2>Add protein annotations</h2>
+<pre class="r"><code>proteins &lt;- read_csv(file = here(&quot;data/sample_sheets/TotalSeq-A_Universal_Cocktail_v1.0.csv&quot;))
+
+rowData(altExp(sceNeeland, &quot;ADT&quot;)) %&gt;%
+  data.frame %&gt;%
+  left_join(proteins, by = c(&quot;ID&quot; = &quot;id&quot;)) %&gt;%
+  DataFrame -&gt; rowData(altExp(sceNeeland, &quot;ADT&quot;))
+
+altExp(sceNeeland, &quot;ADT&quot;) &lt;- altExp(sceNeeland, &quot;ADT&quot;)[!is.na(rowData(altExp(sceNeeland, &quot;ADT&quot;))$name),]
+rowData(altExp(sceNeeland, &quot;ADT&quot;)) %&gt;%
+  data.frame %&gt;%
+  dplyr::select(ID, Symbol, name) %&gt;%
+  knitr::kable()</code></pre>
+<table>
+<colgroup>
+<col width="6%" />
+<col width="6%" />
+<col width="43%" />
+<col width="43%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">ID</th>
+<th align="left">Symbol</th>
+<th align="left">name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">A0006</td>
+<td align="left">A0006</td>
+<td align="left">anti-human CD86</td>
+<td align="left">anti-human CD86</td>
+</tr>
+<tr class="even">
+<td align="left">A0007</td>
+<td align="left">A0007</td>
+<td align="left">anti-human CD274 (B7-H1, PD-L1)</td>
+<td align="left">anti-human CD274 (B7-H1, PD-L1)</td>
+</tr>
+<tr class="odd">
+<td align="left">A0020</td>
+<td align="left">A0020</td>
+<td align="left">anti-human CD270 (HVEM, TR2)</td>
+<td align="left">anti-human CD270 (HVEM, TR2)</td>
+</tr>
+<tr class="even">
+<td align="left">A0023</td>
+<td align="left">A0023</td>
+<td align="left">anti-human CD155 (PVR)</td>
+<td align="left">anti-human CD155 (PVR)</td>
+</tr>
+<tr class="odd">
+<td align="left">A0024</td>
+<td align="left">A0024</td>
+<td align="left">anti-human CD112 (Nectin-2)</td>
+<td align="left">anti-human CD112 (Nectin-2)</td>
+</tr>
+<tr class="even">
+<td align="left">A0026</td>
+<td align="left">A0026</td>
+<td align="left">anti-human CD47</td>
+<td align="left">anti-human CD47</td>
+</tr>
+<tr class="odd">
+<td align="left">A0029</td>
+<td align="left">A0029</td>
+<td align="left">anti-human CD48</td>
+<td align="left">anti-human CD48</td>
+</tr>
+<tr class="even">
+<td align="left">A0031</td>
+<td align="left">A0031</td>
+<td align="left">anti-human CD40</td>
+<td align="left">anti-human CD40</td>
+</tr>
+<tr class="odd">
+<td align="left">A0032</td>
+<td align="left">A0032</td>
+<td align="left">anti-human CD154</td>
+<td align="left">anti-human CD154</td>
+</tr>
+<tr class="even">
+<td align="left">A0033</td>
+<td align="left">A0033</td>
+<td align="left">anti-human CD52</td>
+<td align="left">anti-human CD52</td>
+</tr>
+<tr class="odd">
+<td align="left">A0034</td>
+<td align="left">A0034</td>
+<td align="left">anti-human CD3</td>
+<td align="left">anti-human CD3</td>
+</tr>
+<tr class="even">
+<td align="left">A0046</td>
+<td align="left">A0046</td>
+<td align="left">anti-human CD8</td>
+<td align="left">anti-human CD8</td>
+</tr>
+<tr class="odd">
+<td align="left">A0047</td>
+<td align="left">A0047</td>
+<td align="left">anti-human CD56 (NCAM)</td>
+<td align="left">anti-human CD56 (NCAM)</td>
+</tr>
+<tr class="even">
+<td align="left">A0050</td>
+<td align="left">A0050</td>
+<td align="left">anti-human CD19</td>
+<td align="left">anti-human CD19</td>
+</tr>
+<tr class="odd">
+<td align="left">A0052</td>
+<td align="left">A0052</td>
+<td align="left">anti-human CD33</td>
+<td align="left">anti-human CD33</td>
+</tr>
+<tr class="even">
+<td align="left">A0053</td>
+<td align="left">A0053</td>
+<td align="left">anti-human CD11c</td>
+<td align="left">anti-human CD11c</td>
+</tr>
+<tr class="odd">
+<td align="left">A0058</td>
+<td align="left">A0058</td>
+<td align="left">anti-human HLA-A,B,C</td>
+<td align="left">anti-human HLA-A,B,C</td>
+</tr>
+<tr class="even">
+<td align="left">A0063</td>
+<td align="left">A0063</td>
+<td align="left">anti-human CD45RA</td>
+<td align="left">anti-human CD45RA</td>
+</tr>
+<tr class="odd">
+<td align="left">A0064</td>
+<td align="left">A0064</td>
+<td align="left">anti-human CD123</td>
+<td align="left">anti-human CD123</td>
+</tr>
+<tr class="even">
+<td align="left">A0066</td>
+<td align="left">A0066</td>
+<td align="left">anti-human CD7</td>
+<td align="left">anti-human CD7</td>
+</tr>
+<tr class="odd">
+<td align="left">A0070</td>
+<td align="left">A0070</td>
+<td align="left">anti-human/mouse CD49f</td>
+<td align="left">anti-human/mouse CD49f</td>
+</tr>
+<tr class="even">
+<td align="left">A0071</td>
+<td align="left">A0071</td>
+<td align="left">anti-human CD194 (CCR4)</td>
+<td align="left">anti-human CD194 (CCR4)</td>
+</tr>
+<tr class="odd">
+<td align="left">A0072</td>
+<td align="left">A0072</td>
+<td align="left">anti-human CD4</td>
+<td align="left">anti-human CD4</td>
+</tr>
+<tr class="even">
+<td align="left">A0073</td>
+<td align="left">A0073</td>
+<td align="left">anti-mouse/human CD44</td>
+<td align="left">anti-mouse/human CD44</td>
+</tr>
+<tr class="odd">
+<td align="left">A0081</td>
+<td align="left">A0081</td>
+<td align="left">anti-human CD14</td>
+<td align="left">anti-human CD14</td>
+</tr>
+<tr class="even">
+<td align="left">A0083</td>
+<td align="left">A0083</td>
+<td align="left">anti-human CD16</td>
+<td align="left">anti-human CD16</td>
+</tr>
+<tr class="odd">
+<td align="left">A0085</td>
+<td align="left">A0085</td>
+<td align="left">anti-human CD25</td>
+<td align="left">anti-human CD25</td>
+</tr>
+<tr class="even">
+<td align="left">A0087</td>
+<td align="left">A0087</td>
+<td align="left">anti-human CD45RO</td>
+<td align="left">anti-human CD45RO</td>
+</tr>
+<tr class="odd">
+<td align="left">A0088</td>
+<td align="left">A0088</td>
+<td align="left">anti-human CD279 (PD-1)</td>
+<td align="left">anti-human CD279 (PD-1)</td>
+</tr>
+<tr class="even">
+<td align="left">A0089</td>
+<td align="left">A0089</td>
+<td align="left">anti-human TIGIT (VSTM3)</td>
+<td align="left">anti-human TIGIT (VSTM3)</td>
+</tr>
+<tr class="odd">
+<td align="left">A0090</td>
+<td align="left">A0090</td>
+<td align="left">Mouse IgG1, _ isotype Ctrl</td>
+<td align="left">Mouse IgG1, κ isotype Ctrl</td>
+</tr>
+<tr class="even">
+<td align="left">A0091</td>
+<td align="left">A0091</td>
+<td align="left">Mouse IgG2a, _ isotype Ctrl</td>
+<td align="left">Mouse IgG2a, κ isotype Ctrl</td>
+</tr>
+<tr class="odd">
+<td align="left">A0092</td>
+<td align="left">A0092</td>
+<td align="left">Mouse IgG2b, _ isotype Ctrl</td>
+<td align="left">Mouse IgG2b, κ isotype Ctrl</td>
+</tr>
+<tr class="even">
+<td align="left">A0095</td>
+<td align="left">A0095</td>
+<td align="left">Rat IgG2b, _ Isotype Ctrl</td>
+<td align="left">Rat IgG2b, κ Isotype Ctrl</td>
+</tr>
+<tr class="odd">
+<td align="left">A0100</td>
+<td align="left">A0100</td>
+<td align="left">anti-human CD20</td>
+<td align="left">anti-human CD20</td>
+</tr>
+<tr class="even">
+<td align="left">A0101</td>
+<td align="left">A0101</td>
+<td align="left">anti-human CD335 (NKp46)</td>
+<td align="left">anti-human CD335 (NKp46)</td>
+</tr>
+<tr class="odd">
+<td align="left">A0124</td>
+<td align="left">A0124</td>
+<td align="left">anti-human CD31</td>
+<td align="left">anti-human CD31</td>
+</tr>
+<tr class="even">
+<td align="left">A0127</td>
+<td align="left">A0127</td>
+<td align="left">anti-Human Podoplanin</td>
+<td align="left">anti-Human Podoplanin</td>
+</tr>
+<tr class="odd">
+<td align="left">A0134</td>
+<td align="left">A0134</td>
+<td align="left">anti-human CD146</td>
+<td align="left">anti-human CD146</td>
+</tr>
+<tr class="even">
+<td align="left">A0136</td>
+<td align="left">A0136</td>
+<td align="left">anti-human IgM</td>
+<td align="left">anti-human IgM</td>
+</tr>
+<tr class="odd">
+<td align="left">A0138</td>
+<td align="left">A0138</td>
+<td align="left">anti-human CD5</td>
+<td align="left">anti-human CD5</td>
+</tr>
+<tr class="even">
+<td align="left">A0140</td>
+<td align="left">A0140</td>
+<td align="left">anti-human CD183 (CXCR3)</td>
+<td align="left">anti-human CD183 (CXCR3)</td>
+</tr>
+<tr class="odd">
+<td align="left">A0141</td>
+<td align="left">A0141</td>
+<td align="left">anti-human CD195 (CCR5)</td>
+<td align="left">anti-human CD195 (CCR5)</td>
+</tr>
+<tr class="even">
+<td align="left">A0142</td>
+<td align="left">A0142</td>
+<td align="left">anti-human CD32</td>
+<td align="left">anti-human CD32</td>
+</tr>
+<tr class="odd">
+<td align="left">A0143</td>
+<td align="left">A0143</td>
+<td align="left">anti-human CD196 (CCR6)</td>
+<td align="left">anti-human CD196 (CCR6)</td>
+</tr>
+<tr class="even">
+<td align="left">A0144</td>
+<td align="left">A0144</td>
+<td align="left">anti-human CD185 (CXCR5)</td>
+<td align="left">anti-human CD185 (CXCR5)</td>
+</tr>
+<tr class="odd">
+<td align="left">A0145</td>
+<td align="left">A0145</td>
+<td align="left">Hu CD103 (Integrin _E)</td>
+<td align="left">Hu CD103 (Integrin αE)</td>
+</tr>
+<tr class="even">
+<td align="left">A0146</td>
+<td align="left">A0146</td>
+<td align="left">anti-human CD69</td>
+<td align="left">anti-human CD69</td>
+</tr>
+<tr class="odd">
+<td align="left">A0147</td>
+<td align="left">A0147</td>
+<td align="left">anti-human CD62L</td>
+<td align="left">anti-human CD62L</td>
+</tr>
+<tr class="even">
+<td align="left">A0149</td>
+<td align="left">A0149</td>
+<td align="left">anti-human CD161</td>
+<td align="left">anti-human CD161</td>
+</tr>
+<tr class="odd">
+<td align="left">A0151</td>
+<td align="left">A0151</td>
+<td align="left">anti-human CD152 (CTLA-4)</td>
+<td align="left">anti-human CD152 (CTLA-4)</td>
+</tr>
+<tr class="even">
+<td align="left">A0152</td>
+<td align="left">A0152</td>
+<td align="left">anti-human CD223 (LAG-3)</td>
+<td align="left">anti-human CD223 (LAG-3)</td>
+</tr>
+<tr class="odd">
+<td align="left">A0153</td>
+<td align="left">A0153</td>
+<td align="left">anti-human KLRG1 (MAFA)</td>
+<td align="left">anti-human KLRG1 (MAFA)</td>
+</tr>
+<tr class="even">
+<td align="left">A0154</td>
+<td align="left">A0154</td>
+<td align="left">anti-human CD27</td>
+<td align="left">anti-human CD27</td>
+</tr>
+<tr class="odd">
+<td align="left">A0155</td>
+<td align="left">A0155</td>
+<td align="left">anti-human CD107a (LAMP-1)</td>
+<td align="left">anti-human CD107a (LAMP-1)</td>
+</tr>
+<tr class="even">
+<td align="left">A0156</td>
+<td align="left">A0156</td>
+<td align="left">anti-human CD95 (Fas)</td>
+<td align="left">anti-human CD95 (Fas)</td>
+</tr>
+<tr class="odd">
+<td align="left">A0158</td>
+<td align="left">A0158</td>
+<td align="left">anti-human CD134 (OX40)</td>
+<td align="left">anti-human CD134 (OX40)</td>
+</tr>
+<tr class="even">
+<td align="left">A0159</td>
+<td align="left">A0159</td>
+<td align="left">anti-human HLA-DR</td>
+<td align="left">anti-human HLA-DR</td>
+</tr>
+<tr class="odd">
+<td align="left">A0160</td>
+<td align="left">A0160</td>
+<td align="left">anti-human CD1c</td>
+<td align="left">anti-human CD1c</td>
+</tr>
+<tr class="even">
+<td align="left">A0161</td>
+<td align="left">A0161</td>
+<td align="left">anti-human CD11b</td>
+<td align="left">anti-human CD11b</td>
+</tr>
+<tr class="odd">
+<td align="left">A0162</td>
+<td align="left">A0162</td>
+<td align="left">anti-human CD64</td>
+<td align="left">anti-human CD64</td>
+</tr>
+<tr class="even">
+<td align="left">A0163</td>
+<td align="left">A0163</td>
+<td align="left">anti-human CD141 (Thrombomodulin)</td>
+<td align="left">anti-human CD141 (Thrombomodulin)</td>
+</tr>
+<tr class="odd">
+<td align="left">A0165</td>
+<td align="left">A0165</td>
+<td align="left">Hu CD314 (NKG2D)</td>
+<td align="left">Hu CD314 (NKG2D)</td>
+</tr>
+<tr class="even">
+<td align="left">A0167</td>
+<td align="left">A0167</td>
+<td align="left">anti-human CD35</td>
+<td align="left">anti-human CD35</td>
+</tr>
+<tr class="odd">
+<td align="left">A0168</td>
+<td align="left">A0168</td>
+<td align="left">anti-human CD57 Recombinant</td>
+<td align="left">anti-human CD57 Recombinant</td>
+</tr>
+<tr class="even">
+<td align="left">A0170</td>
+<td align="left">A0170</td>
+<td align="left">anti-human CD272 (BTLA)</td>
+<td align="left">anti-human CD272 (BTLA)</td>
+</tr>
+<tr class="odd">
+<td align="left">A0171</td>
+<td align="left">A0171</td>
+<td align="left">anti-human/mouse/rat CD278 (ICOS)</td>
+<td align="left">anti-human/mouse/rat CD278 (ICOS)</td>
+</tr>
+<tr class="even">
+<td align="left">A0172</td>
+<td align="left">A0172</td>
+<td align="left">anti-human CD275 (B7-H2, B7-RP1, ICOSL)</td>
+<td align="left">anti-human CD275 (B7-H2, B7-RP1, ICOSL)</td>
+</tr>
+<tr class="odd">
+<td align="left">A0174</td>
+<td align="left">A0174</td>
+<td align="left">anti-human CD58 (LFA-3)</td>
+<td align="left">anti-human CD58 (LFA-3)</td>
+</tr>
+<tr class="even">
+<td align="left">A0176</td>
+<td align="left">A0176</td>
+<td align="left">anti-human CD39</td>
+<td align="left">anti-human CD39</td>
+</tr>
+<tr class="odd">
+<td align="left">A0179</td>
+<td align="left">A0179</td>
+<td align="left">anti-human CX3CR1</td>
+<td align="left">anti-human CX3CR1</td>
+</tr>
+<tr class="even">
+<td align="left">A0180</td>
+<td align="left">A0180</td>
+<td align="left">anti-human CD24</td>
+<td align="left">anti-human CD24</td>
+</tr>
+<tr class="odd">
+<td align="left">A0181</td>
+<td align="left">A0181</td>
+<td align="left">anti-human CD21</td>
+<td align="left">anti-human CD21</td>
+</tr>
+<tr class="even">
+<td align="left">A0185</td>
+<td align="left">A0185</td>
+<td align="left">anti-human CD11a</td>
+<td align="left">anti-human CD11a</td>
+</tr>
+<tr class="odd">
+<td align="left">A0187</td>
+<td align="left">A0187</td>
+<td align="left">anti-human CD79b (Ig_)</td>
+<td align="left">anti-human CD79b (Igβ)</td>
+</tr>
+<tr class="even">
+<td align="left">A0189</td>
+<td align="left">A0189</td>
+<td align="left">anti-human CD244 (2B4)</td>
+<td align="left">anti-human CD244 (2B4)</td>
+</tr>
+<tr class="odd">
+<td align="left">A0206</td>
+<td align="left">A0206</td>
+<td align="left">anti-human CD169 (Sialoadhesin, Siglec-1)</td>
+<td align="left">anti-human CD169 (Sialoadhesin, Siglec-1)</td>
+</tr>
+<tr class="even">
+<td align="left">A0214</td>
+<td align="left">A0214</td>
+<td align="left">anti-human/mouse integrin _7</td>
+<td align="left">anti-human/mouse integrin β7</td>
+</tr>
+<tr class="odd">
+<td align="left">A0215</td>
+<td align="left">A0215</td>
+<td align="left">anti-human CD268 (BAFF-R)</td>
+<td align="left">anti-human CD268 (BAFF-R)</td>
+</tr>
+<tr class="even">
+<td align="left">A0216</td>
+<td align="left">A0216</td>
+<td align="left">anti-human CD42b</td>
+<td align="left">anti-human CD42b</td>
+</tr>
+<tr class="odd">
+<td align="left">A0217</td>
+<td align="left">A0217</td>
+<td align="left">anti-human CD54</td>
+<td align="left">anti-human CD54</td>
+</tr>
+<tr class="even">
+<td align="left">A0218</td>
+<td align="left">A0218</td>
+<td align="left">anti-human CD62P (P-Selectin)</td>
+<td align="left">anti-human CD62P (P-Selectin)</td>
+</tr>
+<tr class="odd">
+<td align="left">A0219</td>
+<td align="left">A0219</td>
+<td align="left">anti-human CD119 (IFN-_ R _ chain)</td>
+<td align="left">anti-human CD119 (IFN-γ R α chain)</td>
+</tr>
+<tr class="even">
+<td align="left">A0224</td>
+<td align="left">A0224</td>
+<td align="left">anti-human TCR <em>/</em></td>
+<td align="left">anti-human TCR α/β</td>
+</tr>
+<tr class="odd">
+<td align="left">A0236</td>
+<td align="left">A0236</td>
+<td align="left">Rat IgG1, _ isotype Ctrl</td>
+<td align="left">Rat IgG1, κ isotype Ctrl</td>
+</tr>
+<tr class="even">
+<td align="left">A0237</td>
+<td align="left">A0237</td>
+<td align="left">Rat IgG1, _ Isotype Ctrl</td>
+<td align="left">Rat IgG1, λ Isotype Ctrl</td>
+</tr>
+<tr class="odd">
+<td align="left">A0238</td>
+<td align="left">A0238</td>
+<td align="left">Rat IgG2a, _ Isotype Ctrl</td>
+<td align="left">Rat IgG2a, κ Isotype Ctrl</td>
+</tr>
+<tr class="even">
+<td align="left">A0240</td>
+<td align="left">A0240</td>
+<td align="left">Rat IgG2c, _ Isotype Ctrl</td>
+<td align="left">Rat IgG2c, κ Isotype Ctrl</td>
+</tr>
+<tr class="odd">
+<td align="left">A0241</td>
+<td align="left">A0241</td>
+<td align="left">Armenian Hamster IgG Isotype Ctrl</td>
+<td align="left">Armenian Hamster IgG Isotype Ctrl</td>
+</tr>
+<tr class="even">
+<td align="left">A0242</td>
+<td align="left">A0242</td>
+<td align="left">anti-human CD192 (CCR2)</td>
+<td align="left">anti-human CD192 (CCR2)</td>
+</tr>
+<tr class="odd">
+<td align="left">A0246</td>
+<td align="left">A0246</td>
+<td align="left">anti-human CD122 (IL-2R_)</td>
+<td align="left">anti-human CD122 (IL-2Rβ)</td>
+</tr>
+<tr class="even">
+<td align="left">A0247</td>
+<td align="left">A0247</td>
+<td align="left">anti-human CD267 (TACI)</td>
+<td align="left">anti-human CD267 (TACI)</td>
+</tr>
+<tr class="odd">
+<td align="left">A0352</td>
+<td align="left">A0352</td>
+<td align="left">anti-human Fc_RI_</td>
+<td align="left">anti-human FcεRIα</td>
+</tr>
+<tr class="even">
+<td align="left">A0353</td>
+<td align="left">A0353</td>
+<td align="left">anti-human CD41</td>
+<td align="left">anti-human CD41</td>
+</tr>
+<tr class="odd">
+<td align="left">A0355</td>
+<td align="left">A0355</td>
+<td align="left">anti-human CD137 (4-1BB)</td>
+<td align="left">anti-human CD137 (4-1BB)</td>
+</tr>
+<tr class="even">
+<td align="left">A0357</td>
+<td align="left">A0357</td>
+<td align="left">anti-human CD43</td>
+<td align="left">anti-human CD43</td>
+</tr>
+<tr class="odd">
+<td align="left">A0358</td>
+<td align="left">A0358</td>
+<td align="left">anti-human CD163</td>
+<td align="left">anti-human CD163</td>
+</tr>
+<tr class="even">
+<td align="left">A0359</td>
+<td align="left">A0359</td>
+<td align="left">anti-human CD83</td>
+<td align="left">anti-human CD83</td>
+</tr>
+<tr class="odd">
+<td align="left">A0364</td>
+<td align="left">A0364</td>
+<td align="left">anti-human CD13</td>
+<td align="left">anti-human CD13</td>
+</tr>
+<tr class="even">
+<td align="left">A0367</td>
+<td align="left">A0367</td>
+<td align="left">anti-human CD2</td>
+<td align="left">anti-human CD2</td>
+</tr>
+<tr class="odd">
+<td align="left">A0368</td>
+<td align="left">A0368</td>
+<td align="left">anti-human CD226 (DNAM-1)</td>
+<td align="left">anti-human CD226 (DNAM-1)</td>
+</tr>
+<tr class="even">
+<td align="left">A0369</td>
+<td align="left">A0369</td>
+<td align="left">anti-human CD29</td>
+<td align="left">anti-human CD29</td>
+</tr>
+<tr class="odd">
+<td align="left">A0370</td>
+<td align="left">A0370</td>
+<td align="left">anti-human CD303 (BDCA-2)</td>
+<td align="left">anti-human CD303 (BDCA-2)</td>
+</tr>
+<tr class="even">
+<td align="left">A0371</td>
+<td align="left">A0371</td>
+<td align="left">anti-human CD49b</td>
+<td align="left">anti-human CD49b</td>
+</tr>
+<tr class="odd">
+<td align="left">A0372</td>
+<td align="left">A0372</td>
+<td align="left">anti-human CD61</td>
+<td align="left">anti-human CD61</td>
+</tr>
+<tr class="even">
+<td align="left">A0373</td>
+<td align="left">A0373</td>
+<td align="left">anti-human CD81 (TAPA-1)</td>
+<td align="left">anti-human CD81 (TAPA-1)</td>
+</tr>
+<tr class="odd">
+<td align="left">A0383</td>
+<td align="left">A0383</td>
+<td align="left">anti-human CD55</td>
+<td align="left">anti-human CD55</td>
+</tr>
+<tr class="even">
+<td align="left">A0384</td>
+<td align="left">A0384</td>
+<td align="left">anti-human IgD</td>
+<td align="left">anti-human IgD</td>
+</tr>
+<tr class="odd">
+<td align="left">A0385</td>
+<td align="left">A0385</td>
+<td align="left">anti-human CD18</td>
+<td align="left">anti-human CD18</td>
+</tr>
+<tr class="even">
+<td align="left">A0386</td>
+<td align="left">A0386</td>
+<td align="left">anti-human CD28</td>
+<td align="left">anti-human CD28</td>
+</tr>
+<tr class="odd">
+<td align="left">A0389</td>
+<td align="left">A0389</td>
+<td align="left">anti-human CD38</td>
+<td align="left">anti-human CD38</td>
+</tr>
+<tr class="even">
+<td align="left">A0390</td>
+<td align="left">A0390</td>
+<td align="left">anti-human CD127 (IL-7R_)</td>
+<td align="left">anti-human CD127 (IL-7Rα)</td>
+</tr>
+<tr class="odd">
+<td align="left">A0391</td>
+<td align="left">A0391</td>
+<td align="left">anti-human CD45</td>
+<td align="left">anti-human CD45</td>
+</tr>
+<tr class="even">
+<td align="left">A0393</td>
+<td align="left">A0393</td>
+<td align="left">anti-human CD22</td>
+<td align="left">anti-human CD22</td>
+</tr>
+<tr class="odd">
+<td align="left">A0394</td>
+<td align="left">A0394</td>
+<td align="left">anti-human CD71</td>
+<td align="left">anti-human CD71</td>
+</tr>
+<tr class="even">
+<td align="left">A0396</td>
+<td align="left">A0396</td>
+<td align="left">anti-human CD26</td>
+<td align="left">anti-human CD26</td>
+</tr>
+<tr class="odd">
+<td align="left">A0398</td>
+<td align="left">A0398</td>
+<td align="left">anti-human CD115 (CSF-1R)</td>
+<td align="left">anti-human CD115 (CSF-1R)</td>
+</tr>
+<tr class="even">
+<td align="left">A0404</td>
+<td align="left">A0404</td>
+<td align="left">anti-human CD63</td>
+<td align="left">anti-human CD63</td>
+</tr>
+<tr class="odd">
+<td align="left">A0406</td>
+<td align="left">A0406</td>
+<td align="left">anti-human CD304 (Neuropilin-1)</td>
+<td align="left">anti-human CD304 (Neuropilin-1)</td>
+</tr>
+<tr class="even">
+<td align="left">A0407</td>
+<td align="left">A0407</td>
+<td align="left">anti-human CD36</td>
+<td align="left">anti-human CD36</td>
+</tr>
+<tr class="odd">
+<td align="left">A0408</td>
+<td align="left">A0408</td>
+<td align="left">anti-human CD172a (SIRP_)</td>
+<td align="left">anti-human CD172a (SIRPα)</td>
+</tr>
+<tr class="even">
+<td align="left">A0419</td>
+<td align="left">A0419</td>
+<td align="left">anti-human CD72</td>
+<td align="left">anti-human CD72</td>
+</tr>
+<tr class="odd">
+<td align="left">A0420</td>
+<td align="left">A0420</td>
+<td align="left">anti-human CD158 (KIR2DL1/S1/S3/S5)</td>
+<td align="left">anti-human CD158 (KIR2DL1/S1/S3/S5)</td>
+</tr>
+<tr class="even">
+<td align="left">A0446</td>
+<td align="left">A0446</td>
+<td align="left">anti-human CD93</td>
+<td align="left">anti-human CD93</td>
+</tr>
+<tr class="odd">
+<td align="left">A0447</td>
+<td align="left">A0447</td>
+<td align="left">anti-human CD200 (OX2)</td>
+<td align="left">anti-human CD200 (OX2)</td>
+</tr>
+<tr class="even">
+<td align="left">A0575</td>
+<td align="left">A0575</td>
+<td align="left">anti-human CD49a</td>
+<td align="left">anti-human CD49a</td>
+</tr>
+<tr class="odd">
+<td align="left">A0576</td>
+<td align="left">A0576</td>
+<td align="left">anti-human CD49d</td>
+<td align="left">anti-human CD49d</td>
+</tr>
+<tr class="even">
+<td align="left">A0577</td>
+<td align="left">A0577</td>
+<td align="left">anti-human CD73 (Ecto-5’-nucleotidase)</td>
+<td align="left">anti-human CD73 (Ecto-5’-nucleotidase)</td>
+</tr>
+<tr class="odd">
+<td align="left">A0579</td>
+<td align="left">A0579</td>
+<td align="left">anti-human CD9</td>
+<td align="left">anti-human CD9</td>
+</tr>
+<tr class="even">
+<td align="left">A0581</td>
+<td align="left">A0581</td>
+<td align="left">anti-human TCR V_7.2</td>
+<td align="left">anti-human TCR Vα7.2</td>
+</tr>
+<tr class="odd">
+<td align="left">A0582</td>
+<td align="left">A0582</td>
+<td align="left">anti-human TCR V_2</td>
+<td align="left">anti-human TCR Vδ2</td>
+</tr>
+<tr class="even">
+<td align="left">A0586</td>
+<td align="left">A0586</td>
+<td align="left">anti-human CD354 (TREM-1)</td>
+<td align="left">anti-human CD354 (TREM-1)</td>
+</tr>
+<tr class="odd">
+<td align="left">A0590</td>
+<td align="left">A0590</td>
+<td align="left">anti-human CD305 (LAIR1)</td>
+<td align="left">anti-human CD305 (LAIR1)</td>
+</tr>
+<tr class="even">
+<td align="left">A0591</td>
+<td align="left">A0591</td>
+<td align="left">anti-human LOX-1</td>
+<td align="left">anti-human LOX-1</td>
+</tr>
+<tr class="odd">
+<td align="left">A0599</td>
+<td align="left">A0599</td>
+<td align="left">anti-human CD158e1 (KIR3DL1, NKB1)</td>
+<td align="left">anti-human CD158e1 (KIR3DL1, NKB1)</td>
+</tr>
+<tr class="even">
+<td align="left">A0817</td>
+<td align="left">A0817</td>
+<td align="left">anti-human CD109</td>
+<td align="left">anti-human CD109</td>
+</tr>
+<tr class="odd">
+<td align="left">A0822</td>
+<td align="left">A0822</td>
+<td align="left">anti-human CD142</td>
+<td align="left">anti-human CD142</td>
+</tr>
+<tr class="even">
+<td align="left">A0830</td>
+<td align="left">A0830</td>
+<td align="left">anti-human CD319 (CRACC)</td>
+<td align="left">anti-human CD319 (CRACC)</td>
+</tr>
+<tr class="odd">
+<td align="left">A0845</td>
+<td align="left">A0845</td>
+<td align="left">anti-human CD99</td>
+<td align="left">anti-human CD99</td>
+</tr>
+<tr class="even">
+<td align="left">A0853</td>
+<td align="left">A0853</td>
+<td align="left">anti-human CLEC12A</td>
+<td align="left">anti-human CLEC12A</td>
+</tr>
+<tr class="odd">
+<td align="left">A0861</td>
+<td align="left">A0861</td>
+<td align="left">anti-human CD151 (PETA-3)</td>
+<td align="left">anti-human CD151 (PETA-3)</td>
+</tr>
+<tr class="even">
+<td align="left">A0864</td>
+<td align="left">A0864</td>
+<td align="left">anti-human CD352 (NTB-A)</td>
+<td align="left">anti-human CD352 (NTB-A)</td>
+</tr>
+<tr class="odd">
+<td align="left">A0866</td>
+<td align="left">A0866</td>
+<td align="left">anti-human CLEC1B (CLEC2)</td>
+<td align="left">anti-human CLEC1B (CLEC2)</td>
+</tr>
+<tr class="even">
+<td align="left">A0867</td>
+<td align="left">A0867</td>
+<td align="left">anti-human CD94</td>
+<td align="left">anti-human CD94</td>
+</tr>
+<tr class="odd">
+<td align="left">A0868</td>
+<td align="left">A0868</td>
+<td align="left">anti-human IgE</td>
+<td align="left">anti-human IgE</td>
+</tr>
+<tr class="even">
+<td align="left">A0870</td>
+<td align="left">A0870</td>
+<td align="left">anti-human CD150 (SLAM)</td>
+<td align="left">anti-human CD150 (SLAM)</td>
+</tr>
+<tr class="odd">
+<td align="left">A0871</td>
+<td align="left">A0871</td>
+<td align="left">anti-human CD162</td>
+<td align="left">anti-human CD162</td>
+</tr>
+<tr class="even">
+<td align="left">A0872</td>
+<td align="left">A0872</td>
+<td align="left">anti-human CD84</td>
+<td align="left">anti-human CD84</td>
+</tr>
+<tr class="odd">
+<td align="left">A0894</td>
+<td align="left">A0894</td>
+<td align="left">anti-human Ig light chain _</td>
+<td align="left">anti-human Ig light chain κ</td>
+</tr>
+<tr class="even">
+<td align="left">A0896</td>
+<td align="left">A0896</td>
+<td align="left">anti-human CD85j (ILT2)</td>
+<td align="left">anti-human CD85j (ILT2)</td>
+</tr>
+<tr class="odd">
+<td align="left">A0897</td>
+<td align="left">A0897</td>
+<td align="left">anti-human CD23</td>
+<td align="left">anti-human CD23</td>
+</tr>
+<tr class="even">
+<td align="left">A0898</td>
+<td align="left">A0898</td>
+<td align="left">anti-human Ig light chain _</td>
+<td align="left">anti-human Ig light chain λ</td>
+</tr>
+<tr class="odd">
+<td align="left">A0902</td>
+<td align="left">A0902</td>
+<td align="left">anti-human CD328 (Siglec-7)</td>
+<td align="left">anti-human CD328 (Siglec-7)</td>
+</tr>
+<tr class="even">
+<td align="left">A0912</td>
+<td align="left">A0912</td>
+<td align="left">anti-human GPR56</td>
+<td align="left">anti-human GPR56</td>
+</tr>
+<tr class="odd">
+<td align="left">A0920</td>
+<td align="left">A0920</td>
+<td align="left">anti-human CD82</td>
+<td align="left">anti-human CD82</td>
+</tr>
+<tr class="even">
+<td align="left">A0923</td>
+<td align="left">A0923</td>
+<td align="left">anti-human NKp80</td>
+<td align="left">anti-human NKp80</td>
+</tr>
+<tr class="odd">
+<td align="left">A0931</td>
+<td align="left">A0931</td>
+<td align="left">anti-human CD131</td>
+<td align="left">anti-human CD131</td>
+</tr>
+<tr class="even">
+<td align="left">A0935</td>
+<td align="left">A0935</td>
+<td align="left">anti-human CD74</td>
+<td align="left">anti-human CD74</td>
+</tr>
+<tr class="odd">
+<td align="left">A0940</td>
+<td align="left">A0940</td>
+<td align="left">anti-human CD116</td>
+<td align="left">anti-human CD116</td>
+</tr>
+<tr class="even">
+<td align="left">A0941</td>
+<td align="left">A0941</td>
+<td align="left">anti-human CD37</td>
+<td align="left">anti-human CD37</td>
+</tr>
+<tr class="odd">
+<td align="left">A0944</td>
+<td align="left">A0944</td>
+<td align="left">anti-human CD101 (BB27)</td>
+<td align="left">anti-human CD101 (BB27)</td>
+</tr>
+<tr class="even">
+<td align="left">A1018</td>
+<td align="left">A1018</td>
+<td align="left">anti-human HLA-DR, DP, DQ</td>
+<td align="left">anti-human HLA-DR, DP, DQ</td>
+</tr>
+<tr class="odd">
+<td align="left">A1046</td>
+<td align="left">A1046</td>
+<td align="left">anti-human CD88 (C5aR)</td>
+<td align="left">anti-human CD88 (C5aR)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="visualise-adt-qc-metrics" class="section level2">
+<h2>Visualise ADT QC metrics</h2>
+<pre class="r"><code>controls &lt;- grep(&quot;IgG&quot;, rowData(altExp(sceNeeland, &quot;ADT&quot;))$name)
+colData(altExp(sceNeeland, &quot;ADT&quot;)) &lt;- perCellQCMetrics(altExp(sceNeeland, &quot;ADT&quot;), 
+                                         subsets = list(controls = controls))</code></pre>
+<pre class="r"><code>p1 &lt;- colData(altExp(sceNeeland, &quot;ADT&quot;)) %&gt;% data.frame %&gt;%
+  ggplot(aes(x = sceNeeland$donor, y = sum, fill = sceNeeland$donor)) +
+  geom_violin() +
+  labs(x = &quot;Donor&quot;, y = &quot;Library size&quot;) + NoLegend() +
+  geom_hline(yintercept = median(colData(altExp(sceNeeland, &quot;ADT&quot;))$sum),
+             linetype = &quot;dashed&quot;) +
+  scale_y_log10()
+
+p2 &lt;- colData(altExp(sceNeeland, &quot;ADT&quot;)) %&gt;% data.frame %&gt;%
+  ggplot(aes(x = sceNeeland$donor, y = detected, fill = sceNeeland$donor)) +
+  geom_violin() +
+  labs(x = &quot;Donor&quot;, y = &quot;No. ADT detected&quot;) + NoLegend() +
+  geom_hline(yintercept = median(colData(altExp(sceNeeland, &quot;ADT&quot;))$detected),
+             linetype = &quot;dashed&quot;)
+
+(p1 | p2) &amp; theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-34-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-34-1">
+Past versions of unnamed-chunk-34-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-34-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/185d5b14ea507ebab5b7ac6f48c495b24236e008/docs/figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-34-1.png" target="_blank">185d5b1</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="normalise-adt-data" class="section level2">
+<h2>Normalise ADT data</h2>
+<pre class="r"><code>sf.lib &lt;- librarySizeFactors(altExp(sceNeeland, &quot;ADT&quot;))
+sizeFactors(altExp(sceNeeland, &quot;ADT&quot;)) &lt;- pmax(sf.lib, min(sf.lib[sf.lib &gt; 0]))
+sceNeeland &lt;- applySCE(sceNeeland, logNormCounts, WHICH = &quot;ADT&quot;)
+
+# Checking that we have normalized values:
+assayNames(altExp(sceNeeland, &quot;ADT&quot;))</code></pre>
+<pre><code>[1] &quot;counts&quot;    &quot;logcounts&quot;</code></pre>
+</div>
+<div id="visualise-all-adts" class="section level2">
+<h2>Visualise all ADTs</h2>
+<pre class="r"><code>se.averaged &lt;- sumCountsAcrossCells(altExp(sceNeeland, &quot;ADT&quot;), 
+                                    sceNeeland$Annotation,
+                                    exprs_values = &quot;logcounts&quot;, 
+                                    average = &quot;median&quot;)
+averaged &lt;- assay(se.averaged)
+keep &lt;- !grepl(&quot;IgG&quot;, rowData(altExp(sceNeeland, &quot;ADT&quot;))$name)
+averaged &lt;- averaged[keep, ]
+
+pheatmap(t(averaged - rowMeans(averaged)),
+         color = colorRampPalette(viridis_pal(option = &quot;magma&quot;)(10))(100),
+         cluster_rows = TRUE, 
+         breaks = seq(-3, 3, length.out = 101),
+         border_color = &quot;black&quot;,
+         cellwidth = 10,
+         cellheight = 10,
+         labels_col = gsub(&quot;anti-human &quot;, &quot;&quot;, 
+                           rowData(altExp(sceNeeland, &quot;ADT&quot;))$name[keep]))</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-36-1.png" width="2400" style="display: block; margin: auto;" /></p>
+</div>
+<div id="visualise-adts-of-interest" class="section level2">
+<h2>Visualise ADTs of interest</h2>
+<pre class="r"><code>adt &lt;- read_csv(file = here(&quot;data/macrophage_subcluster_proteins_110322.csv&quot;))
+keep &lt;- rownames(altExp(sceNeeland, &quot;ADT&quot;)) %in% adt$DNA_ID
+
+se.averaged &lt;- sumCountsAcrossCells(altExp(sceNeeland, &quot;ADT&quot;)[keep,], 
+                                    sceNeeland$Annotation,
+                                    exprs_values = &quot;logcounts&quot;, 
+                                    average = &quot;median&quot;)
+averaged &lt;- assay(se.averaged)
+
+pheatmap(t(averaged - rowMeans(averaged)),
+         color = colorRampPalette(viridis_pal(option = &quot;magma&quot;)(10))(100),
+         cluster_rows = TRUE, 
+         breaks = seq(-3, 3, length.out = 101),
+         border_color = &quot;black&quot;,
+         cellwidth = 10,
+         cellheight = 10,
+         labels_col = gsub(&quot;anti-human &quot;, &quot;&quot;, 
+                           rowData(altExp(sceNeeland, &quot;ADT&quot;))$Symbol)[keep])</code></pre>
+<p><img src="figure/03_COMBO.cluster_macrophages.Rmd/unnamed-chunk-37-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="session-info" class="section level1 appendix">
+<h1 class="appendix">Session info</h1>
+<summary>
+The analysis and this document were prepared using the following software (click triangle to expand)
+</summary>
+<details>
+<pre class="r"><code>sessioninfo::session_info()</code></pre>
+<pre><code>─ Session info ───────────────────────────────────────────────────────────────
+ setting  value
+ version  R version 4.1.0 (2021-05-18)
+ os       CentOS Linux 7 (Core)
+ system   x86_64, linux-gnu
+ ui       X11
+ language (EN)
+ collate  en_AU.UTF-8
+ ctype    en_AU.UTF-8
+ tz       Australia/Melbourne
+ date     2022-03-29
+ pandoc   2.14.0.3 @ /usr/lib/rstudio-server/bin/pandoc/ (via rmarkdown)
+
+─ Packages ───────────────────────────────────────────────────────────────────
+ ! package                * version    date (UTC) lib source
+ P abind                    1.4-5      2016-07-21 [?] CRAN (R 4.1.0)
+ P annotate               * 1.72.0     2021-10-26 [?] Bioconductor
+ P AnnotationDbi          * 1.56.2     2021-11-09 [?] Bioconductor
+ P AnnotationFilter       * 1.18.0     2021-10-26 [?] Bioconductor
+ P AnnotationHub          * 3.2.0      2021-10-26 [?] Bioconductor
+ P assertthat               0.2.1      2019-03-21 [?] CRAN (R 4.1.0)
+ P backports                1.4.1      2021-12-13 [?] CRAN (R 4.1.0)
+ P beachmat                 2.10.0     2021-10-26 [?] Bioconductor
+ P beeswarm                 0.4.0      2021-06-01 [?] CRAN (R 4.1.0)
+ P Biobase                * 2.54.0     2021-10-26 [?] Bioconductor
+ P BiocFileCache          * 2.2.0      2021-10-26 [?] Bioconductor
+ P BiocGenerics           * 0.40.0     2021-10-26 [?] Bioconductor
+ P BiocIO                   1.4.0      2021-10-26 [?] Bioconductor
+ P BiocManager              1.30.16    2021-06-15 [?] CRAN (R 4.1.0)
+ P BiocNeighbors            1.12.0     2021-10-26 [?] Bioconductor
+ P BiocParallel           * 1.28.3     2021-12-09 [?] Bioconductor
+ P BiocSingular             1.10.0     2021-10-26 [?] Bioconductor
+ P BiocVersion              3.14.0     2021-05-19 [?] Bioconductor
+ P biomaRt                  2.50.1     2021-11-21 [?] Bioconductor
+ P Biostrings               2.62.0     2021-10-26 [?] Bioconductor
+ P bit                      4.0.4      2020-08-04 [?] CRAN (R 4.1.0)
+ P bit64                    4.0.5      2020-08-30 [?] CRAN (R 4.0.2)
+ P bitops                   1.0-7      2021-04-24 [?] CRAN (R 4.0.2)
+ P blob                     1.2.2      2021-07-23 [?] CRAN (R 4.1.0)
+ P bluster                  1.4.0      2021-10-26 [?] Bioconductor
+ P broom                    0.7.11     2022-01-03 [?] CRAN (R 4.1.0)
+ P bslib                    0.3.1      2021-10-06 [?] CRAN (R 4.1.0)
+ P cachem                   1.0.6      2021-08-19 [?] CRAN (R 4.1.0)
+ P callr                    3.7.0      2021-04-20 [?] CRAN (R 4.1.0)
+ P caTools                  1.18.2     2021-03-28 [?] CRAN (R 4.1.0)
+ P cellranger               1.1.0      2016-07-27 [?] CRAN (R 4.1.0)
+ P Cepo                   * 1.0.0      2021-10-26 [?] Bioconductor
+ P checkmate                2.0.0      2020-02-06 [?] CRAN (R 4.0.2)
+ P cli                      3.1.0      2021-10-27 [?] CRAN (R 4.1.0)
+ P cluster                  2.1.2      2021-04-17 [?] CRAN (R 4.1.0)
+ P clustree               * 0.4.4      2021-11-08 [?] CRAN (R 4.1.0)
+ P codetools                0.2-18     2020-11-04 [?] CRAN (R 4.1.0)
+ P colorspace               2.0-2      2021-06-24 [?] CRAN (R 4.0.2)
+ P cowplot                  1.1.1      2020-12-30 [?] CRAN (R 4.0.2)
+ P crayon                   1.4.2      2021-10-29 [?] CRAN (R 4.1.0)
+ P curl                     4.3.2      2021-06-23 [?] CRAN (R 4.1.0)
+ P data.table               1.14.2     2021-09-27 [?] CRAN (R 4.1.0)
+ P DBI                      1.1.2      2021-12-20 [?] CRAN (R 4.1.0)
+ P dbplyr                 * 2.1.1      2021-04-06 [?] CRAN (R 4.1.0)
+ P DelayedArray             0.20.0     2021-10-26 [?] Bioconductor
+ P DelayedMatrixStats       1.16.0     2021-10-26 [?] Bioconductor
+ P deldir                   1.0-6      2021-10-23 [?] CRAN (R 4.1.0)
+ P digest                   0.6.29     2021-12-01 [?] CRAN (R 4.1.0)
+ P doRNG                    1.8.2      2020-01-27 [?] CRAN (R 4.1.0)
+ P dplyr                  * 1.0.7      2021-06-18 [?] CRAN (R 4.1.0)
+ P dqrng                    0.3.0      2021-05-01 [?] CRAN (R 4.1.0)
+ P DropletUtils           * 1.14.1     2021-11-08 [?] Bioconductor
+ P DT                       0.20       2021-11-15 [?] CRAN (R 4.1.0)
+ P edgeR                  * 3.36.0     2021-10-26 [?] Bioconductor
+ P EGSEA                  * 1.22.0     2021-10-26 [?] Bioconductor
+ P EGSEAdata                1.22.0     2021-10-30 [?] Bioconductor
+ P ellipsis                 0.3.2      2021-04-29 [?] CRAN (R 4.0.2)
+ P ensembldb              * 2.18.2     2021-11-08 [?] Bioconductor
+ P evaluate                 0.14       2019-05-28 [?] CRAN (R 4.0.2)
+ P fansi                    1.0.0      2022-01-10 [?] CRAN (R 4.1.0)
+ P farver                   2.1.0      2021-02-28 [?] CRAN (R 4.0.2)
+ P fastmap                  1.1.0      2021-01-25 [?] CRAN (R 4.1.0)
+ P filelock                 1.0.2      2018-10-05 [?] CRAN (R 4.1.0)
+ P fitdistrplus             1.1-6      2021-09-28 [?] CRAN (R 4.1.0)
+ P forcats                * 0.5.1      2021-01-27 [?] CRAN (R 4.1.0)
+ P foreach                  1.5.1      2020-10-15 [?] CRAN (R 4.0.2)
+ P fs                       1.5.2      2021-12-08 [?] CRAN (R 4.1.0)
+ P future                   1.23.0     2021-10-31 [?] CRAN (R 4.1.0)
+ P future.apply             1.8.1      2021-08-10 [?] CRAN (R 4.1.0)
+ P gage                   * 2.44.0     2021-10-26 [?] Bioconductor
+ P generics                 0.1.1      2021-10-25 [?] CRAN (R 4.1.0)
+   GenomeInfoDb           * 1.30.1     2022-01-30 [1] Bioconductor
+ P GenomeInfoDbData         1.2.7      2021-12-21 [?] Bioconductor
+ P GenomicAlignments        1.30.0     2021-10-26 [?] Bioconductor
+ P GenomicFeatures        * 1.46.3     2021-12-30 [?] Bioconductor
+ P GenomicRanges          * 1.46.1     2021-11-18 [?] Bioconductor
+ P getPass                  0.2-2      2017-07-21 [?] CRAN (R 4.0.2)
+ P ggalluvial             * 0.12.3     2020-12-05 [?] CRAN (R 4.1.0)
+ P ggbeeswarm               0.6.0      2017-08-07 [?] CRAN (R 4.1.0)
+ P ggforce                  0.3.3      2021-03-05 [?] CRAN (R 4.1.0)
+ P ggplot2                * 3.3.5      2021-06-25 [?] CRAN (R 4.0.2)
+ P ggraph                 * 2.0.5      2021-02-23 [?] CRAN (R 4.1.0)
+ P ggrepel                  0.9.1      2021-01-15 [?] CRAN (R 4.1.0)
+ P ggridges                 0.5.3      2021-01-08 [?] CRAN (R 4.1.0)
+ P git2r                    0.29.0     2021-11-22 [?] CRAN (R 4.1.0)
+ P glmGamPoi              * 1.6.0      2021-10-26 [?] Bioconductor
+ P globals                  0.14.0     2020-11-22 [?] CRAN (R 4.0.2)
+ P globaltest               5.48.0     2021-10-26 [?] Bioconductor
+ P glue                   * 1.6.0      2021-12-17 [?] CRAN (R 4.1.0)
+ P GO.db                  * 3.14.0     2021-12-21 [?] Bioconductor
+ P goftest                  1.2-3      2021-10-07 [?] CRAN (R 4.1.0)
+ P gplots                   3.1.1      2020-11-28 [?] CRAN (R 4.0.2)
+ P graph                  * 1.72.0     2021-10-26 [?] Bioconductor
+ P graphlayouts             0.8.0      2022-01-03 [?] CRAN (R 4.1.0)
+ P gridExtra                2.3        2017-09-09 [?] CRAN (R 4.1.0)
+ P GSA                      1.03.1     2019-01-31 [?] CRAN (R 4.1.0)
+ P GSEABase               * 1.56.0     2021-10-26 [?] Bioconductor
+ P GSVA                     1.42.0     2021-10-26 [?] Bioconductor
+ P gtable                   0.3.0      2019-03-25 [?] CRAN (R 4.1.0)
+ P gtools                   3.9.2      2021-06-06 [?] CRAN (R 4.1.0)
+ P haven                    2.4.3      2021-08-04 [?] CRAN (R 4.1.0)
+ P HDF5Array                1.22.1     2021-11-14 [?] Bioconductor
+ P here                   * 1.0.1      2020-12-13 [?] CRAN (R 4.0.2)
+ P hgu133a.db               3.13.0     2022-01-24 [?] Bioconductor
+ P hgu133plus2.db           3.13.0     2022-01-24 [?] Bioconductor
+ P highr                    0.9        2021-04-16 [?] CRAN (R 4.1.0)
+ P hms                      1.1.1      2021-09-26 [?] CRAN (R 4.1.0)
+ P htmltools                0.5.2      2021-08-25 [?] CRAN (R 4.1.0)
+ P HTMLUtils                0.1.7      2015-01-17 [?] CRAN (R 4.1.0)
+ P htmlwidgets              1.5.4      2021-09-08 [?] CRAN (R 4.1.0)
+ P httpuv                   1.6.5      2022-01-05 [?] CRAN (R 4.1.0)
+ P httr                     1.4.2      2020-07-20 [?] CRAN (R 4.1.0)
+ P hwriter                  1.3.2      2014-09-10 [?] CRAN (R 4.1.0)
+ P ica                      1.0-2      2018-05-24 [?] CRAN (R 4.1.0)
+ P igraph                   1.2.11     2022-01-04 [?] CRAN (R 4.1.0)
+ P interactiveDisplayBase   1.32.0     2021-10-26 [?] Bioconductor
+ P IRanges                * 2.28.0     2021-10-26 [?] Bioconductor
+ P irlba                    2.3.5      2021-12-06 [?] CRAN (R 4.1.0)
+ P iterators                1.0.13     2020-10-15 [?] CRAN (R 4.0.2)
+ P janitor                * 2.1.0      2021-01-05 [?] CRAN (R 4.0.2)
+ P jquerylib                0.1.4      2021-04-26 [?] CRAN (R 4.1.0)
+ P jsonlite                 1.7.2      2020-12-09 [?] CRAN (R 4.0.2)
+ P KEGGdzPathwaysGEO        1.32.0     2021-10-30 [?] Bioconductor
+ P KEGGgraph                1.54.0     2021-10-26 [?] Bioconductor
+ P KEGGREST                 1.34.0     2021-10-26 [?] Bioconductor
+ P KernSmooth               2.23-20    2021-05-03 [?] CRAN (R 4.1.0)
+ P knitr                    1.37       2021-12-16 [?] CRAN (R 4.1.0)
+ P labeling                 0.4.2      2020-10-20 [?] CRAN (R 4.0.2)
+ P later                    1.3.0      2021-08-18 [?] CRAN (R 4.1.0)
+ P lattice                  0.20-45    2021-09-22 [?] CRAN (R 4.1.0)
+ P lazyeval                 0.2.2      2019-03-15 [?] CRAN (R 4.1.0)
+ P leiden                   0.3.9      2021-07-27 [?] CRAN (R 4.1.0)
+ P lifecycle                1.0.1      2021-09-24 [?] CRAN (R 4.1.0)
+ P limma                  * 3.50.0     2021-10-26 [?] Bioconductor
+ P listenv                  0.8.0      2019-12-05 [?] CRAN (R 4.1.0)
+ P lmtest                   0.9-39     2021-11-07 [?] CRAN (R 4.1.0)
+ P locfit                   1.5-9.4    2020-03-25 [?] CRAN (R 4.1.0)
+ P lubridate                1.8.0      2021-10-07 [?] CRAN (R 4.1.0)
+ P magrittr                 2.0.1      2020-11-17 [?] CRAN (R 4.0.2)
+ P MASS                     7.3-53.1   2021-02-12 [?] CRAN (R 4.0.2)
+ P mathjaxr                 1.4-0      2021-03-01 [?] CRAN (R 4.1.0)
+ P Matrix                 * 1.4-0      2021-12-08 [?] CRAN (R 4.1.0)
+ P MatrixGenerics         * 1.6.0      2021-10-26 [?] Bioconductor
+ P matrixStats            * 0.61.0     2021-09-17 [?] CRAN (R 4.1.0)
+ P memoise                  2.0.1      2021-11-26 [?] CRAN (R 4.1.0)
+ P metap                    1.7        2021-12-16 [?] CRAN (R 4.1.0)
+ P metapod                  1.2.0      2021-10-26 [?] Bioconductor
+ P mgcv                     1.8-38     2021-10-06 [?] CRAN (R 4.1.0)
+ P mime                     0.12       2021-09-28 [?] CRAN (R 4.1.0)
+ P miniUI                   0.1.1.1    2018-05-18 [?] CRAN (R 4.1.0)
+ P mnormt                   2.0.2      2020-09-01 [?] CRAN (R 4.0.2)
+ P modelr                   0.1.8      2020-05-19 [?] CRAN (R 4.0.2)
+ P multcomp                 1.4-18     2022-01-04 [?] CRAN (R 4.1.0)
+ P multtest                 2.50.0     2021-10-26 [?] Bioconductor
+ P munsell                  0.5.0      2018-06-12 [?] CRAN (R 4.1.0)
+ P mutoss                   0.1-12     2017-12-04 [?] CRAN (R 4.1.0)
+ P mvtnorm                  1.1-3      2021-10-08 [?] CRAN (R 4.1.0)
+ P nlme                     3.1-153    2021-09-07 [?] CRAN (R 4.1.0)
+ P numDeriv                 2016.8-1.1 2019-06-06 [?] CRAN (R 4.1.0)
+ P org.Hs.eg.db           * 3.14.0     2021-12-21 [?] Bioconductor
+ P org.Mm.eg.db             3.14.0     2022-01-24 [?] Bioconductor
+ P org.Rn.eg.db             3.14.0     2022-01-24 [?] Bioconductor
+ P PADOG                    1.36.0     2021-10-26 [?] Bioconductor
+ P parallelly               1.30.0     2021-12-17 [?] CRAN (R 4.1.0)
+ P patchwork              * 1.1.1      2020-12-17 [?] CRAN (R 4.0.2)
+ P pathview               * 1.34.0     2021-10-26 [?] Bioconductor
+ P pbapply                  1.5-0      2021-09-16 [?] CRAN (R 4.1.0)
+ P pheatmap               * 1.0.12     2019-01-04 [?] CRAN (R 4.1.0)
+ P pillar                   1.6.4      2021-10-18 [?] CRAN (R 4.1.0)
+ P pkgconfig                2.0.3      2019-09-22 [?] CRAN (R 4.1.0)
+ P plotly                   4.10.0     2021-10-09 [?] CRAN (R 4.1.0)
+ P plotrix                  3.8-2      2021-09-08 [?] CRAN (R 4.1.0)
+ P plyr                     1.8.6      2020-03-03 [?] CRAN (R 4.0.2)
+ P png                      0.1-7      2013-12-03 [?] CRAN (R 4.1.0)
+ P polyclip                 1.10-0     2019-03-14 [?] CRAN (R 4.1.0)
+ P prettyunits              1.1.1      2020-01-24 [?] CRAN (R 4.0.2)
+ P processx                 3.5.2      2021-04-30 [?] CRAN (R 4.1.0)
+ P progress                 1.2.2      2019-05-16 [?] CRAN (R 4.1.0)
+ P promises                 1.2.0.1    2021-02-11 [?] CRAN (R 4.0.2)
+ P ProtGenerics             1.26.0     2021-10-26 [?] Bioconductor
+ P ps                       1.6.0      2021-02-28 [?] CRAN (R 4.1.0)
+ P purrr                  * 0.3.4      2020-04-17 [?] CRAN (R 4.0.2)
+ P R.methodsS3              1.8.1      2020-08-26 [?] CRAN (R 4.0.2)
+ P R.oo                     1.24.0     2020-08-26 [?] CRAN (R 4.0.2)
+ P R.utils                  2.11.0     2021-09-26 [?] CRAN (R 4.1.0)
+ P R2HTML                   2.3.2      2016-06-23 [?] CRAN (R 4.1.0)
+ P R6                       2.5.1      2021-08-19 [?] CRAN (R 4.1.0)
+ P RANN                     2.6.1      2019-01-08 [?] CRAN (R 4.1.0)
+ P rappdirs                 0.3.3      2021-01-31 [?] CRAN (R 4.0.2)
+ P rbibutils                2.2.7      2021-12-07 [?] CRAN (R 4.1.0)
+ P RColorBrewer             1.1-2      2014-12-07 [?] CRAN (R 4.0.2)
+ P Rcpp                     1.0.7      2021-07-07 [?] CRAN (R 4.1.0)
+ P RcppAnnoy                0.0.19     2021-07-30 [?] CRAN (R 4.1.0)
+   RCurl                    1.98-1.6   2022-02-08 [1] CRAN (R 4.1.0)
+ P Rdpack                   2.1.3      2021-12-08 [?] CRAN (R 4.1.0)
+ P readr                  * 2.1.1      2021-11-30 [?] CRAN (R 4.1.0)
+ P readxl                   1.3.1      2019-03-13 [?] CRAN (R 4.1.0)
+ P renv                     0.15.0-14  2022-01-10 [?] Github (rstudio/renv@a3b90eb)
+ P reprex                   2.0.1      2021-08-05 [?] CRAN (R 4.1.0)
+ P reshape2                 1.4.4      2020-04-09 [?] CRAN (R 4.1.0)
+ P restfulr                 0.0.13     2017-08-06 [?] CRAN (R 4.1.0)
+ P reticulate               1.22       2021-09-17 [?] CRAN (R 4.1.0)
+ P Rgraphviz                2.38.0     2021-10-26 [?] Bioconductor
+ P rhdf5                    2.38.0     2021-10-26 [?] Bioconductor
+ P rhdf5filters             1.6.0      2021-10-26 [?] Bioconductor
+ P Rhdf5lib                 1.16.0     2021-10-26 [?] Bioconductor
+ P rjson                    0.2.21     2022-01-09 [?] CRAN (R 4.1.0)
+ P rlang                    0.4.12     2021-10-18 [?] CRAN (R 4.1.0)
+ P rmarkdown                2.11       2021-09-14 [?] CRAN (R 4.1.0)
+ P rngtools                 1.5.2      2021-09-20 [?] CRAN (R 4.1.0)
+ P ROCR                     1.0-11     2020-05-02 [?] CRAN (R 4.1.0)
+ P rpart                    4.1-15     2019-04-12 [?] CRAN (R 4.1.0)
+ P rprojroot                2.0.2      2020-11-15 [?] CRAN (R 4.0.2)
+ P Rsamtools                2.10.0     2021-10-26 [?] Bioconductor
+ P RSpectra                 0.16-0     2019-12-01 [?] CRAN (R 4.1.0)
+ P RSQLite                  2.2.9      2021-12-06 [?] CRAN (R 4.1.0)
+ P rstudioapi               0.13       2020-11-12 [?] CRAN (R 4.0.2)
+ P rsvd                     1.0.5      2021-04-16 [?] CRAN (R 4.1.0)
+ P rtracklayer              1.54.0     2021-10-26 [?] Bioconductor
+ P Rtsne                    0.15       2018-11-10 [?] CRAN (R 4.1.0)
+ P rvest                    1.0.2      2021-10-16 [?] CRAN (R 4.1.0)
+ P S4Vectors              * 0.32.3     2021-11-21 [?] Bioconductor
+ P safe                     3.34.0     2021-10-26 [?] Bioconductor
+ P sandwich                 3.0-1      2021-05-18 [?] CRAN (R 4.1.0)
+ P sass                     0.4.0      2021-05-12 [?] CRAN (R 4.1.0)
+ P ScaledMatrix             1.2.0      2021-10-26 [?] Bioconductor
+ P scales                 * 1.1.1      2020-05-11 [?] CRAN (R 4.0.2)
+ P scater                 * 1.22.0     2021-10-26 [?] Bioconductor
+ P scattermore              0.7        2020-11-24 [?] CRAN (R 4.1.0)
+ P scran                  * 1.22.1     2021-11-14 [?] Bioconductor
+ P sctransform              0.3.2      2020-12-16 [?] CRAN (R 4.1.0)
+ P scuttle                * 1.4.0      2021-10-26 [?] Bioconductor
+ P sessioninfo              1.2.2      2021-12-06 [?] CRAN (R 4.1.0)
+ P Seurat                 * 4.0.6      2021-12-16 [?] CRAN (R 4.1.0)
+ P SeuratObject           * 4.0.4      2021-11-23 [?] CRAN (R 4.1.0)
+ P shiny                    1.7.1      2021-10-02 [?] CRAN (R 4.1.0)
+ P SingleCellExperiment   * 1.16.0     2021-10-26 [?] Bioconductor
+ P sn                       2.0.1      2021-11-26 [?] CRAN (R 4.1.0)
+ P snakecase                0.11.0     2019-05-25 [?] CRAN (R 4.0.2)
+ P SparseM                * 1.81       2021-02-18 [?] CRAN (R 4.1.0)
+ P sparseMatrixStats        1.6.0      2021-10-26 [?] Bioconductor
+ P spatstat.core            2.3-2      2021-11-26 [?] CRAN (R 4.1.0)
+ P spatstat.data            2.1-2      2021-12-17 [?] CRAN (R 4.1.0)
+ P spatstat.geom            2.3-1      2021-12-10 [?] CRAN (R 4.1.0)
+ P spatstat.sparse          2.1-0      2021-12-17 [?] CRAN (R 4.1.0)
+ P spatstat.utils           2.3-0      2021-12-12 [?] CRAN (R 4.1.0)
+ P speckle                * 0.0.3      2022-03-09 [?] Github (Oshlack/speckle@fc07773)
+ P statmod                  1.4.36     2021-05-10 [?] CRAN (R 4.1.0)
+ P stringi                  1.7.6      2021-11-29 [?] CRAN (R 4.1.0)
+ P stringr                * 1.4.0      2019-02-10 [?] CRAN (R 4.0.2)
+ P SummarizedExperiment   * 1.24.0     2021-10-26 [?] Bioconductor
+ P survival                 3.2-13     2021-08-24 [?] CRAN (R 4.1.0)
+ P tensor                   1.5        2012-05-05 [?] CRAN (R 4.1.0)
+ P TFisher                  0.2.0      2018-03-21 [?] CRAN (R 4.1.0)
+ P TH.data                  1.1-0      2021-09-27 [?] CRAN (R 4.1.0)
+ P tibble                 * 3.1.6      2021-11-07 [?] CRAN (R 4.1.0)
+ P tidygraph                1.2.0      2020-05-12 [?] CRAN (R 4.0.2)
+ P tidyr                  * 1.1.4      2021-09-27 [?] CRAN (R 4.1.0)
+ P tidyselect               1.1.1      2021-04-30 [?] CRAN (R 4.1.0)
+ P tidyverse              * 1.3.1      2021-04-15 [?] CRAN (R 4.1.0)
+ P tmvnsim                  1.0-2      2016-12-15 [?] CRAN (R 4.1.0)
+ P topGO                  * 2.46.0     2021-10-26 [?] Bioconductor
+ P tweenr                   1.0.2      2021-03-23 [?] CRAN (R 4.1.0)
+ P tzdb                     0.2.0      2021-10-27 [?] CRAN (R 4.1.0)
+ P utf8                     1.2.2      2021-07-24 [?] CRAN (R 4.1.0)
+ P uwot                     0.1.11     2021-12-02 [?] CRAN (R 4.1.0)
+ P vctrs                    0.3.8      2021-04-29 [?] CRAN (R 4.0.2)
+ P vipor                    0.4.5      2017-03-22 [?] CRAN (R 4.1.0)
+ P viridis                  0.6.2      2021-10-13 [?] CRAN (R 4.1.0)
+ P viridisLite              0.4.0      2021-04-13 [?] CRAN (R 4.0.2)
+ P vroom                    1.5.7      2021-11-30 [?] CRAN (R 4.1.0)
+ P whisker                  0.4        2019-08-28 [?] CRAN (R 4.0.2)
+ P withr                    2.4.3      2021-11-30 [?] CRAN (R 4.1.0)
+ P workflowr              * 1.7.0      2021-12-21 [?] CRAN (R 4.1.0)
+ P xfun                     0.29       2021-12-14 [?] CRAN (R 4.1.0)
+ P XML                    * 3.99-0.8   2021-09-17 [?] CRAN (R 4.1.0)
+ P xml2                     1.3.3      2021-11-30 [?] CRAN (R 4.1.0)
+ P xtable                   1.8-4      2019-04-21 [?] CRAN (R 4.1.0)
+ P XVector                  0.34.0     2021-10-26 [?] Bioconductor
+ P yaml                     2.2.1      2020-02-01 [?] CRAN (R 4.0.2)
+ P zlibbioc                 1.40.0     2021-10-26 [?] Bioconductor
+ P zoo                      1.8-9      2021-03-09 [?] CRAN (R 4.1.0)
+
+ [1] /oshlack_lab/jovana.maksimovic/projects/MCRI/melanie.neeland/paed-cf-cite-seq/renv/library/R-4.1/x86_64-pc-linux-gnu
+ [2] /config/binaries/R/4.1.0/lib64/R/library
+
+ P ── Loaded and on-disk path mismatch.
+
+──────────────────────────────────────────────────────────────────────────────</code></pre>
+</details>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.1.0 (2021-05-18)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: CentOS Linux 7 (Core)
+
+Matrix products: default
+BLAS:   /config/binaries/R/4.1.0/lib64/R/lib/libRblas.so
+LAPACK: /config/binaries/R/4.1.0/lib64/R/lib/libRlapack.so
+
+locale:
+ [1] LC_CTYPE=en_AU.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_AU.UTF-8        LC_COLLATE=en_AU.UTF-8    
+ [5] LC_MONETARY=en_AU.UTF-8    LC_MESSAGES=en_AU.UTF-8   
+ [7] LC_PAPER=en_AU.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_AU.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] pheatmap_1.0.12             scales_1.1.1               
+ [3] janitor_2.1.0               EGSEA_1.22.0               
+ [5] pathview_1.34.0             topGO_2.46.0               
+ [7] SparseM_1.81                GO.db_3.14.0               
+ [9] gage_2.44.0                 speckle_0.0.3              
+[11] BiocParallel_1.28.3         clustree_0.4.4             
+[13] ggraph_2.0.5                glmGamPoi_1.6.0            
+[15] org.Hs.eg.db_3.14.0         ensembldb_2.18.2           
+[17] AnnotationFilter_1.18.0     GenomicFeatures_1.46.3     
+[19] AnnotationHub_3.2.0         BiocFileCache_2.2.0        
+[21] dbplyr_2.1.1                patchwork_1.1.1            
+[23] edgeR_3.36.0                limma_3.50.0               
+[25] ggalluvial_0.12.3           Matrix_1.4-0               
+[27] scater_1.22.0               Cepo_1.0.0                 
+[29] GSEABase_1.56.0             graph_1.72.0               
+[31] annotate_1.72.0             XML_3.99-0.8               
+[33] AnnotationDbi_1.56.2        scran_1.22.1               
+[35] scuttle_1.4.0               DropletUtils_1.14.1        
+[37] SingleCellExperiment_1.16.0 SummarizedExperiment_1.24.0
+[39] Biobase_2.54.0              GenomicRanges_1.46.1       
+[41] GenomeInfoDb_1.30.1         IRanges_2.28.0             
+[43] S4Vectors_0.32.3            BiocGenerics_0.40.0        
+[45] MatrixGenerics_1.6.0        matrixStats_0.61.0         
+[47] glue_1.6.0                  here_1.0.1                 
+[49] forcats_0.5.1               stringr_1.4.0              
+[51] dplyr_1.0.7                 purrr_0.3.4                
+[53] readr_2.1.1                 tidyr_1.1.4                
+[55] tibble_3.1.6                ggplot2_3.3.5              
+[57] tidyverse_1.3.1             SeuratObject_4.0.4         
+[59] Seurat_4.0.6                workflowr_1.7.0            
+
+loaded via a namespace (and not attached):
+  [1] rsvd_1.0.5                    ica_1.0-2                    
+  [3] ps_1.6.0                      Rsamtools_2.10.0             
+  [5] foreach_1.5.1                 lmtest_0.9-39                
+  [7] rprojroot_2.0.2               crayon_1.4.2                 
+  [9] rbibutils_2.2.7               spatstat.core_2.3-2          
+ [11] MASS_7.3-53.1                 rhdf5filters_1.6.0           
+ [13] nlme_3.1-153                  backports_1.4.1              
+ [15] reprex_2.0.1                  rlang_0.4.12                 
+ [17] XVector_0.34.0                ROCR_1.0-11                  
+ [19] readxl_1.3.1                  irlba_2.3.5                  
+ [21] callr_3.7.0                   filelock_1.0.2               
+ [23] rjson_0.2.21                  globaltest_5.48.0            
+ [25] bit64_4.0.5                   rngtools_1.5.2               
+ [27] sctransform_0.3.2             parallel_4.1.0               
+ [29] processx_3.5.2                vipor_0.4.5                  
+ [31] spatstat.sparse_2.1-0         R2HTML_2.3.2                 
+ [33] spatstat.geom_2.3-1           haven_2.4.3                  
+ [35] tidyselect_1.1.1              fitdistrplus_1.1-6           
+ [37] zoo_1.8-9                     GenomicAlignments_1.30.0     
+ [39] org.Mm.eg.db_3.14.0           xtable_1.8-4                 
+ [41] magrittr_2.0.1                evaluate_0.14                
+ [43] Rdpack_2.1.3                  cli_3.1.0                    
+ [45] zlibbioc_1.40.0               sn_2.0.1                     
+ [47] hwriter_1.3.2                 doRNG_1.8.2                  
+ [49] rstudioapi_0.13               miniUI_0.1.1.1               
+ [51] whisker_0.4                   bslib_0.3.1                  
+ [53] rpart_4.1-15                  mathjaxr_1.4-0               
+ [55] GSA_1.03.1                    KEGGdzPathwaysGEO_1.32.0     
+ [57] GSVA_1.42.0                   shiny_1.7.1                  
+ [59] BiocSingular_1.10.0           xfun_0.29                    
+ [61] org.Rn.eg.db_3.14.0           multtest_2.50.0              
+ [63] cluster_2.1.2                 caTools_1.18.2               
+ [65] tidygraph_1.2.0               KEGGREST_1.34.0              
+ [67] interactiveDisplayBase_1.32.0 ggrepel_0.9.1                
+ [69] listenv_0.8.0                 Biostrings_2.62.0            
+ [71] png_0.1-7                     future_1.23.0                
+ [73] withr_2.4.3                   bitops_1.0-7                 
+ [75] ggforce_0.3.3                 plyr_1.8.6                   
+ [77] cellranger_1.1.0              PADOG_1.36.0                 
+ [79] dqrng_0.3.0                   pillar_1.6.4                 
+ [81] gplots_3.1.1                  cachem_1.0.6                 
+ [83] multcomp_1.4-18               fs_1.5.2                     
+ [85] DelayedMatrixStats_1.16.0     vctrs_0.3.8                  
+ [87] ellipsis_0.3.2                generics_0.1.1               
+ [89] metap_1.7                     tools_4.1.0                  
+ [91] beeswarm_0.4.0                munsell_0.5.0                
+ [93] tweenr_1.0.2                  DelayedArray_0.20.0          
+ [95] fastmap_1.1.0                 compiler_4.1.0               
+ [97] abind_1.4-5                   httpuv_1.6.5                 
+ [99] rtracklayer_1.54.0            sessioninfo_1.2.2            
+[101] plotly_4.10.0                 GenomeInfoDbData_1.2.7       
+[103] gridExtra_2.3                 lattice_0.20-45              
+[105] deldir_1.0-6                  mutoss_0.1-12                
+[107] utf8_1.2.2                    later_1.3.0                  
+[109] jsonlite_1.7.2                ScaledMatrix_1.2.0           
+[111] pbapply_1.5-0                 sparseMatrixStats_1.6.0      
+[113] renv_0.15.0-14                lazyeval_0.2.2               
+[115] promises_1.2.0.1              R.utils_2.11.0               
+[117] goftest_1.2-3                 checkmate_2.0.0              
+[119] spatstat.utils_2.3-0          reticulate_1.22              
+[121] sandwich_3.0-1                rmarkdown_2.11               
+[123] cowplot_1.1.1                 statmod_1.4.36               
+[125] Rtsne_0.15                    EGSEAdata_1.22.0             
+[127] uwot_0.1.11                   igraph_1.2.11                
+[129] HDF5Array_1.22.1              plotrix_3.8-2                
+[131] numDeriv_2016.8-1.1           survival_3.2-13              
+[133] yaml_2.2.1                    htmltools_0.5.2              
+[135] memoise_2.0.1                 BiocIO_1.4.0                 
+[137] locfit_1.5-9.4                graphlayouts_0.8.0           
+[139] viridisLite_0.4.0             digest_0.6.29                
+[141] assertthat_0.2.1              mime_0.12                    
+[143] rappdirs_0.3.3                RSQLite_2.2.9                
+[145] future.apply_1.8.1            data.table_1.14.2            
+[147] blob_1.2.2                    R.oo_1.24.0                  
+[149] labeling_0.4.2                splines_4.1.0                
+[151] Rhdf5lib_1.16.0               ProtGenerics_1.26.0          
+[153] RCurl_1.98-1.6                broom_0.7.11                 
+[155] hms_1.1.1                     modelr_0.1.8                 
+[157] rhdf5_2.38.0                  colorspace_2.0-2             
+[159] mnormt_2.0.2                  BiocManager_1.30.16          
+[161] tmvnsim_1.0-2                 ggbeeswarm_0.6.0             
+[163] sass_0.4.0                    Rcpp_1.0.7                   
+[165] RANN_2.6.1                    mvtnorm_1.1-3                
+[167] fansi_1.0.0                   tzdb_0.2.0                   
+[169] parallelly_1.30.0             R6_2.5.1                     
+[171] grid_4.1.0                    ggridges_0.5.3               
+[173] lifecycle_1.0.1               TFisher_0.2.0                
+[175] bluster_1.4.0                 curl_4.3.2                   
+[177] leiden_0.3.9                  jquerylib_0.1.4              
+[179] snakecase_0.11.0              safe_3.34.0                  
+[181] TH.data_1.1-0                 RcppAnnoy_0.0.19             
+[183] RColorBrewer_1.1-2            iterators_1.0.13             
+[185] htmlwidgets_1.5.4             beachmat_2.10.0              
+[187] polyclip_1.10-0               biomaRt_2.50.1               
+[189] rvest_1.0.2                   mgcv_1.8-38                  
+[191] globals_0.14.0                hgu133plus2.db_3.13.0        
+[193] KEGGgraph_1.54.0              codetools_0.2-18             
+[195] lubridate_1.8.0               metapod_1.2.0                
+[197] gtools_3.9.2                  getPass_0.2-2                
+[199] prettyunits_1.1.1             RSpectra_0.16-0              
+[201] R.methodsS3_1.8.1             gtable_0.3.0                 
+[203] DBI_1.1.2                     git2r_0.29.0                 
+[205] highr_0.9                     tensor_1.5                   
+[207] httr_1.4.2                    KernSmooth_2.23-20           
+[209] vroom_1.5.7                   stringi_1.7.6                
+[211] progress_1.2.2                reshape2_1.4.4               
+[213] farver_2.1.0                  viridis_0.6.2                
+[215] Rgraphviz_2.38.0              DT_0.20                      
+[217] xml2_1.3.3                    BiocNeighbors_1.12.0         
+[219] restfulr_0.0.13               scattermore_0.7              
+[221] BiocVersion_3.14.0            bit_4.0.4                    
+[223] spatstat.data_2.1-2           hgu133a.db_3.13.0            
+[225] pkgconfig_2.0.3               HTMLUtils_0.1.7              
+[227] knitr_1.37                   </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

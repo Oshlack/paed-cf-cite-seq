@@ -1,0 +1,20 @@
+name: "paed-cf-cite-seq"
+output_dir: ../docs
+navbar:
+  title: "paed-cf-cite-seq"
+  left:
+  - text: Home
+    href: index.html
+  - text: About
+    href: about.html
+  - text: License
+    href: license.html
+output:
+  bookdown::html_document2:
+    base_format: workflowr::wflow_html
+    toc: yes
+    toc_float: yes
+    theme: cosmo
+    highlight: textmate
+    number_sections: true
+

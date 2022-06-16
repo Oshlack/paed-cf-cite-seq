@@ -1,0 +1,103 @@
+---
+title: "Getting Started"
+description: |
+author:
+  - name: Jovana Maksimovic
+date: "`r Sys.Date()`"
+bibliography: ref.bib
+site: workflowr::wflow_site
+output:
+  html_document:
+    theme: cosmo
+---
+
+```{r knitr, include = FALSE}
+knitr::opts_chunk$set(autodep        = TRUE,
+                      cache          = FALSE,
+                      cache.comments = FALSE,
+                      echo           = TRUE,
+                      error          = FALSE,
+                      fig.align      = "center",
+                      fig.width      = 10,
+                      fig.height     = 8,
+                      message        = FALSE,
+                      warning        = FALSE)
+```
+
+This page describes how to download the data and code used in this analysis,
+set up the project directory and rerun the analysis. We have used the
+[`workflowr`][workflowr] package to organise the analysis and incorporate
+reproducibilty information into the output documents.
+
+# Getting the code {#code}
+
+All the code and outputs of analysis are available from GitHub at
+https://github.com/Oshlack/methyl-geneset-testing. If you want to replicate the
+analysis you can either fork the repository and clone it or download the
+repository as a zipped directory.
+
+Once you have a local copy of the repository you should see the following
+directory structure:
+
+* `analysis/` - Contains the RMarkdown documents with the various stages of
+analysis. These are numbered according to the order they should be run.
+* `data/` - This directory contains the data files used in the analysis with
+sub-directories for different data types (see [Getting the data](#data) for
+details). Processed intermediate data files will also be placed here.
+* `output/` - Directory for output files produced by the analysis, each analysis
+step has it's own sub-directory.
+* `docs/` - This directory contains the analysis website hosted at
+  http://oshlacklab.com/methyl-geneset-testing, including image files.
+* `code/` - R scripts with custom functions used in some analysis stages. There
+  are sub-directories for scripts associated with different steps in the
+  anlaysis.
+* `README.md` - README describing the project.
+* `.Rprofile` - Custom R profile for the project including set up for
+  `workflowr`.
+* `.gitignore` - Details of files and directories that are excluded from the
+  repository.
+* `_workflowr.yml` - Workflowr configuration file.
+* `paed-cf-cite-seq.Rproj` - RStudio project file.
+
+
+# Getting the data {#data}
+
+
+# Running the analysis {#analysis}
+
+The analysis directory contains the following analysis files:
+
+```{r, echo=FALSE}
+list.files(path = here::here("analysis"), pattern = "[01][0-9]_*")
+```
+
+As indicated by the numbering they should be run in this order. If you want to
+rerun the entire analysis this can be easily done using `workflowr`.
+
+```r
+workflowr::wflow_build(republish = TRUE)
+```
+
+<!-- It is important to consider the computer and environment you are using before -->
+<!-- doing this. Running this analysis from scratch requires a considerable amount -->
+<!-- of time, disk space and memory. **Some stages of the analysis need to be executed -->
+<!-- on a HPC to generate results required by downstream steps.** If you do no have -->
+<!-- access to a HPC to perform these analyses using the code provided, you can -->
+<!-- download pre-computed RDS files containing the results from [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4706148.svg)](https://doi.org/10.5281/zenodo.4706148). -->
+
+<!-- To use the pre-computed RDS objects, after cloning or downloading the GitHub repository to your computer, please extract the `outputs.tar.gz` archive under the `output` directory, using `tar -xvf outputs.tar.gz`. -->
+
+It is also possible to run individual stages of the analysis, either by
+providing the names of the file you want to run to `workflowr::wflow_build()` or
+by manually knitting the document (for example using the 'Kint' button in
+RStudio).
+
+[expt-hub]: https://bioconductor.org/packages/release/bioc/html/ExperimentHub.html "ExperimentHub"
+[geo-rnaseq]: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE107011 "GSE107011"
+[sra-rnaseq]: https://www.ncbi.nlm.nih.gov/sra?term=SRP125125 "SRP125125"
+[workflowr]: https://jdblischak.github.io/workflowr/ "Workflowr"
+
+
+```{r session-info, cache = FALSE, eval = FALSE}
+devtools::session_info()
+```

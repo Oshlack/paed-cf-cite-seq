@@ -1,0 +1,141 @@
+---
+title: "Analysis of C133_Neeland CITE-seq Data"
+subtitle: "Droplet Selection"
+author: "Jovana Maksimovic (modified from code by Peter Hickey & William Ho)"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+site: workflowr::wflow_site
+bibliography: ref.bib
+output:
+  bookdown::html_document2:
+    base_format: workflowr::wflow_html
+    toc: yes
+    toc_float: yes
+    theme: cosmo
+    highlight: textmate
+    number_sections: true
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+Bronchoalveolar lavage (BAL) samples were collected from 8 individuals with cystic fibrosis (CF). The samples were run on the 10X Chromium and sequenced by the Cellular Genomics Project Team at the [WEHI Advanced Genomics Facility](https://www.wehi.edu.au/people/rory-bowden/4536/wehi-advanced-genomics-facility). After sequencing, expression was quantified by aligning, filtering, barcode counting, and counting the number of UMIs mapped to each gene using [**CellRanger** `v5.0.0`](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/what-is-cell-ranger). [Version `2020-A (July 7, 2020)` of the **CellRanger** reference files](https://support.10xgenomics.com/single-cell-gene-expression/software/downloads/latest) was used, which maps against the GRCh38 of the reference genome and quantifies expression using gene models from GENCODE v32/Ensembl 98. 
+View the **CellRanger** [overall](C133_Neeland.web_summary.html), [read depth normalised](C133_Neeland_read_depth_normalized.web_summary.html) and capture-specific web summaries: [C133_1](C133_1.web_summary.html), [C133_2](C133_2.web_summary.html). 
+View the [**MultiQC**](https://multiqc.info/) [report](C133_Neeland_multiqc_report.html).
+
+# Load libraries
+
+```{r, message=FALSE, warning=FALSE}
+suppressPackageStartupMessages(library(BiocStyle))
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(here))
+suppressPackageStartupMessages(library(glue))
+suppressPackageStartupMessages(library(DropletUtils))
+suppressPackageStartupMessages(library(scran))
+suppressPackageStartupMessages(library(scater))
+suppressPackageStartupMessages(library(scuttle))
+set.seed(42)
+options(scipen=999)
+options(future.globals.maxSize = 6500 * 1024^2)
+```
+
+# Load data
+
+```{r}
+sce <- readRDS(here("data/SCEs/C133_Neeland.CellRanger.SCE.rds"))
+dim(sce)
+```
+
+```{r}
+# Preparing HTO data -----------------------------------------------------------
+is_hto <- rownames(altExp(sce, "Antibody Capture")) %in%
+  paste0("Human_HTO_", 1:8)
+altExp(sce, "HTO") <- altExp(sce, "Antibody Capture")[is_hto, ]
+altExp(sce, "ADT") <- altExp(sce, "Antibody Capture")[!is_hto, ]
+altExp(sce, "Antibody Capture") <- NULL
+
+expSum <- colSums(counts(sce))
+htoSum <- colSums(counts(altExp(sce, "HTO")))
+adtSum <- colSums(counts(altExp(sce, "ADT")))
+
+dat <- data.frame(exp = expSum, hto = htoSum, adt = adtSum)
+```
+
+# Identify empty droplets 
+
+We use the `emptyDrops()` function from the `r Biocpkg("DropletUtils")` package to test whether the expression profile for each cell barcode is significantly different from the ambient RNA pool [@lun2018distinguishing]. A significant deviation indicates that the barcode corresponds to a cell-containing droplet. Cells are called at a false discovery rate (FDR) of 0.1%.
+
+```{r}
+sce$capture <- factor(sce$Sample)
+capture_names <- levels(sce$capture)
+capture_names <- setNames(capture_names, capture_names)
+empties <- do.call(rbind, lapply(capture_names, function(cn) {
+  message(cn)
+  empties <- readRDS(
+    here("data", "emptyDrops", paste0(cn, ".emptyDrops.rds")))
+  empties$capture <- cn
+  empties
+}))
+tapply(
+  empties$FDR,
+  empties$capture,
+  function(x) sum(x <= 0.001, na.rm = TRUE)) %>%
+  knitr::kable(
+    caption = "Number of non-empty droplets identified using `emptyDrops()` from **DropletUtils**.")
+```
+
+## Examine results
+
+```{r rankplot2, fig.asp = 1}
+par(mfrow = c(2, 2))
+lapply(levels(sce$capture), function(s) {
+  sce <- sce[, sce$capture == s]
+  bcrank <- barcodeRanks(counts(sce))
+  
+  # Only showing unique points for plotting speed.
+  uniq <- !duplicated(bcrank$rank)
+  plot(
+    x = bcrank$rank[uniq],
+    y = bcrank$total[uniq],
+    log = "xy",
+    xlab = "Rank",
+    ylab = "Total UMI count",
+    main = s,
+    cex.lab = 1.2,
+    xlim = c(1, 500000),
+    ylim = c(1, 200000))
+  abline(h = metadata(bcrank)$inflection, col = "darkgreen", lty = 2)
+  abline(h = metadata(bcrank)$knee, col = "dodgerblue", lty = 2)
+})
+``` 
+
+# Remove empty droplets
+
+Remove empty droplets.
+
+```{r}
+sce <- sce[, which(empties$FDR <= 0.001)]
+sce
+```
+
+# Save data
+
+Save the object.
+
+```{r}
+out <- here("data/SCEs/03_C133_Neeland.emptyDrops.SCE.rds")
+if (!file.exists(out)) saveRDS(sce, file = out)
+```
+
+# Session info {.appendix}
+
+<summary>The analysis and this document were prepared using the following software (click triangle to expand)</summary>
+<details>
+
+```{r}
+sessioninfo::session_info()
+```
+
+</details>
+
+# References

@@ -1,0 +1,473 @@
+---
+title: "Analysis of scRNA-seq & CITE-seq Data Combined"
+subtitle: "Normalise and Transfer ADT data"
+author: "Jovana Maksimovic"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+site: workflowr::wflow_site
+bibliography: ref.bib
+output:
+  bookdown::html_document2:
+    base_format: workflowr::wflow_html
+    toc: yes
+    toc_float: yes
+    theme: cosmo
+    highlight: textmate
+    number_sections: true
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+# Load libraries
+
+```{r, message=FALSE, echo=FALSE}
+suppressPackageStartupMessages(library(BiocStyle))
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(here))
+suppressPackageStartupMessages(library(glue))
+suppressPackageStartupMessages(library(DropletUtils))
+suppressPackageStartupMessages(library(scran))
+suppressPackageStartupMessages(library(scater))
+suppressPackageStartupMessages(library(scuttle))
+suppressPackageStartupMessages(library(Seurat))
+suppressPackageStartupMessages(library(patchwork))
+suppressPackageStartupMessages(library(clustree))
+suppressPackageStartupMessages(library(glmGamPoi))
+suppressPackageStartupMessages(library(BiocParallel))
+suppressPackageStartupMessages(library(paletteer))
+suppressPackageStartupMessages(library(glmGamPoi))
+suppressPackageStartupMessages(library(dsb))
+source(here("code/utility.R"))
+source(here("code/helper_functions.R"))
+
+set.seed(42)
+options(scipen = -1)
+options(future.globals.maxSize = 6500 * 1024^2)
+```
+
+# Load data
+## Load C133_Neeland raw and preprocessed CITE-seq data
+
+```{r}
+sceRaw <- readRDS(here("data/SCEs/C133_Neeland.CellRanger.SCE.rds"))
+is_hto <- rownames(altExp(sceRaw, "Antibody Capture")) %in%
+  paste0("Human_HTO_", 1:8)
+altExp(sceRaw, "HTO") <- altExp(sceRaw, "Antibody Capture")[is_hto, ]
+altExp(sceRaw, "ADT") <- altExp(sceRaw, "Antibody Capture")[!is_hto, ]
+altExp(sceRaw, "Antibody Capture") <- NULL
+
+# Load C133_Neeland ADT data 
+scePrep <- readRDS(here("data", "SCEs", 
+                           "03_C133_Neeland.preprocessed.SCE.rds"))
+```
+
+### Plot raw background and cell ADT expression
+
+```{r}
+md <- data.frame(
+  rna.size = log10(Matrix::colSums(counts(sceRaw))), 
+  prot.size = log10(Matrix::colSums(counts(altExp(sceRaw, "ADT")))))
+md <- md[md$rna.size > 0 & md$prot.size > 0, ]
+md$type <- ifelse(rownames(md) %in% colnames(scePrep), "cell", "background")
+
+ggplot(md[md$type == "cell",], aes(x = prot.size,
+                                   y = rna.size)) +
+  geom_hex() + 
+  ggtitle("cells") +
+  xlim(c(0, 5)) +
+  ylim(c(0,5)) +
+  scale_fill_viridis_c(option = "magma") -> p1
+
+ggplot(md[md$type != "cell",], aes(x = prot.size,
+                                   y = rna.size)) +
+  geom_hex() + 
+  xlim(c(0, 5)) +
+  ylim(c(0,5)) +
+  ggtitle("background") + 
+  scale_fill_viridis_c(option = "magma") -> p2
+
+(p1 | p2) & theme(legend.position = "bottom",
+                  legend.text = element_text(size = 6))
+```
+
+## DSB normalise ADT data
+
+```{r}
+# remove low end ADT expression droplets
+md <- md[md$prot.size > 1.5 & md$rna.size > 1.5, ]
+background.adt.mtx <- counts(altExp(sceRaw, "ADT"))[, colnames(sceRaw) %in% rownames(md[md$type == "background",])]
+keep <- grepl("^A0", rownames(background.adt.mtx))
+background.adt.mtx <- background.adt.mtx[keep, ] 
+cell.adt.mtx <- counts(altExp(scePrep, "ADT"))
+cell.adt.mtx <- cell.adt.mtx[keep, ]
+
+read_csv(file = here("data/sample_sheets/TotalSeq-A_Universal_Cocktail_v1.0.csv")) %>%
+  dplyr::filter(grepl("[Ii]sotype", name)) %>%
+  pull(id) -> isotype.controls 
+
+# normalize and denoise with dsb with 
+out <- here("data/SCEs/04_C133_Neeland.adt_dsb_normalised.rds")
+
+if(!file.exists(out)){
+  cells.dsb.norm <- DSBNormalizeProtein(cell_protein_matrix = cell.adt.mtx, 
+                                        empty_drop_matrix = background.adt.mtx, 
+                                        denoise.counts = TRUE, 
+                                        use.isotype.control = TRUE, 
+                                        isotype.control.name.vec = isotype.controls)
+  saveRDS(cells.dsb.norm, file = out)
+} else {
+  cells.dsb.norm <- readRDS(out)
+}
+```
+
+## Load processed RNA data
+
+Load integrated, clustered data that has been mapped to Zilionis reference.
+
+```{r}
+out <- here("data/SCEs/04_COMBO.zilionis_mapped.SEU.rds")
+seuInt <- readRDS(out)
+
+## Add Azimuth HCLA v1.0 labels
+seuInt <- AddAzimuthResults(seuInt,
+                            filename = here("data/SCEs/03_COMBO.clustered_azimuth.SEU.rds"))
+seuInt$predicted.annotation.l1 <- fct_drop(seuInt$predicted.annotation.l1)
+
+## Add Azimuth HCLA v2.0 labels
+seuInt <- AddAzimuthResults(seuInt,
+                            filename = here("data/SCEs/03_COMBO.clustered_azimuth_v2.SEU.rds"))
+seuInt$predicted.ann_level_1 <- fct_drop(seuInt$predicted.ann_level_1)
+seuInt$predicted.ann_level_2 <- fct_drop(seuInt$predicted.ann_level_2)
+seuInt$predicted.ann_level_3 <- fct_drop(seuInt$predicted.ann_level_3)
+seuInt$predicted.ann_level_4 <- fct_drop(seuInt$predicted.ann_level_4)
+seuInt$predicted.ann_finest_level <- fct_drop(seuInt$predicted.ann_finest_level)
+```
+
+## Add ADT data to `Seurat` object 
+
+```{r}
+# Extract C133_Neeland RNA data from Seurat object
+DefaultAssay(seuInt) <- "RNA"
+seuAdt <- DietSeurat(seuInt[, seuInt$experiment == 2], assays = "RNA") 
+# Create cell ID that matched SCE object
+colnames(cells.dsb.norm) <- paste0("B-", colnames(cells.dsb.norm))
+colnames(cell.adt.mtx) <- paste0("B-", colnames(cell.adt.mtx))
+
+# Check that all cells in Seurat object are also in SCE object
+all(colnames(seuAdt) %in% colnames(cells.dsb.norm))
+
+# Match up and subset Seurat and SCE objects 
+m <- match(colnames(seuAdt), colnames(cells.dsb.norm))
+cells.dsb.norm <- cells.dsb.norm[, m]
+cell.adt.mtx <- cell.adt.mtx[, m]
+
+# Check that cell IDs match
+all(colnames(seuAdt) == colnames(cells.dsb.norm))
+
+# Add ADT data to Seurat object
+# Create a new assay to store ADT information
+adt.raw <- CreateAssayObject(counts = cell.adt.mtx)
+adt.dsb <- CreateAssayObject(counts = cells.dsb.norm)
+
+# add this assay to the previously created Seurat object
+seuAdt[["ADT.raw"]] <- adt.raw
+seuAdt[["ADT.dsb"]] <- adt.dsb
+
+# Validate that the object now contains multiple assays
+seuAdt
+```
+
+```{r, echo=FALSE}
+rm(sceRaw, scePrep)
+gc()
+```
+
+## Integrate ADT data
+
+```{r}
+out <- here("data/SCEs/04_C133_Neeland.adt_integrated.rds")
+
+if(!file.exists(out)){
+  DefaultAssay(seuAdt) <- "ADT.raw"
+  seuAdt <- intDat(seuAdt, type = "ADT", int.assay.name = "int.adt.raw")
+  
+  DefaultAssay(seuAdt) <- "ADT.dsb"
+  seuAdt <- intDat(seuAdt, type = "ADT", adt.norm = "DSB", 
+                   int.assay.name = "int.adt.dsb")
+  saveRDS(seuAdt, file = out)
+  
+} else {
+  seuAdt <- readRDS(out)
+}
+```
+
+## Cluster ADT 
+### Raw with CLR normalisation
+
+```{r}
+# define proteins to use in clustering (non-isptype controls)
+prots <- rownames(cells.dsb.norm)[!rownames(cells.dsb.norm) %in% isotype.controls]
+
+DefaultAssay(seuAdt) <- "int.adt.raw"
+VariableFeatures(seuAdt) <- prots
+seuAdt <- ScaleData(seuAdt) %>%
+  RunPCA(verbose = FALSE, dims = 1:30, reduction.name = "int.adt.raw.pca")
+
+seuAdt <- FindNeighbors(object = seuAdt, dims = 1:30, assay = 'int.adt.raw',  
+                        k.param = 30, verbose = FALSE,
+                        reduction = "int.adt.raw.pca")
+seuAdt <- FindClusters(object = seuAdt, resolution = 1, 
+                       algorithm = 3, verbose = FALSE)
+seuAdt <- RunUMAP(seuAdt, verbose = FALSE, dims = 1:30, 
+                  reduction = "int.adt.raw.pca", 
+                  reduction.name = "int.adt.raw.umap")
+
+DimPlot(seuAdt, group.by = "seurat_clusters", label = TRUE,
+        label.size = 2.5, reduction = "int.adt.raw.umap") + NoLegend() -> p1
+DimPlot(seuAdt, group.by = "predicted.ann_level_3", label = TRUE,
+        label.size = 2.5, reduction = "int.adt.raw.umap") + NoLegend() -> p2
+DimPlot(seuAdt, group.by = "donor", reduction = "int.adt.raw.umap") -> p3
+
+# make results dataframe 
+d <- cbind(seuAdt@meta.data, 
+           as.data.frame(t(seuAdt@assays$ADT.raw@data)))
+# calculate the median protein expression separately for each cluster 
+raw.adt.plot <- d %>% 
+  dplyr::group_by(seurat_clusters) %>% 
+  dplyr::summarize_at(.vars = prots, .funs = median) %>% 
+  tibble::remove_rownames() %>% 
+  tibble::column_to_rownames("seurat_clusters") 
+```
+
+### DSB normalised
+
+```{r}
+DefaultAssay(seuAdt) <- "int.adt.dsb"
+VariableFeatures(seuAdt) <- prots
+seuAdt <- ScaleData(seuAdt) %>%
+  RunPCA(verbose = FALSE, dims = 1:30, reduction.name = "int.adt.dsb.pca")
+
+seuAdt <- FindNeighbors(object = seuAdt, dims = 1:30, assay = 'int.adt.dsb',  
+                        k.param = 30, verbose = FALSE,
+                        reduction = "int.adt.dsb.pca")
+seuAdt <- FindClusters(object = seuAdt, resolution = 1, 
+                       algorithm = 3, verbose = FALSE)
+seuAdt <- RunUMAP(seuAdt, verbose = FALSE, dims = 1:30, 
+                  reduction = "int.adt.dsb.pca", 
+                  reduction.name = "int.adt.dsb.umap")
+
+DimPlot(seuAdt, group.by = "seurat_clusters", label = TRUE,
+        label.size = 2.5, reduction = "int.adt.dsb.umap") + NoLegend() -> p4
+DimPlot(seuAdt, group.by = "predicted.ann_level_3", label = TRUE,
+        label.size = 2.5, reduction = "int.adt.dsb.umap") + NoLegend() -> p5
+DimPlot(seuAdt, group.by = "donor", reduction = "int.adt.dsb.umap") -> p6
+
+d <- cbind(seuAdt@meta.data, 
+           as.data.frame(t(seuAdt@assays$ADT.dsb@data))) %>% 
+  dplyr::group_by(seurat_clusters) %>% 
+  dplyr::summarize_at(.vars = prots, .funs = median) %>% 
+  tibble::remove_rownames() %>% 
+  tibble::column_to_rownames("seurat_clusters") -> dsb.adt.plot
+```
+
+```{r, fig.asp=1.75, fig.width=10}
+((p1 + scale_color_paletteer_d("miscpalettes::pastel") | 
+    p4 + scale_color_paletteer_d("miscpalettes::pastel")) / 
+   ((p2 + scale_color_paletteer_d("miscpalettes::pastel") | 
+       p5 + scale_color_paletteer_d("miscpalettes::pastel")) + 
+      plot_layout(guides = "collect")) / 
+   ((p3 | p6) + 
+      plot_layout(guides = "collect"))) & 
+  theme(legend.position = "bottom",
+        legend.text = element_text(size = 8))
+```
+
+```{r, fig.asp=2}
+read_csv(file = here("data/sample_sheets/TotalSeq-A_Universal_Cocktail_v1.0.csv")) -> dat
+dat <- dat[dat$id %in% prots,]
+all(colnames(raw.adt.plot) == dat$id)
+
+pheatmap::pheatmap(t(raw.adt.plot), 
+                   color = viridis::viridis(25, option = "B"), 
+                   fontsize_row = 8, border_color = NA,
+                   labels_row = gsub("anti-human", "", dat$name))
+```
+
+```{r, fig.asp=2}
+pheatmap::pheatmap(t(dsb.adt.plot), 
+                   color = viridis::viridis(25, option = "B"), 
+                   fontsize_row = 8, border_color = NA,
+                   labels_row = gsub("anti-human", "", dat$name))
+```
+
+### Visualise RNA 
+
+```{r}
+DefaultAssay(seuAdt) <- "RNA"
+seuAdt <- NormalizeData(seuAdt) %>% 
+  FindVariableFeatures() %>% 
+  ScaleData() %>% 
+  RunPCA(verbose = FALSE, dims = 1:30, reduction.name = "rna.pca") %>%
+  RunUMAP(verbose = FALSE, dims = 1:30, reduction = "rna.pca", 
+          reduction.name = "rna.umap")
+```
+
+```{r}
+DimPlot(seuAdt, group.by = "donor", combine = FALSE, reduction = "rna.umap")
+DimPlot(seuAdt, group.by = "predicted.ann_level_3", 
+        combine = FALSE, reduction = "rna.umap")
+```
+
+## Integrate RNA data
+
+```{r}
+DefaultAssay(seuAdt) <- "RNA"
+out <- here("data/SCEs/04_C133_Neeland.all_integrated.SEU.rds")
+
+if(!file.exists(out)) {
+  seuAdt <- intDat(seuAdt, type = "RNA")
+  seuAdt <- RunPCA(seuAdt, verbose = FALSE, dims = 1:30, 
+                 reduction.name = "rna.pca") %>%
+  RunUMAP(verbose = FALSE, dims = 1:30, reduction = "rna.pca", 
+          reduction.name = "rna.umap")
+  saveRDS(seuAdt, file = out)
+  
+} else {
+  seuAdt <- readRDS(out)
+  
+}
+
+DefaultAssay(seuAdt) <- "integrated"
+DimPlot(seuAdt, group.by = "donor", combine = FALSE, reduction = "rna.umap")
+```
+
+## Map CF_BAL_Pilot to C133_Neeland and transfer protein data
+
+```{r}
+out <- here("data/SCEs/05_CF_BAL_Pilot.transfer_adt.SEU.rds")
+
+DefaultAssay(seuInt) <- "RNA"
+seuPilot <- DietSeurat(seuInt[, seuInt$experiment == 1], assays = "RNA")
+
+if(!file.exists(out)) {
+  seuSct <- SCTransform(seuPilot, method = "glmGamPoi")
+  anchors <- FindTransferAnchors(reference = seuAdt, query = seuSct,
+                                 dims = 1:30, reference.reduction = "rna.pca",
+                                 normalization.method = "SCT")
+  adt.raw <- TransferData(anchorset = anchors, 
+                         refdata = GetAssayData(seuAdt[["ADT.raw"]]), dims = 1:30)
+  adt.dsb <- TransferData(anchorset = anchors, 
+                         refdata = GetAssayData(seuAdt[["ADT.dsb"]]), dims = 1:30)
+  seuPilot[["ADT.raw"]] <- adt.raw
+  seuPilot[["ADT.dsb"]] <- adt.dsb
+  saveRDS(seuPilot, file = out)
+  
+} else {
+  seuPilot <- readRDS(out)
+  
+}
+```
+
+## Visualise transferred ADT data
+### By donor and HLCA v2.0 level 4 annotations
+
+```{r}
+DefaultAssay(seuPilot) <- "ADT.raw"
+VariableFeatures(seuPilot) <- prots
+seuPilot <- ScaleData(seuPilot) %>% 
+  RunPCA(verbose = FALSE, dims = 1:30, reduction.name = "adt.pca") %>%
+  RunUMAP(verbose = FALSE, dims = 1:30, reduction = "adt.pca", 
+          reduction.name = "adt.umap")
+
+DimPlot(seuPilot, group.by = "donor", repel = TRUE,
+        reduction = "adt.umap", label = TRUE, label.size = 2.5) 
+DimPlot(seuPilot, group.by = "predicted.ann_level_4", repel = TRUE,
+        reduction = "adt.umap", label = TRUE, label.size = 2.5) & NoLegend()
+```
+### By various marker genes 
+
+```{r}
+markers <- read_csv(
+  here("data/sample_sheets/TotalSeq_A_Human_Universal_Cocktail_Proteins_of_interest_29.09.21.csv"))
+```
+
+```{r, fig.width=10, fig.asp=0.5}
+DefaultAssay(seuPilot) <- "RNA"
+Idents(seuPilot) <- "predicted.ann_level_4"
+options(ggrepel.max.overlaps = Inf) 
+
+p <- vector("list", nrow(markers))
+for(i in 1:nrow(markers)){
+  if(markers$`Gene Name`[i] %in% rownames(seuPilot[["RNA"]]) &
+     markers$DNA_ID[i] %in% rownames(seuPilot[["ADT.raw"]])){
+    
+    DefaultAssay(seuPilot) <- "ADT.raw"
+    p1 <- FeaturePlot(seuPilot, features = markers$DNA_ID[i], label = TRUE,
+                      repel = TRUE, label.size = 2.5,
+                      reduction = 'adt.umap', keep.scale = "all", 
+                      cols = c("lightgrey","darkgreen")) +
+      ggtitle(markers$`Gene Name`[i], subtitle = "ADT.raw") +
+      theme(title = element_text(size = 8),
+            axis.text = element_text(size = 8)) + 
+      NoLegend()
+    
+    DefaultAssay(seuPilot) <- "ADT.dsb"
+    p2 <- FeaturePlot(seuPilot, features = markers$DNA_ID[i], label = TRUE,
+                      repel = TRUE, label.size = 2.5,
+                      reduction = 'adt.umap', keep.scale = "all", 
+                      cols = c("lightgrey","darkblue")) +
+      ggtitle(markers$`Gene Name`[i], subtitle = "ADT.dsb") +
+      theme(title = element_text(size = 8),
+            axis.text = element_text(size = 8)) + 
+      NoLegend()
+    
+    DefaultAssay(seuPilot) <- "RNA"
+    p3 <- FeaturePlot(seuPilot, features = markers$`Gene Name`[i], label = TRUE,
+                      repel = TRUE, label.size = 2.5,
+                      reduction = 'adt.umap', keep.scale = "all", 
+                      cols = c("lightgrey","purple")) +
+      ggtitle(markers$`Gene Name`[i], subtitle = "RNA") +
+      theme(title = element_text(size = 8),
+            axis.text = element_text(size = 8)) + 
+      NoLegend()
+    
+    p[[i]] <- (p1 | p2 | p3)
+  }
+}
+
+p[!sapply(p, is.null)]
+```
+
+## Merge C133_Neeland and CF_BAL_Pilot data with ADTs
+
+```{r}
+DefaultAssay(seuPilot) <- "RNA"
+DefaultAssay(seuAdt) <- "RNA"
+seuMerge <- merge(DietSeurat(seuPilot, assays = c("RNA", "ADT.dsb", "ADT.raw")),
+                  y = DietSeurat(seuAdt, assays = c("RNA","ADT.dsb", "ADT.raw")))
+seuMerge
+```
+
+# Save data
+
+```{r}
+out <- here(glue("data/SCEs/05_COMBO.clustered_annotated_adt_diet.SEU.rds"))
+
+if(!file.exists(out)) {
+  saveRDS(seuMerge, file = out)
+} 
+```
+
+# Session info {.appendix}
+
+<summary>The analysis and this document were prepared using the following software (click triangle to expand)</summary>
+<details>
+
+```{r}
+sessioninfo::session_info()
+```
+
+</details>
+
+

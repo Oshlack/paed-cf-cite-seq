@@ -1,0 +1,607 @@
+---
+title: "Analysis of scRNA-seq & CITE-seq Data Combined"
+subtitle: "Cell Type Proportions Analysis"
+author: "Jovana Maksimovic"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+site: workflowr::wflow_site
+bibliography: ref.bib
+output:
+  bookdown::html_document2:
+    base_format: workflowr::wflow_html
+    toc: yes
+    toc_float: yes
+    theme: cosmo
+    highlight: textmate
+    number_sections: true
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+# Load libraries
+
+```{r, message=FALSE, warning=FALSE}
+suppressPackageStartupMessages(library(BiocStyle))
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(here))
+suppressPackageStartupMessages(library(glue))
+suppressPackageStartupMessages(library(Seurat))
+suppressPackageStartupMessages(library(patchwork))
+suppressPackageStartupMessages(library(paletteer))
+suppressPackageStartupMessages(library(tidyHeatmap))
+suppressPackageStartupMessages(library(speckle))
+suppressPackageStartupMessages(library(Cepo))
+suppressPackageStartupMessages(library(glmGamPoi))
+suppressPackageStartupMessages(library(BiocParallel))
+suppressPackageStartupMessages(library(limma))
+source(here("code/utility.R"))
+source(here("code/helper_functions.R"))
+
+set.seed(42)
+options(scipen=999)
+options(future.globals.maxSize = 6500 * 1024^2)
+```
+
+# Analyse cell proportions
+
+## Load Data
+
+```{r}
+seu1 <- readRDS(here("data/SCEs/06_COMBO.clean_macrophages_diet.SEU.rds"))
+seu2 <- readRDS(here("data/SCEs/06_COMBO.clean_tcells_diet.SEU.rds"))
+seu3 <- readRDS(here("data/SCEs/06_COMBO.clean_others_diet.SEU.rds"))
+seu <- merge(seu1, y = c(seu2, seu3))
+seu
+```
+
+```{r, echo=FALSE}
+# cleanup obsolete objects
+rm(seu1, seu2, seu3)
+gc()
+```
+
+## Visualise combined, filtered data
+
+```{r}
+DefaultAssay(seu) <- "RNA"
+seu <- NormalizeData(seu) %>%
+  FindVariableFeatures() %>%
+  ScaleData() %>%
+  RunPCA(verbose = FALSE, dims = 1:30) %>%
+  RunUMAP(verbose = FALSE, dims = 1:30)
+```
+
+```{r}
+DimPlot(seu, group.by = "experiment", combine = FALSE)
+```
+
+# Integrate data
+
+Normalise the data using `SCTransform` and integrate across batches/individuals.
+
+```{r, warning=FALSE, message=FALSE}
+out <- here("data/SCEs/06_COMBO.clean_integrated.SEU.rds")
+
+if(!file.exists(out)) {
+  seuInt <- intDat(seu, split = "donor", type = "RNA",
+                   reference = unique(as.character(seu$capture[seu$experiment == 1])))
+  saveRDS(seuInt, file = out)
+
+} else {
+  seuInt <- readRDS(out)
+
+}
+```
+
+```{r, echo=FALSE}
+# cleanup obsolete objects
+rm(seu)
+gc()
+```
+
+## Visualise integrated data
+
+```{r}
+seuInt <- RunPCA(seuInt, npcs = 30, verbose = FALSE)
+seuInt <- RunUMAP(seuInt, verbose = FALSE, dims = 1:30)
+DimPlot(seuInt, group.by = "experiment", combine = FALSE)
+```
+
+# Cluster data
+## Perform linear dimensional reduction
+
+```{r}
+p1 <- DimPlot(seuInt, reduction = "pca", group.by = "donor")
+p2 <- DimPlot(seuInt, reduction = "pca", dims = c(1,3), group.by = "donor")
+p3 <- DimPlot(seuInt, reduction = "pca", dims = c(2,3), group.by = "donor")
+p4 <- DimPlot(seuInt, reduction = "pca", dims = c(3,4), group.by = "donor")
+
+((p1 | p2) / (p3 | p4)) + plot_layout(guides = "collect") &
+  theme(legend.text = element_text(size = 8),
+        plot.title = element_text(size = 10),
+        axis.title = element_text(size = 9),
+        axis.text = element_text(size = 8))
+```
+
+```{r, fig.width=9, fig.height=27}
+DimHeatmap(seuInt, dims = 1:30, cells = 500, balanced = TRUE)
+```
+
+## Determine the *dimensionality* of the dataset
+
+```{r}
+ElbowPlot(seuInt, ndims = 30)
+```
+
+## Cluster the cells
+
+```{r, warning=FALSE, message=FALSE}
+out <- here("data/SCEs/06_COMBO.clean_clustered.SEU.rds")
+
+if(!file.exists(out)) {
+  seuInt <- FindNeighbors(seuInt, reduction = "pca", dims = 1:30)
+  seuInt <- FindClusters(seuInt, algorithm = 3,
+                         resolution = 1)
+  seuInt <- RunUMAP(seuInt, dims = 1:30)
+  saveRDS(seuInt, file = out)
+
+} else {
+  seuInt <- readRDS(out)
+
+}
+```
+
+## Visualise clustering
+
+```{r, fig.asp=0.9, fig.width=9}
+options(ggrepel.max.overlaps = Inf)
+DimPlot(seuInt, reduction = 'umap', label = TRUE, repel = TRUE,
+        label.size = 2.5, group.by = "integrated_snn_res.1") + NoLegend()
+
+DimPlot(seuInt, reduction = 'umap', label = TRUE, repel = TRUE,
+        label.size = 2.5, group.by = "Annotation") + NoLegend()
+
+DimPlot(seuInt, reduction = 'umap', label = TRUE, repel = TRUE,
+        label.size = 3, group.by = "Broad",
+        cols = paletteer::paletteer_d("miscpalettes::pastel", 
+                                      length(unique(seuInt$Broad)))) + 
+  NoLegend() -> f1b
+
+f1b
+```
+
+## `Cepo` cluster marker genes 
+
+```{r}
+cepoMarkers <- Cepo(seuInt[["RNA"]]@data, 
+                   seuInt$Broad, 
+                   exprsPct = 0.1,
+                   logfc = 1)
+
+sapply(1:ncol(cepoMarkers$stats), function(i){
+  names(sort(cepoMarkers$stats[,i], decreasing = TRUE))[1:20]
+}) -> dat
+
+colnames(dat) <- colnames(cepoMarkers$stats)
+dat %>% knitr::kable()
+```
+
+
+### `Cepo` marker gene dot plot
+
+Genes duplicated between clusters are excluded.
+
+```{r, fig.width=10, fig.asp=0.4}
+DefaultAssay(seuInt) <- "RNA"
+
+maxGenes <- 5
+sigGenes <- lapply(1:ncol(dat), function(i){
+  dat[,i][1:maxGenes]
+})
+sig <- unlist(sigGenes)
+geneCols <- c(rep(rep(c("blue","black"), each = maxGenes), 
+                  ceiling(ncol(dat)/2)))[1:length(sig)][!duplicated(sig)] 
+
+geneCols <- rep(paletteer_d("miscpalettes::pastel", ncol(dat)), 
+                each = maxGenes)[1:length(sig)][!duplicated(sig)] 
+
+pal <- paletteer::paletteer_d("vapoRwave::cool")
+DotPlot(seuInt,    
+        features = sig[!duplicated(sig)], 
+        group.by = "Broad",
+        dot.scale = 2.5) + 
+  FontSize(y.text = 10, x.text = 8) + 
+  labs(y = element_blank(), x = element_blank()) + 
+  theme(axis.text.x = element_text(color = geneCols,
+                                   angle = 90,
+                                   hjust = 1,
+                                   vjust = 0.5),
+        legend.text = element_text(size = 8),
+        legend.title = element_text(size = 10)) +
+  scale_color_gradient2(low = pal[1], 
+                        mid = pal[3], 
+                        high = pal[5]) -> f1d
+f1d
+```
+
+
+# Analyse cell type proportions
+## Load clinical information
+
+Import clinical characteristics and patient information and associate with `genetic_donor` IDs.
+
+```{r}
+info <- read.csv(file = here("data/sample_sheets/Sample_information.csv"))
+tab <- table(seuInt$HTO, seuInt$donor)
+
+apply(tab, 2, function(x){
+  names(which(x == max(x)))
+}) %>% data.frame %>%
+  dplyr::rename("HTO" = ".") %>%
+  rownames_to_column(var = "donor") %>%
+  inner_join(info, by = c("HTO" = "Sample")) %>%
+  mutate(Batch = factor(Batch)) -> info
+
+info %>% knitr::kable()
+```
+
+
+## Manual annotation proportions
+
+```{r}
+# Differences in cell type proportions
+props <- getTransformedProps(clusters = seuInt$Broad, 
+                             sample = seuInt$donor, transform="asin")
+props$Proportions %>% knitr::kable()
+```
+
+### Cell proportions by donor
+
+```{r, fig.asp=1}
+props$Proportions %>%
+  data.frame %>%
+  inner_join(info, by = c("sample" = "donor")) %>%
+ggplot(aes(x = Participant, y = Freq, fill = clusters)) +
+  geom_bar(stat = "identity") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90, 
+                                   vjust = 0.5, 
+                                   hjust = 1),
+        legend.text = element_text(size = 10)) +
+  labs(y = "Proportion", fill = "Cell Label") + 
+  paletteer::scale_fill_paletteer_d("miscpalettes::pastel") -> f1c
+f1c
+```
+
+# Differences in cell type proportions (Broad)
+## Proportion plots
+
+Stripchart of cell type proportion, stratified by disease.
+
+```{r, fig.asp=1}
+props$Proportions %>% data.frame %>%
+  left_join(info,
+            by = c("sample" = "donor")) %>%
+  ggplot(aes(x = Disease,
+             y = Freq,
+             colour = Age)) +
+  geom_jitter(stat = "identity",
+              width = 0.15,
+              size = 2.25,
+              aes(shape = as.factor(Batch))) +
+  stat_summary(aes(x = Disease, y = Freq),
+               inherit.aes = FALSE,
+               fun = "mean",
+               geom = "crossbar",
+               size = 0.1) +
+  theme(axis.text.x = element_text(angle = 90,
+                                   hjust = 1,
+                                   vjust = 0.5),
+        legend.position = "bottom",
+        legend.direction = "horizontal",
+        strip.text = element_text(size = 6),
+        axis.text = element_text(size = 6)) +
+  labs(x = "Disease", y = "Proportion",
+       shape = "Batch", colour = "Age") +
+  scale_color_gradientn(colours = paletteer_d(palette = "RColorBrewer::Spectral")) +
+  facet_wrap(~ clusters, scales = "free_y") -> p1
+
+p1
+```
+
+## Statistical analysis of cell type proportions
+
+We can set up a design matrix taking into account various aspects of the data,
+such as disease severity, treatment and Batch.
+Please note that the way that `propeller` has been designed is such that the
+group information is *always* first in the design matrix specification, and
+there is NO intercept.
+
+```{r}
+Group <- factor(info$Disease)
+Batch <- factor(info$Batch)
+
+design <- model.matrix(~ 0 + Group + Batch)
+
+colnames(design) <- c("CF", "Ctrl", "Batch")
+design
+```
+
+### Test for differences in cell type proportions by disease
+
+We can use the `propeller.ttest` function and specify a contrast that tests for this
+comparison with our design matrix.
+
+#### Disease: Control versus CF
+
+```{r}
+mycontr <- makeContrasts(CvCF = Ctrl-CF,
+                         levels = design)
+mycontr
+```
+
+```{r}
+propeller.ttest(props, design, contrasts = mycontr[,1], robust=TRUE, trend=FALSE,
+                sort=TRUE) %>% knitr::kable()
+```
+
+There are no statistically significant differences in cell type proportions between the control and CF groups at the broad label level.
+
+# Compare flow cytometry and scRNA-seq proportions
+## Format proportions for comparison
+### Flow
+
+```{r}
+flow <- read_csv(file = here("data/CITE-seq_pilot_proportions_final.csv"))
+
+flow %>%
+  dplyr::rename(HTO = "...1") %>%
+  pivot_longer(cols = -HTO,
+               names_to = "cell") %>%
+  mutate(value = value / 100) -> flowProps
+
+flowProps %>% head(n = 10) %>% knitr::kable()
+```
+
+### scRNA-seq
+
+```{r}
+props <- getTransformedProps(clusters = ifelse(seuInt$Broad == "Proliferating macrophages", 
+                                               "Macrophages", 
+                                               seuInt$Broad), 
+                             sample = seuInt$donor, transform="asin")
+
+props$Proportions %>%
+  as.data.frame.matrix %>%
+  data.frame %>% 
+  rownames_to_column(var = "cell") %>%
+  pivot_longer(cols = -cell) %>%
+  inner_join(dplyr::select(info, donor, HTO), by = c("name" = "donor")) %>%
+  dplyr::select(-name) -> scProps
+
+scProps %>% head(n = 10) %>% knitr::kable()
+```
+
+## Test flow cytometry vs. scRNA-seq proportions
+
+Prepare the data for comparison.
+
+```{r}
+flowProps %>% left_join(scProps, by = c("HTO", "cell")) %>%
+  left_join(info) -> dat
+
+dat %>%
+  dplyr::select(Participant, cell, value.x, value.y) %>%
+  pivot_wider(names_from = Participant,
+                    names_sep = ".",
+                    values_from = c(value.x, value.y)) %>% 
+  column_to_rownames(var = "cell") -> datw
+```
+
+Setup design matrix etc. for `propeller` style comparison using `arcsin` transformation and `limma`.
+Test for difference between flow cytometry and scRNA-seq proportions taking individual into account.
+
+```{r}
+tech <- factor(substr(colnames(datw), 1, 7),
+               labels = c("flow", "sc"))
+participant <- factor(substr(colnames(datw), 9, 13))
+
+design <- model.matrix(~ 0 + tech + participant)
+colnames(design)[1:2] <- levels(tech)
+
+mycontr <- makeContrasts(FvSC = flow-sc,
+                         levels = design)
+
+fit <- lmFit(asin(sqrt(datw)), design)
+fit.cont <- contrasts.fit(fit, contrasts = mycontr)
+fit.cont <- eBayes(fit.cont, robust = TRUE, trend = FALSE)
+
+top <- topTable(fit.cont, coef = 1)    
+top %>% knitr::kable()
+```
+
+Neutrophils and dendritic cells show statistically significant differences in cell type proportions between technologies.
+
+
+## Visualise flow cytometry vs. scRNA-seq proportions 
+A statistically significant difference in cell type proportions between technologies is indicated with an asterisk (*).
+
+```{r, fig.asp=1}
+p <- vector("list", length(unique(dat$cell)))
+
+for(i in 1:length(p)) {
+  tmp <- dat %>%
+    dplyr::filter(cell == unique(dat$cell)[i])
+  
+  # cors <- cor.test(tmp$value.x, tmp$value.y,
+  #                  method = "spearman")
+  sig <- ifelse(top[unique(dat$cell)[i], ]$adj.P.Val < 0.05, "*", "")
+  lim <- max(c(tmp$value.x, tmp$value.y)) 
+  
+  p[[i]] <- ggplot(tmp,
+                   aes(x = value.x, y = value.y, colour = Participant)) +
+    geom_point() +
+    geom_smooth(method = "lm",
+                alpha = 0.15,
+                size = 0.5,
+                colour = "grey") +
+    # annotate("text", -Inf, Inf,  
+    #          label = glue("rho: {round(cors$estimate, 2)}
+    #                        p-value: {scales::scientific(cors$p.value)}"),
+    #          hjust = 0, vjust = 1, size = 3) +
+    labs(x = "Proportion (Flow Cytometry)",
+         y = "Proportion (scRNA-seq)") +
+    ylim(c(0, lim)) +
+    xlim(c(0, lim)) +
+    theme_classic() +
+    ggtitle(glue("{unique(dat$cell)[i]}{sig}"))
+  
+}
+
+wrap_plots(p, ncol = 3) + 
+  plot_layout(guides = "collect") &
+  theme(legend.position = "bottom",
+        axis.title = element_text(size = 10))
+
+p <- vector("list", length(unique(dat$cell)))
+
+for(i in 1:length(p)) {
+  tmp <- dat %>%
+    dplyr::filter(cell == unique(dat$cell)[i]) %>%
+    rowwise() %>%
+    mutate(avg = mean(c(value.x, value.y)),
+           diff = value.x - value.y)
+  
+  sig <- ifelse(top[unique(dat$cell)[i], ]$adj.P.Val < 0.05, "*", "")
+  lim <- max(abs(tmp$diff)) 
+  if (lim < 0.05) lim <- 0.05
+  
+  p[[i]] <- ggplot(tmp,
+                   aes(x = avg, y = diff, colour = Participant)) +
+    geom_point() +
+    geom_hline(yintercept = 0, linetype = "dashed", colour = "black") +
+    labs(x = "Mean",
+         y = "Difference (F - SC)") +
+    ylim(c(-lim, lim)) +
+    theme_classic() +
+    ggtitle(glue("{unique(dat$cell)[i]}{sig}"))
+  
+}
+
+wrap_plots(p, ncol = 3) + 
+  plot_layout(guides = "collect") &
+  theme(legend.position = "bottom",
+        axis.title = element_text(size = 10),
+        axis.text = element_text(size = 8))
+```
+
+# Load protein data
+## Add to `Seurat` object
+
+```{r}
+seuAdt <- readRDS(here("data",
+                       "SCEs",
+                       "05_COMBO.clustered_annotated_adt_diet.SEU.rds"))
+seuAdt <- subset(seuAdt, cells = colnames(seuInt))
+all(colnames(seuAdt) == colnames(seuInt))
+
+seuInt[["ADT.dsb"]] <- seuAdt[["ADT.dsb"]]
+seuInt[["ADT.raw"]] <- seuAdt[["ADT.raw"]]
+seuInt
+```
+```{r}
+rm(seuAdt)
+gc()
+```
+
+## Load protein annotations
+
+```{r, message=FALSE, warning=FALSE}
+prots <- read_csv(file = here("data",
+                              "sample_sheets",
+                              "TotalSeq-A_Universal_Cocktail_v1.0.csv")) %>%
+  dplyr::filter(grepl("^A0", id)) %>%
+  dplyr::filter(!grepl("[Ii]sotype", name)) 
+```
+
+### Visualise ADTs of interest
+
+```{r}
+adt <- read_csv(file = here("data/Proteins_broad_22.04.22.csv"))
+adt <- adt[!duplicated(adt$DNA_ID),]
+  
+cbind(seuInt@meta.data, 
+      as.data.frame(t(seuInt@assays$ADT.dsb@data))) %>% 
+  dplyr::group_by(Broad, experiment) %>% 
+  dplyr::summarize_at(.vars = adt$DNA_ID, .funs = median) %>%
+  pivot_longer(c(-Broad, -experiment), names_to = "ADT",
+               values_to = "ADT Exp.") %>%
+  left_join(adt, by = c("ADT" = "DNA_ID")) %>%
+  dplyr::rename(`Cell Label` = Broad,
+                Protein = `Name for heatmap`) |> 
+  dplyr::filter(experiment == 2) |>
+  ungroup() %>%
+    heatmap(
+        .column = Protein,
+        .row = `Cell Label`,
+        .value = `ADT Exp.`,
+        scale = "none",
+        rect_gp = grid::gpar(col = "white", lwd = 1),
+        show_row_names = TRUE,
+        column_names_gp = grid::gpar(fontsize = 10),
+        row_names_gp = grid::gpar(fontsize = 10),
+        palette_value = circlize::colorRamp2(seq(-1, 8, length.out = 256),
+                                         viridis::magma(256)),
+        column_title_side = "bottom") |>
+  add_tile(`Cell Label`, show_annotation_name = FALSE, show_legend = FALSE,
+           palette = paletteer_d("miscpalettes::pastel", ncol(dat)))-> f1e
+
+wrap_heatmap(f1e)
+```
+
+# Panel figures
+
+```{r, fig.width=12, fig.asp=1.5}
+layout = "AAAA
+          AAAA
+          BBBC
+          BBBC
+          DDDD
+          DDDD
+          EEEE
+          EEEE
+          EEEE"
+((ggplot(data.frame(x = 1, y = 1), aes(x, y)) + 
+    geom_point(colour = "white") +
+    theme_void()) +
+ (f1b + ggtitle("")) + 
+   f1c + 
+   f1d +
+   wrap_heatmap(f1e)) + 
+  plot_layout(design = layout) +
+  plot_annotation(tag_levels = "A") &
+  theme(plot.tag = element_text(size = 14, face = "bold"))
+```
+
+# Session info {.appendix}
+
+<summary>The analysis and this document were prepared using the following software (click triangle to expand)</summary>
+<details>
+
+```{r}
+sessioninfo::session_info()
+```
+
+</details>
+
+
+
+
+
+
+
+
+
+
+

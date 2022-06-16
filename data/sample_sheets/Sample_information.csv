@@ -1,0 +1,13 @@
+Participant,Sample,Sex,Age,Disease,Batch
+A1_Ctrl,C,M,3,Ctrl,1
+B1_CF,A,M,2.99,CF,1
+C1_CF,B,M,2.99,CF,1
+D1_CF,D,M,3.03,CF,1
+E2_CF,Human_HTO_1,F,5.99,CF,2
+F2_CF,Human_HTO_2,F,6.02,CF,2
+G2_CF,Human_HTO_3,F,4.91,CF,2
+H2_CF,Human_HTO_4,F,5.89,CF,2
+I2_CF,Human_HTO_5,F,5.93,CF,2
+J2_CF,Human_HTO_6,M,5.05,CF,2
+K2_CF,Human_HTO_7,M,4.92,CF,2
+L2_CF,Human_HTO_8,M,5.95,CF,2
