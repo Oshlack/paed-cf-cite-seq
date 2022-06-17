@@ -17,7 +17,7 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, number_sections = FALSE)
 
 
 This site contains the code and results of the analyses described in the pre-print
-[*“Multimodal single cell analysis of the paediatric lower airway reveals novel immune cell phenotypes in early life health and disease”*](). To reproduce the complete analysis follow the instructions on the [getting started](https://github.com/Oshlack/paed-cf-cite-seq/gettingStarted.html) page.
+[*“Multimodal single cell analysis of the paediatric lower airway reveals novel immune cell phenotypes in early life health and disease”*](). To reproduce the complete analysis follow the instructions on the [getting started](https://oshlacklab.com/paed-cf-cite-seq/gettingStarted.html) page.
 
 Follow the links below to view the different parts of the analysis. 
 
