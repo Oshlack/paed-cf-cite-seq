@@ -2,6 +2,8 @@
 
 This repository contains code and output for the analysis described in the pre-print [*"Multimodal single cell analysis of the paediatric lower airway reveals novel immune cell phenotypes in early life health and disease"*]().
 
+The raw single cell RNA-seq and CITE-seq count data generated for this study can be downloaded as RDS files from [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6651465.svg)](https://doi.org/10.5281/zenodo.6651465).
+
 The code and analysis results can be viewed at the [analysis webpage](https://oshlacklab.com/paed-cf-cite-seq/). 
 To reproduce the complete analysis follow the instructions on the [getting started](https://oshlacklab.com/paed-cf-cite-seq/gettingStarted.html) page.
 
