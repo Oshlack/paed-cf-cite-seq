@@ -25,42 +25,91 @@ knitr::opts_chunk$set(autodep        = TRUE,
 ```
 
 This page describes how to download the data and code used in this analysis,
-set up the project directory and rerun the analysis. We have used the
-[`workflowr`][workflowr] package to organise the analysis and incorporate
-reproducibilty information into the output documents.
+set up the project directory and reproduce the analysis. We have used the
+[`workflowr`][workflowr] and [`renv`][renv] packages to organise this project and 
+ensure reproducibility.
 
 # Getting the code {#code}
 
-All the code and outputs of analysis are available from GitHub at
-https://github.com/Oshlack/methyl-geneset-testing. If you want to replicate the
-analysis you can either fork the repository and clone it or download the
-repository as a zipped directory.
+All the code and outputs of this analysis are available from GitHub at
+https://github.com/Oshlack/paed-cf-cite-seq. If you want to replicate the
+analysis you can either clone the repository or download it as a zipped 
+directory.
 
 Once you have a local copy of the repository you should see the following
 directory structure:
 
 * `analysis/` - Contains the RMarkdown documents with the various stages of
 analysis. These are numbered according to the order they should be run.
+* `code/` - R scripts with custom functions used in some analysis stages. 
 * `data/` - This directory contains the data files used in the analysis with
 sub-directories for different data types (see [Getting the data](#data) for
 details). Processed intermediate data files will also be placed here.
-* `output/` - Directory for output files produced by the analysis, each analysis
-step has it's own sub-directory.
-* `docs/` - This directory contains the analysis website hosted at
-  http://oshlacklab.com/methyl-geneset-testing, including image files.
-* `code/` - R scripts with custom functions used in some analysis stages. There
-  are sub-directories for scripts associated with different steps in the
-  anlaysis.
+* `docs/` - This directory contains the analysis website html files hosted at
+  http://oshlacklab.com/paed-cf-cite-seq, as well as the image files.
+* `output/` - Directory for output files produced by the analysis.
+* `renv/` 
 * `README.md` - README describing the project.
 * `.Rprofile` - Custom R profile for the project including set up for
   `workflowr`.
+* `.gitattributes`
+* `.gitmodules`
 * `.gitignore` - Details of files and directories that are excluded from the
   repository.
-* `_workflowr.yml` - Workflowr configuration file.
+* `.renvignore` - `renv` ignore file
+* `_workflowr.yml` - `workflowr` configuration file.
 * `paed-cf-cite-seq.Rproj` - RStudio project file.
+* `renv.lock` - `renv` lock file, used to restore and install correct versions of
+R packages required for this project.
+
+This analysis was completed using `r R.version.string`. To ensure reproducibility
+the `renv` package was used to track package sources and versions. Ensure you 
+have the correct version of R and `renv` installed prior to beginning. To 
+install the necessary package versions you can use:
+
+```r
+renv::restore()
+```
+
+For more information on using `renv` see the `renv` [website][renv].
 
 
 # Getting the data {#data}
+
+The raw counts generated for this study can be downloaded as RDS files from [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4706148.svg)](https://doi.org/10.5281/zenodo.4706148).
+
+To use the RDS objects, after cloning or downloading the GitHub repository to 
+your computer, please extract the `raw_counts.tar.gz` archive under the 
+`data/SCEs` directory, using: 
+
+```r
+tar -xvf raw_counts.tar.gz.
+```
+
+In this project we have also used publicly available single cell RNA-seq data 
+generated from RBC-depleted cells from non-small cell lung tumor and the blood 
+of 7 patients. The raw count data and metadata can be downloaded from 
+[GSE127465][geo]. The `GSE127465_RAW.tar` and 
+`GSE127465_human_cell_metadata_54773x25.tsv.gz` are required. The downloaded 
+`tar` file should be extracted under the `data` directory by running the 
+following command:
+
+```r
+tar –xvf GSE127465_RAW.tar
+```
+
+The `GSE127465_human_cell_metadata_54773x25.tsv.gz` should be placed in the 
+newly created `GSE127465_RAW` directory.
+
+The downstream analysis code assumes the following directory structure inside 
+the `data/` directory:
+
+* `GSE127465_RAW`
+    * `GSE127465_human_cell_metadata_54773x25.tsv.gz`
+    * `GSM3635278_human_p1t1_raw_counts.tsv.gz`
+    * ...
+    * ...
+    * `GSM3635303_human_p7b1_raw_counts.tsv.gz`
 
 
 # Running the analysis {#analysis}
@@ -72,32 +121,19 @@ list.files(path = here::here("analysis"), pattern = "[01][0-9]_*")
 ```
 
 As indicated by the numbering they should be run in this order. If you want to
-rerun the entire analysis this can be easily done using `workflowr`.
+reproduce the entire analysis this can be easily done using `workflowr`.
 
 ```r
 workflowr::wflow_build(republish = TRUE)
 ```
 
-<!-- It is important to consider the computer and environment you are using before -->
-<!-- doing this. Running this analysis from scratch requires a considerable amount -->
-<!-- of time, disk space and memory. **Some stages of the analysis need to be executed -->
-<!-- on a HPC to generate results required by downstream steps.** If you do no have -->
-<!-- access to a HPC to perform these analyses using the code provided, you can -->
-<!-- download pre-computed RDS files containing the results from [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4706148.svg)](https://doi.org/10.5281/zenodo.4706148). -->
-
-<!-- To use the pre-computed RDS objects, after cloning or downloading the GitHub repository to your computer, please extract the `outputs.tar.gz` archive under the `output` directory, using `tar -xvf outputs.tar.gz`. -->
-
 It is also possible to run individual stages of the analysis, either by
 providing the names of the file you want to run to `workflowr::wflow_build()` or
-by manually knitting the document (for example using the 'Kint' button in
-RStudio).
+by manually knitting the document (for example using the 'Knit' button in
+RStudio). Note, most parts of the analysis require outputs generated by a 
+previous step and so will not run unless the preceding steps have already been 
+executed.
 
-[expt-hub]: https://bioconductor.org/packages/release/bioc/html/ExperimentHub.html "ExperimentHub"
-[geo-rnaseq]: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE107011 "GSE107011"
-[sra-rnaseq]: https://www.ncbi.nlm.nih.gov/sra?term=SRP125125 "SRP125125"
-[workflowr]: https://jdblischak.github.io/workflowr/ "Workflowr"
-
-
-```{r session-info, cache = FALSE, eval = FALSE}
-devtools::session_info()
-```
+[geo]: <https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE127465> "geo"
+[workflowr]: <https://workflowr.github.io/workflowr/> "workflowr"
+[renv]: <https://rstudio.github.io/renv/articles/renv.html> "renv"
