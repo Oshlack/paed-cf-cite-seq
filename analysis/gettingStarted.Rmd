@@ -76,7 +76,8 @@ For more information on using `renv` see the `renv` [website][renv].
 
 # Getting the data {#data}
 
-The raw counts generated for this study can be downloaded as RDS files from [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6651465.svg)](https://doi.org/10.5281/zenodo.6651465).
+The raw single cell RNA-seq and CITE-seq counts generated for this study can be 
+downloaded as RDS files from [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6651465.svg)](https://doi.org/10.5281/zenodo.6651465).
 
 To use the RDS objects, after cloning or downloading the GitHub repository to 
 your computer, please extract the `raw_counts.tar.gz` archive under the 

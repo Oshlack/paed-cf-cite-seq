@@ -16,8 +16,14 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, number_sections = FALSE)
 ```
 
 
-This site contains the code and results of the analyses described in the pre-print
-[*“Multimodal single cell analysis of the paediatric lower airway reveals novel immune cell phenotypes in early life health and disease”*](). To reproduce the complete analysis follow the instructions on the [getting started](https://oshlacklab.com/paed-cf-cite-seq/gettingStarted.html) page.
+This site presents the code and results of the analyses described in the 
+pre-print [*“Multimodal single cell analysis of the paediatric lower airway reveals novel immune cell phenotypes in early life health and disease”*]().
+
+All the code and results of this analysis are available from GitHub at
+https://github.com/Oshlack/paed-cf-cite-seq. To reproduce the complete analysis 
+follow the instructions on the [getting started](https://oshlacklab.com/paed-cf-cite-seq/gettingStarted.html) page. 
+The raw single cell RNA-seq and CITE-seq count data generated for this study 
+can be downloaded as RDS files from [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6651465.svg)](https://doi.org/10.5281/zenodo.6651465).
 
 Follow the links below to view the different parts of the analysis. 
 
