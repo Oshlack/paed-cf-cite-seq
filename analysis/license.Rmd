@@ -1,21 +1,22 @@
 ---
 title: "License"
+description: |
+author:
+  - name: Jovana Maksimovic
+date: "`r Sys.Date()`"
+bibliography: ref.bib
+site: workflowr::wflow_site
 output:
-  workflowr::wflow_html:
-    toc: false
-editor_options:
-  chunk_output_type: console
+  html_document:
+    theme: cosmo
 ---
 
-What license are you using for your code? See [choosealicense.com][choose] for
-help deciding. It's a convention to save a file `LICENSE` in the root of your
-Git repo that contains the license text.
 
-What license are you using for the written content on your site? It is
-traditional to choose a [Creative Commons][cc] license for this type of content.
+The code in this analysis is covered by the [MIT license][mit] and the written
+content is covered by a [Creative Commons CC-BY][cc] license.
 
-[choose]: http://choosealicense.com/
-[cc]: https://creativecommons.org/choose/
+[mit]: https://choosealicense.com/licenses/mit/ "MIT License"
+[cc]: https://choosealicense.com/licenses/cc-by-4.0/ "CC-BY License"
 
-How should others cite your work? It's a convention to save a file `CITATION`
-in the root of your Git repo that contains the citation information.
+<!-- How should others cite your work? It's a convention to save a file `CITATION` -->
+<!-- in the root of your Git repo that contains the citation information. -->

@@ -1,10 +1,21 @@
 ---
 title: "About"
+description: |
+author:
+  - name: Jovana Maksimovic
+date: "`r Sys.Date()`"
+bibliography: ref.bib
+site: workflowr::wflow_site
 output:
-  workflowr::wflow_html:
-    toc: false
-editor_options:
-  chunk_output_type: console
+  html_document:
+    theme: cosmo
 ---
 
-Describe your project.
+This site presents the code and results of the analyses described in the 
+pre-print: [*“Multimodal single cell analysis of the paediatric lower airway reveals novel immune cell phenotypes in early life health and disease”*](https://www.biorxiv.org/content/10.1101/2022.06.17.496207v1).
+
+We employed multiomic single-cell sequencing to generate the first immune cell atlas of the paediatric lower airway with more than 44,900 cells across 12 preschool aged children. By integrating transcriptome-wide gene expression, assessment of 154 surface proteins, and functional pathway analysis, we extensively characterised immune and epithelial cell populations present in the bronchoalveolar lavage of 11 children with cystic fibrosis and an age-matched healthy control.
+
+All the code and results of this analysis are available from GitHub at
+https://github.com/Oshlack/paed-cf-cite-seq.  The raw single cell RNA-seq and CITE-seq count data generated for this study 
+can be downloaded as RDS files from [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6651465.svg)](https://doi.org/10.5281/zenodo.6651465).
