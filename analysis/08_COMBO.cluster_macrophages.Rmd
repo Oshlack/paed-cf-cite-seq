@@ -189,6 +189,9 @@ seuInt@meta.data %>%
 ```
 
 # Identify Cluster Marker Genes
+
+Adapted from Dr. Belinda Phipson's [work](https://bphipson.github.io/Human_Development_snRNAseq/14-MarkerAnalysisBCT.html) for [@Sim2021-cg].
+
 ## Test for Marker Genes using *limma*
 
 ```{r}
@@ -461,3 +464,5 @@ sessioninfo::session_info()
 ```
 
 </details>
+
+# References

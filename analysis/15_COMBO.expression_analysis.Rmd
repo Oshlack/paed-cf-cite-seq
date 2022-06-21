@@ -201,9 +201,7 @@ wrap_plots(p, cols = 2) + plot_layout(guides = "collect") &
 
 # Differential expression analysis within cell types
 
-This analysis was adapted from [this](https://bphipson.github.io/Human_Development_snRNAseq/) 
-analysis of single nuclei RNAseq data from human heart samples.
-
+Adapted from Dr. Belinda Phipson's [work](https://bphipson.github.io/Human_Development_snRNAseq/DE-BroadCellTypes.html) for [@Sim2021-cg].
 
 ```{r}
 y.pb$samples %>%
@@ -758,5 +756,5 @@ layout = "AABB
 sessioninfo::session_info()
 ```
 
-
+# References
 
