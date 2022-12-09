@@ -84,7 +84,8 @@ Jovana Maksimovic^1,2,9\*^, Shivanthan Shanthikumar^2,3,4\*^, George Howitt^1,9^
     a) [Sub-clustering of macrophages](08_COMBO.cluster_macrophages.html)
     b) [Sub-clustering of T/NK cells](09_COMBO.cluster_tcells.html)
     c) [Sub-clustering of "other" cells](10_COMBO.cluster_others.html)
-
+    d) [Sub-clustering of macrophages (round 2)](08_COMBO.cluster_macrophages_round2.html)
+    
 5. Manual annotation 
     a) [Post-processing of macrophages](11_COMBO.postprocess_macrophages.html) 
     b) [Post-processing of T/NK cells](12_COMBO.postprocess_tcells.html)
