@@ -1,0 +1,577 @@
+---
+title: "Analysis of scRNA-seq & CITE-seq Data Combined"
+subtitle: "Sub-cluster Macrophages (Round 2)"
+author: "Jovana Maksimovic"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+site: workflowr::wflow_site
+bibliography: ref.bib
+output:
+  bookdown::html_document2:
+    base_format: workflowr::wflow_html
+    toc: yes
+    toc_float: yes
+    theme: cosmo
+    highlight: textmate
+    number_sections: true
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+# Load libraries
+
+```{r, message=FALSE, echo=FALSE}
+suppressPackageStartupMessages(library(BiocStyle))
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(here))
+suppressPackageStartupMessages(library(glue))
+suppressPackageStartupMessages(library(DropletUtils))
+suppressPackageStartupMessages(library(scran))
+suppressPackageStartupMessages(library(scater))
+suppressPackageStartupMessages(library(scuttle))
+suppressPackageStartupMessages(library(Seurat))
+suppressPackageStartupMessages(library(patchwork))
+suppressPackageStartupMessages(library(clustree))
+suppressPackageStartupMessages(library(glmGamPoi))
+suppressPackageStartupMessages(library(BiocParallel))
+suppressPackageStartupMessages(library(paletteer))
+suppressPackageStartupMessages(library(glmGamPoi))
+suppressPackageStartupMessages(library(tidyHeatmap))
+suppressPackageStartupMessages(library(edgeR))
+suppressPackageStartupMessages(library(org.Hs.eg.db))
+suppressPackageStartupMessages(library(EGSEA))
+source(here("code/utility.R"))
+source(here("code/helper_functions.R"))
+
+set.seed(42)
+options(scipen=999)
+options(future.globals.maxSize = 6500 * 1024^2)
+```
+
+# Load Data
+
+Load the clustered and labelled scRNA-seq and CITE-seq data.
+
+```{r}
+seuInt <- readRDS(file = here("data/SCEs/06_COMBO.macrophages_clustered.SEU.rds"))
+seuInt
+```
+## Load manual annotations
+
+```{r}
+labels <- read_csv(here("data/macrophage_subcluster_annotation_29.05.22.csv"))
+
+seuInt@meta.data %>%
+  left_join(labels %>%
+              mutate(Annotation = ifelse(is.na(Annotation),
+                                         "SUSPECT",
+                                         Annotation),
+                     Broad = ifelse(is.na(Broad),
+                                         "SUSPECT",
+                                         Broad)) %>%
+              mutate(Cluster = as.factor(Cluster),
+                     Annotation = as.factor(Annotation)),
+            by = c("integrated_snn_res.1" = "Cluster")) -> ann 
+
+ann %>% dplyr::pull(Annotation) -> seuInt$Annotation
+ann %>% dplyr::pull(Broad) -> seuInt$Broad
+
+seuInt$Annotation <- fct_drop(seuInt$Annotation)
+seuInt$Broad <- fct_drop(seuInt$Broad)
+seuInt
+```
+
+## Check for doublet enrichment
+The *macro-T* cluster expresses both macrophage and T-cell marker genes so we need to check if it is artefactual e.g. contains doublets. We have already removed a total of 3826 heterogenic doublets based on `vireo` and `hashedDrops` calls. However, those methods cannot detect heterotypic and homotypic doublets from the same individual (homogenic). We have also run `scds` and `scDblFinder` to detect putative homogenic doublets. 
+
+Load doublet detection results and match up with annotated cells.
+
+```{r}
+e1Doublets <- readRDS(here("data/experiment1_doublets.rds"))
+e1Doublets$cell <- paste0("A-", e1Doublets$cell)
+e2Doublets <- readRDS(here("data/experiment2_doublets.rds"))
+e2Doublets$cell <- paste0("B-", e2Doublets$cell)
+
+doublets <- rbind(e1Doublets, e2Doublets)
+m <- match(colnames(seuInt), doublets$cell)
+doublets <- doublets[m,]
+all(doublets$cell == colnames(seuInt))
+```
+
+The *macro-T* cluster is comprised of ~60% putative doublets.
+
+```{r}
+table(doublets$scDblFinder.class == "doublet" & doublets$hybrid_call, 
+      seuInt$Annotation) %>%
+  data.frame %>% 
+  group_by(Var2) %>%
+  mutate(prop = Freq/sum(Freq)) %>%
+  ungroup() %>%
+  ggplot(aes(x = Var2, y = prop, fill = Var1)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  geom_hline(yintercept = 0.1, linetype = "dashed") +
+  labs(fill = "Doublet",
+       x = "Fine annotation",
+       y = "Proportion") -> p1
+
+table(doublets$scDblFinder.class == "doublet" & doublets$hybrid_call, 
+      seuInt$Annotation) %>%
+  data.frame %>% 
+  ggplot(aes(x = Var2, y = Freq, fill = Var1)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  labs(fill = "Doublet",
+       x = "Fine annotation",
+       y = "Frequency") -> p2
+
+(p2 | p1) + plot_layout(guides = "collect") &
+  theme(legend.position = "bottom")
+```
+
+Calculate if doublets are statistically over-represented in any clusters using Fisher's Exact Test.
+
+```{r}
+tab <- table(doublets$scDblFinder.class == "doublet" & doublets$hybrid_call, 
+      seuInt$Annotation)
+dblStats <- table(doublets$scDblFinder.class == "doublet" & doublets$hybrid_call)
+
+apply(tab, 2, function(x){
+  dblFreq <- matrix(c(x[2], dblStats[2] - x[2], x[1], dblStats[1] - x[1]), 
+                      nrow = 2,
+	              dimnames = list(c("In cluster", "Not in cluster"),
+	                              c("Doublet", "Singlet")))
+  fisher.test(dblFreq, alternative = "greater")$p.value
+}) -> pvals
+
+pvals %>% 
+  data.frame %>%
+  rownames_to_column(var = "cell") %>%
+  dplyr::rename("p.value" = ".") %>%
+  mutate(FDR = p.adjust(p.value, method = "BH")) %>%
+  ggplot(aes(y = -log10(FDR), x = cell,
+             fill = FDR < 0.05)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  geom_col() 
+```
+
+Doublets are defined as cells that are called doublets by *both* `scds` and `scDblFinder`. Filter out all doublets and all the cells in the *macro-T* cluster, which are all likely to be doublets based on association. 
+
+```{r}
+keep <- !(doublets$scDblFinder.class == "doublet" & doublets$hybrid_call)
+DefaultAssay(seuInt) <- "RNA"
+seu <- DietSeurat(subset(seuInt, cells = which(keep)),
+                  assays = "RNA")
+seu
+```
+
+```{r}
+rm(seuInt)
+gc()
+```
+
+# Subcluster macrophages
+
+Normalise and integrate data.
+
+```{r}
+out <- here("data/SCEs/07_COMBO.macrophages_integrated.SEU.rds")
+
+if(!file.exists(out)){ 
+  seuInt <- intDat(seu, type = "RNA", 
+                   reference = unique(seu$capture[seu$experiment == 1]))
+  saveRDS(seuInt, file = out)
+  
+} else {
+  seuInt <- readRDS(file = out)
+  
+}
+```
+
+Visualise the data.
+
+```{r}
+seuInt <- RunPCA(seuInt, verbose = FALSE, dims = 1:30) %>%
+  RunUMAP(verbose = FALSE, dims = 1:30)
+```
+
+```{r}
+DimPlot(seuInt, group.by = "experiment", combine = FALSE)
+```
+
+# Clustering
+
+## Perform Linear Dimensional Reduction
+
+```{r}
+p1 <- DimPlot(seuInt, reduction = "pca", group.by = "donor")
+p2 <- DimPlot(seuInt, reduction = "pca", dims = c(1,3), group.by = "donor")
+p3 <- DimPlot(seuInt, reduction = "pca", dims = c(2,3), group.by = "donor")
+p4 <- DimPlot(seuInt, reduction = "pca", dims = c(3,4), group.by = "donor")
+
+((p1 | p2) / (p3 | p4)) + plot_layout(guides = "collect") &
+  theme(legend.text = element_text(size = 8),
+        plot.title = element_text(size = 10),
+        axis.title = element_text(size = 9),
+        axis.text = element_text(size = 8))
+```
+
+```{r, fig.width=9, fig.height=27}
+DimHeatmap(seuInt, dims = 1:30, cells = 500, balanced = TRUE)
+```
+
+## Determine the ‘Dimensionality’ of the Dataset
+
+```{r}
+ElbowPlot(seuInt, ndims = 30)
+```
+
+# Cluster the Cells
+
+Examine cluster number and size with respect to resolution.
+
+```{r, warning=FALSE, message=FALSE, fig.asp=1.25}
+out <- here("data/SCEs/07_COMBO.macrophages_clustered.SEU.rds")
+
+if(!file.exists(out)){
+  seuInt <- FindNeighbors(seuInt, reduction = "pca", dims = 1:30)
+  seuInt <- FindClusters(seuInt, algorithm = 3, 
+                         resolution = seq(0.1, 1, by = 0.1))
+  seuInt <- RunUMAP(seuInt, dims = 1:10)
+  saveRDS(seuInt, file = out)
+  
+} else {
+  seuInt <- readRDS(file = out)
+  
+}
+
+clustree::clustree(seuInt)
+```
+
+Choose a resolution. Visualise UMAP.
+
+```{r}
+options(ggrepel.max.overlaps = Inf)
+grp <- "integrated_snn_res.1"
+DimPlot(seuInt, reduction = 'umap', label = TRUE, repel = FALSE, 
+        label.size = 2.5, group.by = grp) + NoLegend()
+```
+
+## Examine clusters
+
+Visualise quality metrics by cluster.
+
+```{r, fig.asp=0.8}
+seuInt@meta.data %>%
+  ggplot(aes(x = integrated_snn_res.1,
+             y = predicted.annotation.l1.score,
+             fill = integrated_snn_res.1)) +
+  geom_violin(scale = "width") +
+  NoLegend() -> p1
+
+seuInt@meta.data %>%
+  ggplot(aes(x = integrated_snn_res.1,
+             y = nCount_RNA,
+             fill = integrated_snn_res.1)) +
+  geom_violin(scale = "area") +
+  scale_y_log10() +
+  NoLegend() -> p2
+
+seuInt@meta.data %>%
+  ggplot(aes(x = integrated_snn_res.1,
+             y = nFeature_RNA,
+             fill = integrated_snn_res.1)) +
+  geom_violin(scale = "area") +
+  scale_y_log10() +
+  NoLegend() -> p3
+
+seuInt@meta.data %>%
+  ggplot(aes(x = integrated_snn_res.1,
+             y = predicted.ann_level_3.score,
+             fill = integrated_snn_res.1)) +
+  geom_violin(scale = "area") +
+  scale_y_log10() +
+  NoLegend() -> p4
+
+((p1 | p2) / (p3 | p4)) & theme(text = element_text(size = 8))
+```
+
+# Identify Cluster Marker Genes
+
+Adapted from Dr. Belinda Phipson's [work](https://bphipson.github.io/Human_Development_snRNAseq/14-MarkerAnalysisBCT.html) for [@Sim2021-cg].
+
+## Test for Marker Genes using *limma*
+
+```{r}
+# limma-trend for DE
+Idents(seuInt) <- grp
+counts <- as.matrix(seuInt[["RNA"]]@counts)
+
+y.org <- DGEList(counts)
+logcounts <- normCounts(y.org, log = TRUE, prior.count = 0.5)
+
+maxclust <- length(levels(Idents(seuInt))) - 1
+
+clustgrp <- paste0("c", Idents(seuInt))
+clustgrp <- factor(clustgrp, levels = paste0("c", 0:maxclust))
+donor <- seuInt$donor
+
+design <- model.matrix(~ 0 + clustgrp + donor)
+colnames(design)[1:(length(levels(clustgrp)))] <- levels(clustgrp)
+
+# Create contrast matrix
+mycont <- matrix(NA, ncol = length(levels(clustgrp)), 
+                 nrow = length(levels(clustgrp)))
+rownames(mycont) <- colnames(mycont) <- levels(clustgrp)
+diag(mycont) <- 1
+mycont[upper.tri(mycont)] <- -1/(length(levels(factor(clustgrp))) - 1)
+mycont[lower.tri(mycont)] <- -1/(length(levels(factor(clustgrp))) - 1)
+
+# Fill out remaining rows with 0s
+zero.rows <- matrix(0, ncol = length(levels(clustgrp)),
+                    nrow = (ncol(design) - length(levels(clustgrp))))
+fullcont <- rbind(mycont, zero.rows)
+rownames(fullcont) <- colnames(design)
+
+fit <- lmFit(logcounts, design)
+fit.cont <- contrasts.fit(fit, contrasts = fullcont)
+fit.cont <- eBayes(fit.cont, trend = TRUE, robust = TRUE)
+
+summary(decideTests(fit.cont))
+```
+
+## Test relative to a threshold (TREAT)
+
+```{r}
+tr <- treat(fit.cont, fc = 1.5)
+dt <- decideTests(tr)
+summary(dt)
+```
+
+### Mean-difference Plots per Cluster
+
+```{r, fig.asp=1}
+par(mfrow=c(3,3))
+
+for(i in 1:ncol(mycont)){
+  plotMD(tr, coef = i, status = dt[,i], hl.cex = 0.5)
+  abline(h = 0, col = "lightgrey")
+  lines(lowess(tr$Amean, tr$coefficients[,i]), lwd = 1.5, col = 4)
+}
+```
+
+### Export Marker Genes per cluster
+
+```{r}
+options(scipen=-1, digits = 6)
+contnames <- colnames(mycont)
+dirName <- here("output/marker-analysis/06-COMBO-macrophages")
+if(!dir.exists(dirName)) dir.create(dirName)
+
+getCols <- setNames(c("SYMBOL","ENTREZID"),c("SYMBOL","ENTREZID"))
+tr$genes <- data.frame(
+  lapply(getCols, function(column) {
+    mapIds(
+      x = org.Hs.eg.db,
+      keys = rownames(tr),
+      keytype = "SYMBOL",
+      column = column)
+  }),
+  row.names = rownames(tr))
+
+gsAnnots <- buildIdx(entrezIDs = tr$genes$ENTREZID, species = "human",
+                     msigdb.gsets = c("c2","c5"))
+reactomeIdx <-gsAnnots$c2@idx[grep("REACTOME", 
+                                   names(gsAnnots$c2@idx))]
+
+for(i in 1:length(contnames)){
+  top <- topTreat(tr, coef = i, n = Inf)
+  top <- top[top$logFC > 0, ]
+  
+  write.csv(top[1:100, ],
+            file = glue("{dirName}/up-cluster-{contnames[i]}.csv"))
+  
+  cameraPR(tr$t[,i], reactomeIdx) %>%
+    rownames_to_column(var = "Pathway") %>%
+    slice_head(n = 20) %>%
+    write_csv(file = here(glue("{dirName}/REACTOME-cluster-{contnames[i]}.csv")))
+}
+```
+
+### Cluster marker gene dot plot
+
+Genes duplicated between clusters are excluded.
+
+```{r, message=FALSE, warning=FALSE, fig.asp=3}
+sig.genes <- vector("list", ncol(tr))
+p <- vector("list",length(sig.genes))
+DefaultAssay(seuInt) <- "RNA"
+
+for(i in 1:length(sig.genes)){
+  top <- topTreat(tr, coef = i, n = Inf)
+  sig.genes[[i]] <- rownames(top)[top$logFC > 0][1:10]
+}
+
+sig <- unlist(sig.genes)
+geneCols <- c(rep(rep(c("grey","black"), each = 10), ncol(tr)/2), 
+              rep("grey", 10))[!duplicated(sig)] 
+
+DotPlot(seuInt,    features = sig[!duplicated(sig)], 
+                    group.by = "integrated_snn_res.1",
+                    cols = c("lightgrey", "red"),
+                    dot.scale = 3) + 
+    RotatedAxis() + 
+    FontSize(y.text = 8, x.text = 12) + 
+    labs(y = element_blank(), x = element_blank()) + 
+    coord_flip() + 
+  theme(axis.text.y = element_text(color = geneCols)) +
+  ggtitle("Top 10 cluster marker genes without duplicates")
+```
+
+
+### No. cells per cluster
+
+```{r}
+seuInt@meta.data %>%
+  ggplot(aes(x = integrated_snn_res.1, fill = integrated_snn_res.1)) +
+  geom_bar() +
+  geom_text(aes(label = ..count..), stat = "count",
+            vjust = -0.5, colour = "black", size = 2) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  NoLegend()
+```
+
+# Load protein data
+## Add to `Seurat` object
+
+```{r}
+seuAdt <- readRDS(here("data",
+                       "SCEs",
+                       "05_COMBO.clustered_annotated_adt_diet.SEU.rds"))
+seuAdt <- subset(seuAdt, cells = colnames(seuInt))
+all(colnames(seuAdt) == colnames(seuInt))
+
+seuInt[["ADT.dsb"]] <- seuAdt[["ADT.dsb"]]
+seuInt[["ADT.raw"]] <- seuAdt[["ADT.raw"]]
+seuInt
+```
+
+```{r}
+rm(seuAdt)
+gc()
+```
+
+## Load protein annotations
+
+```{r, message=FALSE, warning=FALSE}
+prots <- read.csv(file = here("data",
+                              "sample_sheets",
+                              "TotalSeq-A_Universal_Cocktail_v1.0.csv")) %>%
+  dplyr::filter(grepl("^A0", id)) %>%
+  dplyr::filter(!grepl("[Ii]sotype", name)) 
+```
+
+## Visualise all ADTs
+
+Normalised with DSB. CITE-seq ADT data was transferred to scRNA-seq using reference mapping and transfer.
+
+```{r, fig.asp=1}
+cbind(seuInt@meta.data, 
+      as.data.frame(t(seuInt@assays$ADT.dsb@data))) %>% 
+  dplyr::group_by(integrated_snn_res.1, experiment) %>% 
+  dplyr::summarize_at(.vars = prots$id, .funs = median) %>%
+  pivot_longer(c(-integrated_snn_res.1, -experiment), names_to = "ADT",
+               values_to = "ADT Exp.") %>%
+  left_join(prots, by = c("ADT" = "id")) %>%
+  mutate(Cluster = as.character(integrated_snn_res.1)) %>%
+  dplyr::rename(Protein = name) |> 
+  dplyr::filter(experiment == 2) |>
+  ungroup() -> dat
+
+plot(density(dat$`ADT Exp.`))
+topMax <- 8
+abline(v = topMax, lty = 2, col = "grey")
+```
+
+```{r, fig.asp=2.5}
+dat |>
+  heatmap(
+    .column = Cluster,
+    .row = Protein,
+    .value = `ADT Exp.`,
+    scale = "none",
+    rect_gp = grid::gpar(col = "white", lwd = 1),
+    show_row_names = TRUE,
+    column_names_gp = grid::gpar(fontsize = 10),
+    column_title_gp = grid::gpar(fontsize = 12),
+    row_names_gp = grid::gpar(fontsize = 8),
+    row_title_gp = grid::gpar(fontsize = 12),
+    column_title_side = "top",
+    palette_value = circlize::colorRamp2(seq(-1, topMax, length.out = 256),
+                                         viridis::magma(256)),
+    heatmap_legend_param = list(direction = "vertical")) 
+```
+
+## Visualise ADTs of interest
+
+```{r}
+adt <- read_csv(file = here("data/Proteins_macs_22.04.22.csv"))
+adt <- adt[!duplicated(adt$DNA_ID),]
+
+dat %>%
+  inner_join(adt, by = c("ADT" = "DNA_ID")) %>%
+  dplyr::mutate(Protein = `Name for heatmap`) |> 
+  heatmap(
+    .column = Cluster,
+    .row = Protein,
+    .value = `ADT Exp.`,
+    scale = "none",
+    rect_gp = grid::gpar(col = "white", lwd = 1),
+    show_row_names = TRUE,
+    column_names_gp = grid::gpar(fontsize = 10),
+    column_title_gp = grid::gpar(fontsize = 12),
+    row_names_gp = grid::gpar(fontsize = 8),
+    row_title_gp = grid::gpar(fontsize = 12),
+    column_title_side = "top",
+    palette_value = circlize::colorRamp2(seq(-1, topMax, length.out = 256),
+                                         viridis::magma(256)),
+    heatmap_legend_param = list(direction = "vertical")) 
+```
+
+## Visualise cytokines of interest
+
+```{r, fig.asp=0.8}
+markers <- read_csv(file = here("data",
+                                "macrophage_subcluster_cytokines.csv"),
+                    col_names = FALSE)
+p <- DotPlot(seuInt,
+             features = markers$X1,
+             cols = c("grey", "red"),
+             dot.scale = 5,
+             assay = "RNA",
+             group.by = "integrated_snn_res.1") +
+  theme(axis.text.x = element_text(angle = 90,
+                                   hjust = 1,
+                                   vjust = 0.5,
+                                   size = 8),
+        axis.text.y = element_text(size = 8),
+        text = element_text(size = 8)) +
+  coord_flip() +
+  labs(y = "Cluster", x = "Cytokine")
+
+p
+```
+
+# Session info {.appendix}
+
+<summary>The analysis and this document were prepared using the following software (click triangle to expand)</summary>
+<details>
+
+```{r}
+sessioninfo::session_info()
+```
+
+</details>
+
+# References
