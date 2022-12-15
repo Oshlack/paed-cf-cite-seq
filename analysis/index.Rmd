@@ -1,5 +1,5 @@
 ---
-title: "Multimodal single cell analysis of the paediatric lower airway reveals novel immune cell phenotypes in early life health and disease"
+title: "Multimodal single-cell analysis of bronchoalveolar lavage from children with cystic fibrosis reveals novel cell phenotypes"
 description: |
 author:
   - name: Jovana Maksimovic
@@ -91,9 +91,6 @@ Jovana Maksimovic^1,2,9\*^, Shivanthan Shanthikumar^2,3,4\*^, George Howitt^1,9^
     b) [Post-processing of T/NK cells](12_COMBO.postprocess_tcells.html)
     c) [Post-processing of "other" cells](13_COMBO.postprocess_others.html)
     d) [Post-processing of all cells combined](14_COMBO.postprocess_all.html) 
-
-6. Differential gene expression analysis within cell types
-    a) [Analysis of gene expression](15_COMBO.expression_analysis.html)
 
 
 # Licenses {-}
