@@ -17,7 +17,7 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, number_sections = FALSE)
 
 
 This site presents the code and results of the analyses described in the 
-pre-print: [*“Multimodal single cell analysis of the paediatric lower airway reveals novel immune cell phenotypes in early life health and disease”*](https://www.biorxiv.org/content/10.1101/2022.06.17.496207v1).
+pre-print: [*“Multimodal single-cell analysis of bronchoalveolar lavage from children with cystic fibrosis reveals novel cell phenotypes”*](https://www.biorxiv.org/content/10.1101/2022.06.17.496207v1).
 
 All the code and results of this analysis are available from GitHub at
 https://github.com/Oshlack/paed-cf-cite-seq. To reproduce the complete analysis 
@@ -30,7 +30,7 @@ Follow the links below to view the different parts of the analysis.
 
 # Abstract {-}
 
-Respiratory disease is a major cause of morbidity and mortality in children worldwide. Many childhood respiratory diseases are characterised by chronic inflammation, however, the immune landscape of the paediatric airway remains uncharacterized. This is due to difficulties obtaining tissue-specific samples in early life as well as limited application of technologies that permit deep profiling from small sample volumes. Here, we employ multiomic single-cell sequencing to generate the first immune cell atlas of the paediatric lower airway with more than 44,900 cells across 12 preschool aged children. By integrating transcriptome-wide gene expression, assessment of 154 surface proteins, and functional pathway analysis, we extensively characterised immune and epithelial cell populations present in the bronchoalveolar lavage of 11 children with cystic fibrosis and an age-matched healthy control. Paired spectral flow cytometry analysis of over 256,000 cells revealed high correlation in cell subset proportions and protein expression across the two techniques. We further revealed that paediatric alveolar macrophages consist of 12 functionally distinct sub populations, including previously undescribed populations enriched for IFN-α/β signalling, markers of vesicle production, and regulatory/repair function. Other novel immune cell populations not observed in previous studies of the adult lung include CD4 T cells expressing inflammatory signalling genes. Further, whilst we show no significant difference in overall cell proportions between CF and healthy lung, we observed significant differential gene expression in the alveolar macrophage population, including genes associated with lung inflammation (IL33, CCL15) and fibrosis (RBMS3, COL4A1, SPP1). Our work provides a comprehensive cellular analysis of the paediatric lower airway, reveals key immune signatures of early life lung disease, and provides a reference for investigations of respiratory immunity in children.
+To be updated
 
 
 # Authors {-}
