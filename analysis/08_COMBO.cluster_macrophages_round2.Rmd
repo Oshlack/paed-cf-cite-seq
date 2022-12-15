@@ -88,9 +88,9 @@ The *macro-T* cluster expresses both macrophage and T-cell marker genes so we ne
 Load doublet detection results and match up with annotated cells.
 
 ```{r}
-e1Doublets <- readRDS(here("data/experiment1_doublets.rds"))
+e1Doublets <- readRDS(here("data/SCEs/experiment1_doublets.rds"))
 e1Doublets$cell <- paste0("A-", e1Doublets$cell)
-e2Doublets <- readRDS(here("data/experiment2_doublets.rds"))
+e2Doublets <- readRDS(here("data/SCEs/experiment2_doublets.rds"))
 e2Doublets$cell <- paste0("B-", e2Doublets$cell)
 
 doublets <- rbind(e1Doublets, e2Doublets)

@@ -49,6 +49,7 @@ seuInt <- readRDS(file = out)
 
 seuInt
 ```
+
 # Sub-cluster annotation
 ## Load manual annotations
 
@@ -74,7 +75,8 @@ seuInt$Annotation <- fct_drop(seuInt$Annotation)
 seuInt$Broad <- fct_drop(seuInt$Broad)
 seuInt
 ```
-## Visulalise annotations
+
+## Visualise annotations
 
 ```{r, fig.width=10, fig.asp=0.5}
 options(ggrepel.max.overlaps = Inf)
@@ -356,74 +358,30 @@ ggplot(aes(x = Participant, y = Freq, fill = clusters)) +
   scale_fill_paletteer_d("miscpalettes::pastel")
 ```
 
-## Statistical analysis of cell type proportions
 
-We can set up a design matrix taking into account various aspects of the data,
-such as disease severity, treatment and Batch.
-Please note that the way that `propeller` has been designed is such that the
-group information is *always* first in the design matrix specification, and
-there is NO intercept.
+### Cell proportions of control sample relative to CF samples
 
 ```{r}
-Group <- factor(info$Disease)
-Batch <- factor(info$Batch)
+props$Proportions %>%
+  data.frame %>%
+  inner_join(info, by = c("sample" = "donor")) -> dat
 
-design <- model.matrix(~ 0 + Group + Batch)
-colnames(design) <- c(levels(Group), "Batch")
-design
-```
-
-### Test for differences in proportions between Control and CF
-
-Stripchart of cell type proportion, stratified by disease status.
-
-```{r, fig.asp=0.8, fig.width=9}
-props$Proportions %>% data.frame %>%
-  inner_join(info,
-            by = c("sample" = "donor")) %>%
-  ggplot(aes(x = Disease,
-             y = Freq,
-             colour = Age)) +
-  geom_jitter(stat = "identity",
-              width = 0.15,
-              size = 2.25,
-              aes(shape = as.factor(Batch))) +
-  stat_summary(aes(x = Disease, y = Freq),
-               inherit.aes = FALSE,
-               fun = "mean",
-               geom = "crossbar",
-               size = 0.1) +
+ggplot(dat[dat$Participant != "A1_Ctrl",], 
+       aes(x = clusters, y = Freq, fill = clusters)) +
+  geom_boxplot() +
+  geom_point(data = dat[dat$Participant == "A1_Ctrl", ], 
+             aes(x = clusters, y = Freq),
+             color = "red") +
+  theme_classic() +
   theme(axis.text.x = element_text(angle = 90,
-                                   hjust = 1,
-                                   vjust = 0.5),
-        legend.position = "bottom",
-        legend.direction = "horizontal",
-        strip.text = element_text(size = 10),
-        axis.text = element_text(size = 8)) +
-  labs(x = "Disease", y = "Proportion",
-       shape = "Batch", colour = "Age") +
-  scale_color_gradientn(colours = paletteer_d(palette = "RColorBrewer::Spectral")) +
-  facet_wrap(~ clusters, scales = "free_y") -> p1
-
-p1
+                                   vjust = 0.5,
+                                   hjust = 1),
+        legend.text = element_text(size = 8)) +
+  labs( y = "Proportion", x = "Cell Label") +
+  scale_fill_paletteer_d("miscpalettes::pastel") +
+  NoLegend() -> f
+f
 ```
-
-#### Control versus disease
-
-First test for differences in proportions between control and all CF samples.
-
-```{r}
-mycontr <- makeContrasts(CvCF = Ctrl-CF,
-                         levels=design)
-mycontr
-```
-
-```{r}
-propeller.ttest(props, design, contrasts = mycontr[,1], robust=TRUE, trend=FALSE,
-                sort=TRUE) %>% knitr::kable()
-```
-
-There is no statistically significant difference in cell type proportions between the CF samples and the control.
 
 # Save data
 

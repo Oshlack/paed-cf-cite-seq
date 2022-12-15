@@ -33,6 +33,8 @@ suppressPackageStartupMessages(library(DropletUtils))
 suppressPackageStartupMessages(library(scran))
 suppressPackageStartupMessages(library(scater))
 suppressPackageStartupMessages(library(scuttle))
+suppressPackageStartupMessages(library(scds))
+suppressPackageStartupMessages(library(scDblFinder))
 set.seed(42)
 options(scipen=999)
 options(future.globals.maxSize = 6500 * 1024^2)
@@ -103,6 +105,36 @@ Remove empty droplets.
 sce <- sce[, which(empties$FDR <= 0.001)]
 sce
 ```
+
+
+# Call homogenic doublets
+Use `scds` and `scDblFinder` to try to identify homogenic doublets. Doublets are called on each capture separately. 
+
+```{r}
+out <- here("data/SCEs/experiment1_doublets.rds")
+
+if(!file.exists(out)){
+  sceLst <- sapply(levels(sce$capture), function(cap){
+    ## Annotate doublets using scds three step process as run in Demuxafy
+    sce1 <- bcds(sce[, sce$capture == cap], 
+                 retRes = TRUE, estNdbl = TRUE)
+    sce1 <- cxds(sce1, retRes = TRUE, estNdbl = TRUE)
+    sce1 <- cxds_bcds_hybrid(sce1, estNdbl = TRUE)
+    ## Annotate doublets using scDblFInder with rate estimate from Demuxafy
+    sce1 <- scDblFinder(sce1, dbr = ncol(sce1)/1000*0.008)
+    sce1
+  })  
+  
+  lapply(sceLst, function(s){
+    colData(s) %>% 
+      data.frame %>%
+      rownames_to_column(var = "cell")
+  }) %>% 
+    bind_rows() %>% 
+    saveRDS(file = out)
+} 
+```
+
 
 # Save data
 

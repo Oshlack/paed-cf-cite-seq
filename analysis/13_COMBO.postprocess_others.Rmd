@@ -1,6 +1,6 @@
 ---
 title: "Analysis of scRNA-seq & CITE-seq Data Combined"
-subtitle: "Post-process T/NK Cells Sub-clustering Results"
+subtitle: "Post-process Other Cells Sub-clustering Results"
 author: "Jovana Maksimovic"
 date: '`r format(Sys.Date(), "%B %d, %Y")`'
 site: workflowr::wflow_site
@@ -127,7 +127,7 @@ seuInt <- RunPCA(seuInt, verbose = FALSE, dims = 1:30) %>%
   RunUMAP(verbose = FALSE, dims = 1:30)
 ```
 
-## Visulaise annotations
+## Visualise annotations
 
 ```{r}
 DimPlot(seuInt, reduction = 'umap', label = TRUE, repel = TRUE, 
@@ -198,8 +198,8 @@ DotPlot(seuInt,
         legend.title = element_text(size = 10)) +
   scale_color_gradient2(low = pal[1], 
                         mid = pal[3], 
-                        high = pal[5]) -> f4b
-f4b
+                        high = pal[5]) -> f4c
+f4c
 ```
 
 ## Visualise cytokines of interest
@@ -255,6 +255,7 @@ prots <- read_csv(file = here("data",
   dplyr::filter(grepl("^A0", id)) %>%
   dplyr::filter(!grepl("[Ii]sotype", name)) 
 ```
+
 ## Visualise all ADTs
 
 Normalised with DSB. C133_Neeland ADT data was transferred to CF_BAL_Pilot using reference mapping and transfer.
@@ -322,15 +323,12 @@ dat |>
     column_title_side = "bottom",
     palette_value = circlize::colorRamp2(seq(-1, topMax, length.out = 256),
                                          viridis::magma(256)),
-    heatmap_legend_param = list(direction = "horizontal"),
-    column_title_side = "top") |>
+    heatmap_legend_param = list(direction = "vertical"),
+    column_title_side = "bottom") |>
   add_tile(`Cell Label`, show_legend = FALSE,
            show_annotation_name = FALSE,
-           palette = pal)  %>%
-  as_ComplexHeatmap() %>%
-  ComplexHeatmap::draw(heatmap_legend_side = "bottom",  
-                       annotation_legend_side = "bottom") -> f4c
-
+           palette = pal) -> f4d
+f4d
 ```
 
 # Proportions analysis
@@ -380,27 +378,6 @@ ggplot(aes(x = Participant, y = Freq, fill = clusters)) +
   scale_fill_paletteer_d("miscpalettes::pastel")
 ```
 
-### Cell proportions by donor, stratified by cell type
-
-```{r, fig.asp=1, fig.width=9}
-props$Proportions %>%
-  data.frame %>%
-  inner_join(info, by = c("sample" = "donor")) %>%
-ggplot(aes(x = Participant, y = Freq, fill = clusters)) +
-  geom_bar(stat = "identity") +
-  facet_wrap(~clusters, scales = "free_y") +
-    theme_classic() +
-  NoLegend() +
-  theme(axis.text.x = element_text(angle = 90,
-                                   vjust = 0.5,
-                                   hjust = 1,
-                                   size = 8),
-        strip.text = element_text(size = 10),
-        axis.text = element_text(size = 8)) +
-  labs(y = "Proportion", fill = "Cell label") +
-  scale_fill_paletteer_d("miscpalettes::pastel")
-```
-
 
 ## Sub-cluster proportions (Fine)
 
@@ -425,29 +402,9 @@ ggplot(aes(x = Participant, y = Freq, fill = clusters)) +
                                    hjust = 1),
         legend.text = element_text(size = 8)) +
   labs(y = "Proportion", fill = "Cell label") +
-  scale_fill_paletteer_d("miscpalettes::pastel")
+  scale_fill_paletteer_d("miscpalettes::pastel") -> f4b
 ```
 
-### Cell proportions by donor, stratified by cell type
-
-```{r, fig.asp=1, fig.width=9}
-props$Proportions %>%
-  data.frame %>%
-  inner_join(info, by = c("sample" = "donor")) %>%
-ggplot(aes(x = Participant, y = Freq, fill = clusters)) +
-  geom_bar(stat = "identity") +
-  facet_wrap(~clusters, scales = "free_y") +
-  theme_classic() +
-  NoLegend() +
-  theme(axis.text.x = element_text(angle = 90,
-                                   vjust = 0.5,
-                                   hjust = 1,
-                                   size = 8),
-        strip.text = element_text(size = 8),
-        axis.text = element_text(size = 8)) +
-  labs(y = "Proportion", fill = "Cell label") +
-  scale_fill_paletteer_d("miscpalettes::pastel")
-```
 
 # Save data
 
@@ -465,18 +422,19 @@ if(!file.exists(out)){
 
 # Panel figures
 
-```{r, fig.width=10, fig.asp=1.3}
-layout = "AAAA
-          AAAA
-          AAAA
-          BBBB
-          BBBB
+```{r, fig.width=12, fig.asp=1.1}
+layout = "AAAB
+          AAAB
+          AAAB
           CCCC
           CCCC
-          CCCC"
+          DDDD
+          DDDD
+          DDDD"
 ((f4a + ggtitle("")) + 
    f4b + 
-   wrap_elements(grid::grid.grabExpr(ComplexHeatmap::draw(f4c)))) + 
+   f4c +
+   wrap_heatmap(f4d)) + 
   plot_layout(design = layout) +
   plot_annotation(tag_levels = "A") &
   theme(plot.tag = element_text(size = 14, face = "bold"))

@@ -171,6 +171,21 @@ DimPlot(seuInt, reduction = 'umap', label = TRUE, repel = TRUE,
 f1b
 ```
 
+### APOC2 gene expression
+
+```{r}
+FeaturePlot(seuInt, features = "APOC2")
+```
+
+```{r, fig.asp=1}
+VlnPlot(seuInt, features = "APOC2", 
+        group.by = "Broad", pt.size = 0,
+        log = TRUE) + 
+  NoLegend() +
+  paletteer::scale_fill_paletteer_d("miscpalettes::pastel")
+```
+
+
 ## `Cepo` cluster marker genes 
 
 ```{r}
@@ -247,7 +262,7 @@ info %>% knitr::kable()
 ```
 
 
-## Manual annotation proportions
+## Manual annotation proportions (Broad)
 
 ```{r}
 # Differences in cell type proportions
@@ -256,7 +271,7 @@ props <- getTransformedProps(clusters = seuInt$Broad,
 props$Proportions %>% knitr::kable()
 ```
 
-### Cell proportions by donor
+### Cell proportions by donor (Broad)
 
 ```{r, fig.asp=1}
 props$Proportions %>%
@@ -274,79 +289,80 @@ ggplot(aes(x = Participant, y = Freq, fill = clusters)) +
 f1c
 ```
 
-# Differences in cell type proportions (Broad)
-## Proportion plots
+### Cell proportions of control sample relative to CF samples (Broad)
 
-Stripchart of cell type proportion, stratified by disease.
+```{r}
+props$Proportions %>%
+  data.frame %>%
+  inner_join(info, by = c("sample" = "donor")) -> dat
 
-```{r, fig.asp=1}
-props$Proportions %>% data.frame %>%
-  left_join(info,
-            by = c("sample" = "donor")) %>%
-  ggplot(aes(x = Disease,
-             y = Freq,
-             colour = Age)) +
-  geom_jitter(stat = "identity",
-              width = 0.15,
-              size = 2.25,
-              aes(shape = as.factor(Batch))) +
-  stat_summary(aes(x = Disease, y = Freq),
-               inherit.aes = FALSE,
-               fun = "mean",
-               geom = "crossbar",
-               size = 0.1) +
+ggplot(dat[dat$Participant != "A1_Ctrl",], 
+       aes(x = clusters, y = Freq)) +
+  geom_boxplot() +
+  geom_point(data = dat[dat$Participant == "A1_Ctrl", ], 
+             aes(x = clusters, y = Freq),
+             color = "red") +
+  theme_classic() +
   theme(axis.text.x = element_text(angle = 90,
-                                   hjust = 1,
-                                   vjust = 0.5),
-        legend.position = "bottom",
-        legend.direction = "horizontal",
-        strip.text = element_text(size = 6),
-        axis.text = element_text(size = 6)) +
-  labs(x = "Disease", y = "Proportion",
-       shape = "Batch", colour = "Age") +
-  scale_color_gradientn(colours = paletteer_d(palette = "RColorBrewer::Spectral")) +
-  facet_wrap(~ clusters, scales = "free_y") -> p1
-
+                                   vjust = 0.5,
+                                   hjust = 1),
+        legend.text = element_text(size = 8)) +
+  labs(y = "Proportion") +
+  NoLegend() -> p1
 p1
 ```
 
-## Statistical analysis of cell type proportions
+### Cell proportions of control sample relative to CF samples (Fine)
 
-We can set up a design matrix taking into account various aspects of the data,
-such as disease severity, treatment and Batch.
-Please note that the way that `propeller` has been designed is such that the
-group information is *always* first in the design matrix specification, and
-there is NO intercept.
+```{r, fig.asp=1}
+macrophages <- c("Macrophages")
+tcells <- c("T cell lineage", "Innate lymphoid cell NK")
+lung <- c("AT1", "EC arterial", "Rare", "Secretory", "Basal",
+          "EC venous", "Multiciliated lineage", "EC capillary", 
+          "Lymphatic EC mature", "AT2")
 
-```{r}
-Group <- factor(info$Disease)
-Batch <- factor(info$Batch)
+seuInt$grouping <- ifelse(seuInt$predicted.ann_level_3 %in% macrophages, "Macrophages",
+                          ifelse(seuInt$predicted.ann_level_3 %in% tcells, "T\\NK Cells", "Other Cells"))
 
-design <- model.matrix(~ 0 + Group + Batch)
+propsFine <- getTransformedProps(clusters = seuInt$Annotation, 
+                             sample = seuInt$donor, transform="asin")
 
-colnames(design) <- c("CF", "Ctrl", "Batch")
-design
+propsFine$Proportions %>%
+  data.frame %>%
+  inner_join(info, by = c("sample" = "donor")) -> dat
+
+dat %>% 
+  left_join(seuInt@meta.data %>%
+              dplyr::select(Annotation, grouping) %>%
+              distinct, by = c("clusters" = "Annotation")) -> dat
+
+lapply(unique(dat$grouping), function(grp) {
+ggplot(dat[dat$grouping == grp & dat$Participant != "A1_Ctrl",], 
+       aes(x = clusters, y = Freq)) +
+  geom_boxplot() +
+  geom_point(data = dat[dat$grouping == grp & dat$Participant == "A1_Ctrl", ], 
+             aes(x = clusters, y = Freq),
+             color = "red") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90,
+                                   vjust = 0.5,
+                                   hjust = 1),
+        legend.text = element_text(size = 8)) +
+  labs(y = "Proportion") +
+  NoLegend()
+}) -> p
+
+c(list(p1), p) -> p
+
+((p[[1]] + theme(axis.title.x = element_blank())) / 
+  ((p[[2]] + theme(axis.title.x = element_blank())) +
+     (p[[3]] + theme(axis.title.y = element_blank(),
+                     axis.title.x = element_blank())) + 
+     (p[[4]] + theme(axis.title.y = element_blank(),
+                     axis.title.x = element_blank())))) +
+  plot_annotation(tag_levels = "A") &
+  theme(plot.tag = element_text(size = 14, face = "bold"))
 ```
-
-### Test for differences in cell type proportions by disease
-
-We can use the `propeller.ttest` function and specify a contrast that tests for this
-comparison with our design matrix.
-
-#### Disease: Control versus CF
-
-```{r}
-mycontr <- makeContrasts(CvCF = Ctrl-CF,
-                         levels = design)
-mycontr
-```
-
-```{r}
-propeller.ttest(props, design, contrasts = mycontr[,1], robust=TRUE, trend=FALSE,
-                sort=TRUE) %>% knitr::kable()
-```
-
-There are no statistically significant differences in cell type proportions between the control and CF groups at the broad label level.
 
 # Compare flow cytometry and scRNA-seq proportions
 ## Format proportions for comparison
