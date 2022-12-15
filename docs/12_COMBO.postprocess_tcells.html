@@ -11,7 +11,7 @@
 
 <meta name="author" content="Jovana Maksimovic" />
 
-<meta name="date" content="2022-06-16" />
+<meta name="date" content="2022-12-15" />
 
 <title>Analysis of scRNA-seq &amp; CITE-seq Data Combined</title>
 
@@ -375,7 +375,7 @@ div.tocify {
 <h1 class="title toc-ignore">Analysis of scRNA-seq &amp; CITE-seq Data Combined</h1>
 <h3 class="subtitle">Post-process T/NK Cells Sub-clustering Results</h3>
 <h4 class="author">Jovana Maksimovic</h4>
-<h4 class="date">June 16, 2022</h4>
+<h4 class="date">December 15, 2022</h4>
 
 </div>
 
@@ -404,7 +404,7 @@ Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></sp
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-06-16
+<strong>Last updated:</strong> 2022-12-15
 </p>
 <p>
 <strong>Checks:</strong>
@@ -532,20 +532,20 @@ makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree8255c241a80231919c022a91ab9f226505b1e73ctargetblank8255c24a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree916bafae8e95c06971d8a185a2a787b2b81e7385targetblank916bafaa">
 <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-<strong>Repository version:</strong> <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/8255c241a80231919c022a91ab9f226505b1e73c" target="_blank">8255c24</a>
+<strong>Repository version:</strong> <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/916bafae8e95c06971d8a185a2a787b2b81e7385" target="_blank">916bafa</a>
 </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree8255c241a80231919c022a91ab9f226505b1e73ctargetblank8255c24a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree916bafae8e95c06971d8a185a2a787b2b81e7385targetblank916bafaa" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and
 connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/8255c241a80231919c022a91ab9f226505b1e73c" target="_blank">8255c24</a>.
+The results in this page were generated with repository version <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/916bafae8e95c06971d8a185a2a787b2b81e7385" target="_blank">916bafa</a>.
 See the <em>Past versions</em> tab to see a history of the changes made to the
 R Markdown and HTML files.
 </p>
@@ -566,21 +566,18 @@ Ignored files:
     Ignored:    data/190930_A00152_0150_BHTYCMDSXX/
     Ignored:    data/CellRanger/
     Ignored:    data/GSE127465_RAW/
+    Ignored:    data/Homo_sapiens.gene_info
     Ignored:    data/SCEs/02_ZILIONIS.sct_normalised.SEU.rds
     Ignored:    data/SCEs/03_C133_Neeland.demultiplexed.SCE.rds
     Ignored:    data/SCEs/03_C133_Neeland.emptyDrops.SCE.rds
-    Ignored:    data/SCEs/03_C133_Neeland.nuclear_fraction_calls.rds
     Ignored:    data/SCEs/03_C133_Neeland.preprocessed.SCE.rds
     Ignored:    data/SCEs/03_CF_BAL_Pilot.CellRanger_v6.SCE.rds
     Ignored:    data/SCEs/03_CF_BAL_Pilot.emptyDrops.SCE.rds
-    Ignored:    data/SCEs/03_CF_BAL_Pilot.nuclear_fraction_calls.rds
     Ignored:    data/SCEs/03_CF_BAL_Pilot.preprocessed.SCE.rds
     Ignored:    data/SCEs/03_COMBO.clustered.SEU.rds
     Ignored:    data/SCEs/03_COMBO.clustered_annotated_macrophages_diet.SEU.rds
     Ignored:    data/SCEs/03_COMBO.clustered_annotated_others_diet.SEU.rds
     Ignored:    data/SCEs/03_COMBO.clustered_annotated_tcells_diet.SEU.rds
-    Ignored:    data/SCEs/03_COMBO.clustered_azimuth.SEU.rds
-    Ignored:    data/SCEs/03_COMBO.clustered_azimuth_v2.SEU.rds
     Ignored:    data/SCEs/03_COMBO.clustered_diet.SEU.rds
     Ignored:    data/SCEs/03_COMBO.integrated.SEU.rds
     Ignored:    data/SCEs/03_COMBO.zilionis_mapped.SEU.rds
@@ -630,20 +627,28 @@ Ignored files:
     Ignored:    data/SCEs/05_COMBO.others_integrated.SEU.rds
     Ignored:    data/SCEs/05_COMBO.tcells_clustered.SEU.rds
     Ignored:    data/SCEs/05_COMBO.tcells_integrated.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.clean_clustered.DIET.rds
     Ignored:    data/SCEs/06_COMBO.clean_clustered.SEU.rds
     Ignored:    data/SCEs/06_COMBO.clean_integrated.SEU.rds
     Ignored:    data/SCEs/06_COMBO.clean_macrophages_diet.SEU.rds
     Ignored:    data/SCEs/06_COMBO.clean_others_diet.SEU.rds
     Ignored:    data/SCEs/06_COMBO.clean_tcells_diet.SEU.rds
     Ignored:    data/SCEs/06_COMBO.macrophages_clustered.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.macrophages_clustered_dbl.SEU.rds
     Ignored:    data/SCEs/06_COMBO.macrophages_integrated.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.macrophages_integrated_dbl.SEU.rds
     Ignored:    data/SCEs/06_COMBO.others_clustered.SEU.rds
     Ignored:    data/SCEs/06_COMBO.others_integrated.SEU.rds
     Ignored:    data/SCEs/06_COMBO.tcells_clustered.SEU.rds
     Ignored:    data/SCEs/06_COMBO.tcells_integrated.SEU.rds
+    Ignored:    data/SCEs/07_COMBO.macrophages_clustered.SEU.rds
+    Ignored:    data/SCEs/07_COMBO.macrophages_integrated.SEU.rds
     Ignored:    data/SCEs/C133_Neeland.CellRanger.SCE.rds
+    Ignored:    data/SCEs/experiment1_doublets.rds
+    Ignored:    data/SCEs/experiment2_doublets.rds
     Ignored:    data/SCEs/obsolete/
-    Ignored:    data/emptyDrops/
+    Ignored:    data/cellsnp-lite/
+    Ignored:    data/emptyDrops/obsolete/
     Ignored:    data/obsolete/
     Ignored:    data/sample_sheets/obsolete/
     Ignored:    output/marker-analysis/obsolete/
@@ -653,24 +658,13 @@ Ignored files:
     Ignored:    renv/staging/
     Ignored:    wflow_background.R
 
+Untracked files:
+    Untracked:  output/marker-analysis/06-COMBO-macrophages/
+
 Unstaged changes:
     Modified:   .gitignore
     Modified:   .renvignore
-    Deleted:    analysis/03_C133_Neeland.demultiplex.Rmd
-    Deleted:    analysis/03_C133_Neeland.preprocess.Rmd
-    Deleted:    analysis/03_COMBO.clustering_annotation.Rmd
-    Deleted:    analysis/04_CF_BAL_Pilot.emptyDrops.Rmd
-    Deleted:    analysis/04_CF_BAL_Pilot.preprocess.Rmd
-    Deleted:    analysis/04_COMBO.transfer_proteins.Rmd
-    Deleted:    analysis/05_COMBO.cluster_macrophages.Rmd
-    Deleted:    analysis/05_COMBO.cluster_others.Rmd
-    Deleted:    analysis/05_COMBO.cluster_tcells.Rmd
-    Deleted:    analysis/05_COMBO.expression_analysis.Rmd
-    Deleted:    analysis/05_COMBO.postprocess_all.Rmd
-    Deleted:    analysis/05_COMBO.postprocess_macrophages.Rmd
-    Deleted:    analysis/05_COMBO.postprocess_others.Rmd
-    Deleted:    analysis/05_COMBO.postprocess_tcells.Rmd
-    Modified:   analysis/gettingStarted.Rmd
+    Modified:   analysis/index.Rmd
     Modified:   renv/.gitignore
     Modified:   renv/settings.dcf
 
@@ -722,7 +716,24 @@ Message
 Rmd
 </td>
 <td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/8255c241a80231919c022a91ab9f226505b1e73c/analysis/12_COMBO.postprocess_tcells.Rmd" target="_blank">8255c24</a>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/916bafae8e95c06971d8a185a2a787b2b81e7385/analysis/12_COMBO.postprocess_tcells.Rmd" target="_blank">916bafa</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-15
+</td>
+<td>
+wflow_publish(c("analysis/<em>.emptyDrops.Rmd", "analysis/</em>postprocess_*.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/analysis/12_COMBO.postprocess_tcells.Rmd" target="_blank">f3b7b92</a>
 </td>
 <td>
 Jovana Maksimovic
@@ -731,7 +742,24 @@ Jovana Maksimovic
 2022-06-16
 </td>
 <td>
-wflow_publish(c(paste0("analysis/", list.files(path = here::here("analysis"),
+Submission version
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/12_COMBO.postprocess_tcells.html" target="_blank">f3b7b92</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-16
+</td>
+<td>
+Submission version
 </td>
 </tr>
 </tbody>
@@ -804,6 +832,43 @@ DimPlot(seuInt, reduction = &#39;umap&#39;, label = TRUE, repel = TRUE,
 (p1 | p2 | p3) &amp; theme(text = element_text(size = 8),
                   axis.text = element_text(size = 8))</code></pre>
 <p><img src="figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-5-1.png" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-1">
+Past versions of unnamed-chunk-5-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-5-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-5-1.png" target="_blank">f3b7b92</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div id="no.-cells-per-cluster" class="section level3" number="3.2.1">
 <h3><span class="header-section-number">3.2.1</span> No. cells per cluster</h3>
 <pre class="r"><code>seuInt@meta.data %&gt;%
@@ -815,6 +880,43 @@ DimPlot(seuInt, reduction = &#39;umap&#39;, label = TRUE, repel = TRUE,
   NoLegend() +
   scale_fill_paletteer_d(&quot;miscpalettes::pastel&quot;)</code></pre>
 <p><img src="figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-1">
+Past versions of unnamed-chunk-6-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-6-1.png" target="_blank">f3b7b92</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>seuInt@meta.data %&gt;%
   ggplot(aes(x = Broad, fill = Broad)) +
   geom_bar() +
@@ -824,6 +926,43 @@ DimPlot(seuInt, reduction = &#39;umap&#39;, label = TRUE, repel = TRUE,
   NoLegend() +
   scale_fill_paletteer_d(&quot;miscpalettes::pastel&quot;)</code></pre>
 <p><img src="figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-6-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-2">
+Past versions of unnamed-chunk-6-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-6-2.png" target="_blank">f3b7b92</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="remove-suspect-clusters" class="section level3" number="3.2.2">
 <h3><span class="header-section-number">3.2.2</span> Remove SUSPECT clusters</h3>
@@ -836,8 +975,8 @@ seuInt &lt;- RunPCA(seuInt, verbose = FALSE, dims = 1:30) %&gt;%
   RunUMAP(verbose = FALSE, dims = 1:30)</code></pre>
 </div>
 </div>
-<div id="visulalise-annotations-1" class="section level2" number="3.3">
-<h2><span class="header-section-number">3.3</span> Visulalise annotations</h2>
+<div id="visualise-annotations" class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> Visualise annotations</h2>
 <pre class="r"><code>DimPlot(seuInt, reduction = &#39;umap&#39;, label = TRUE, repel = FALSE, 
         label.size = 3, group.by = &quot;Annotation&quot;) + 
   NoLegend() +
@@ -852,10 +991,84 @@ DimPlot(seuInt, reduction = &#39;umap&#39;, label = TRUE, repel = FALSE,
 (p1) &amp; theme(text = element_text(size = 8),
                   axis.text = element_text(size = 8))</code></pre>
 <p><img src="figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-1">
+Past versions of unnamed-chunk-8-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-8-1.png" target="_blank">f3b7b92</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>(p2) &amp; theme(text = element_text(size = 8),
                   axis.text = element_text(size = 8)) -&gt; f3a
 f3a</code></pre>
 <p><img src="figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-8-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-2">
+Past versions of unnamed-chunk-8-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-8-2.png" target="_blank">f3b7b92</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="cepo-cluster-marker-genes" class="section level2" number="3.4">
 <h2><span class="header-section-number">3.4</span> <code>Cepo</code> cluster marker genes</h2>
@@ -1216,9 +1429,46 @@ DotPlot(seuInt,
         legend.title = element_text(size = 10)) +
   scale_color_gradient2(low = pal[1], 
                         mid = pal[3], 
-                        high = pal[5]) -&gt; f3b
-f3b</code></pre>
+                        high = pal[5]) -&gt; f3c
+f3c</code></pre>
 <p><img src="figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-10-1.png" width="864" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-1">
+Past versions of unnamed-chunk-10-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-10-1.png" target="_blank">f3b7b92</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="visualise-cytokines-of-interest" class="section level2" number="3.5">
@@ -1243,6 +1493,43 @@ p &lt;- DotPlot(seuInt,
 
 p</code></pre>
 <p><img src="figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-1">
+Past versions of unnamed-chunk-11-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-11-1.png" target="_blank">f3b7b92</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="load-protein-data" class="section level1" number="4">
@@ -1266,8 +1553,8 @@ Active assay: RNA (16001 features, 0 variable features)
 <pre class="r"><code>rm(seuAdt)
 gc()</code></pre>
 <pre><code>            used   (Mb) gc trigger   (Mb)  max used   (Mb)
-Ncells   9771370  521.9   14699751  785.1  14699751  785.1
-Vcells 249929055 1906.9  682342901 5205.9 806711063 6154.8</code></pre>
+Ncells   9771883  521.9   14699798  785.1  14699798  785.1
+Vcells 249930867 1906.9  682344641 5205.9 806712681 6154.8</code></pre>
 </div>
 <div id="load-protein-annotations" class="section level2" number="4.2">
 <h2><span class="header-section-number">4.2</span> Load protein annotations</h2>
@@ -1296,6 +1583,43 @@ plot(density(dat$`ADT Exp.`))
 topMax &lt;- 8
 abline(v = topMax, lty = 2, col = &quot;grey&quot;)</code></pre>
 <p><img src="figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-15-1">
+Past versions of unnamed-chunk-15-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-15-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-15-1.png" target="_blank">f3b7b92</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>dat |&gt; heatmap(
   .column = `Cell Label`,
   .row = Protein,
@@ -1312,6 +1636,43 @@ abline(v = topMax, lty = 2, col = &quot;grey&quot;)</code></pre>
                                          viridis::magma(256)),
   heatmap_legend_param = list(direction = &quot;vertical&quot;)) </code></pre>
 <p><img src="figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-16-1">
+Past versions of unnamed-chunk-16-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-16-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-16-1.png" target="_blank">f3b7b92</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="visualise-adts-of-interest" class="section level2" number="4.4">
 <h2><span class="header-section-number">4.4</span> Visualise ADTs of interest</h2>
@@ -1340,10 +1701,47 @@ dat |&gt;
   add_tile(`Cell Label`, show_legend = FALSE,
            show_annotation_name = FALSE,
            palette = paletteer_d(&quot;miscpalettes::pastel&quot;, 
-                                 length(levels(seuInt$Annotation)))) -&gt; f3c
+                                 length(levels(seuInt$Annotation)))) -&gt; f3d
 
-wrap_heatmap(f3c)</code></pre>
+wrap_heatmap(f3d)</code></pre>
 <p><img src="figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-17-1">
+Past versions of unnamed-chunk-17-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-17-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-17-1.png" target="_blank">f3b7b92</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="proportions-analysis" class="section level1" number="5">
@@ -1650,26 +2048,43 @@ ggplot(aes(x = Participant, y = Freq, fill = clusters)) +
   labs( y = &quot;Proportion&quot;, fill = &quot;Cell label&quot;) +
   scale_fill_paletteer_d(&quot;miscpalettes::pastel&quot;)</code></pre>
 <p><img src="figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-20-1">
+Past versions of unnamed-chunk-20-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-20-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-20-1.png" target="_blank">f3b7b92</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-16
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="cell-proportions-by-donor-stratified-by-cell-type" class="section level3" number="5.2.2">
-<h3><span class="header-section-number">5.2.2</span> Cell proportions by donor, stratified by cell type</h3>
-<pre class="r"><code>props$Proportions %&gt;%
-  data.frame %&gt;%
-  inner_join(info, by = c(&quot;sample&quot; = &quot;donor&quot;)) %&gt;%
-ggplot(aes(x = Participant, y = Freq, fill = clusters)) +
-  geom_bar(stat = &quot;identity&quot;) +
-  facet_wrap(~clusters, scales = &quot;free_y&quot;) +
-  theme_classic() +
-  NoLegend() +
-  theme(axis.text.x = element_text(angle = 90,
-                                   vjust = 0.5,
-                                   hjust = 1,
-                                   size = 8),
-        strip.text = element_text(size = 10),
-        axis.text = element_text(size = 8)) +
-  labs( y = &quot;Proportion&quot;, fill = &quot;Cell label&quot;) +
-  scale_fill_paletteer_d(&quot;miscpalettes::pastel&quot;)</code></pre>
-<p><img src="figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
 </div>
 </div>
 <div id="sub-cluster-proportions-fine" class="section level2" number="5.3">
@@ -1907,28 +2322,9 @@ ggplot(aes(x = Participant, y = Freq, fill = clusters)) +
                                    hjust = 1),
         legend.text = element_text(size = 8)) +
   labs(y = &quot;Proportion&quot;, fill = &quot;Cell label&quot;) +
-  scale_fill_paletteer_d(&quot;miscpalettes::pastel&quot;)</code></pre>
-<p><img src="figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-23-1.png" width="672" style="display: block; margin: auto;" /></p>
-</div>
-<div id="cell-proportions-by-donor-stratified-by-cell-type-1" class="section level3" number="5.3.2">
-<h3><span class="header-section-number">5.3.2</span> Cell proportions by donor, stratified by cell type</h3>
-<pre class="r"><code>props$Proportions %&gt;%
-  data.frame %&gt;%
-  inner_join(info, by = c(&quot;sample&quot; = &quot;donor&quot;)) %&gt;%
-ggplot(aes(x = Participant, y = Freq, fill = clusters)) +
-  geom_bar(stat = &quot;identity&quot;) +
-  facet_wrap(~clusters, scales = &quot;free_y&quot;) +
-  theme_classic() +
-  NoLegend() +
-  theme(axis.text.x = element_text(angle = 90,
-                                   vjust = 0.5,
-                                   hjust = 1,
-                                   size = 8),
-        strip.text = element_text(size = 10),
-        axis.text = element_text(size = 0)) +
-  labs(y = &quot;Proportion&quot;, fill = &quot;Cell label&quot;) +
-  scale_fill_paletteer_d(&quot;miscpalettes::pastel&quot;)</code></pre>
-<p><img src="figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-24-1.png" width="864" style="display: block; margin: auto;" /></p>
+  scale_fill_paletteer_d(&quot;miscpalettes::pastel&quot;) -&gt; f3b
+f3b</code></pre>
+<p><img src="figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 </div>
@@ -1946,21 +2342,59 @@ if(!file.exists(out)){
 </div>
 <div id="panel-figures" class="section level1" number="7">
 <h1><span class="header-section-number">7</span> Panel figures</h1>
-<pre class="r"><code>layout = &quot;AAAA
-          AAAA
-          AAAA
-          BBBB
-          BBBB
+<pre class="r"><code>layout = &quot;AAAB
+          AAAB
+          AAAB
           CCCC
           CCCC
-          CCCC&quot;
+          DDDD
+          DDDD
+          DDDD&quot;
 ((f3a + ggtitle(&quot;&quot;)) + 
    f3b + 
-   wrap_heatmap(f3c)) + 
+   f3c +
+   wrap_heatmap(f3d)) + 
   plot_layout(design = layout) +
   plot_annotation(tag_levels = &quot;A&quot;) &amp;
   theme(plot.tag = element_text(size = 14, face = &quot;bold&quot;))</code></pre>
-<p><img src="figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-26-1.png" width="864" style="display: block; margin: auto;" /></p>
+<p><img src="figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-24-1.png" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-24-1">
+Past versions of unnamed-chunk-24-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-24-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/12_COMBO.postprocess_tcells.Rmd/unnamed-chunk-24-1.png" target="_blank">f3b7b92</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="session-info" class="section level1 appendix" number="8">
 <h1><span class="header-section-number">8</span> Session info</h1>
@@ -1979,7 +2413,7 @@ The analysis and this document were prepared using the following software (click
  collate  en_AU.UTF-8
  ctype    en_AU.UTF-8
  tz       Australia/Melbourne
- date     2022-06-16
+ date     2022-12-15
  pandoc   2.17.1.1 @ /usr/lib/rstudio-server/bin/quarto/bin/ (via rmarkdown)
 
 ─ Packages ───────────────────────────────────────────────────────────────────

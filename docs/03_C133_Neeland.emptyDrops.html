@@ -11,7 +11,7 @@
 
 <meta name="author" content="Jovana Maksimovic (modified from code by Peter Hickey &amp; William Ho)" />
 
-<meta name="date" content="2022-06-16" />
+<meta name="date" content="2022-12-15" />
 
 <title>Analysis of C133_Neeland CITE-seq Data</title>
 
@@ -375,7 +375,7 @@ div.tocify {
 <h1 class="title toc-ignore">Analysis of C133_Neeland CITE-seq Data</h1>
 <h3 class="subtitle">Droplet Selection</h3>
 <h4 class="author">Jovana Maksimovic (modified from code by Peter Hickey &amp; William Ho)</h4>
-<h4 class="date">June 16, 2022</h4>
+<h4 class="date">December 15, 2022</h4>
 
 </div>
 
@@ -404,7 +404,7 @@ Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></sp
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-06-16
+<strong>Last updated:</strong> 2022-12-15
 </p>
 <p>
 <strong>Checks:</strong>
@@ -532,20 +532,20 @@ makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree8255c241a80231919c022a91ab9f226505b1e73ctargetblank8255c24a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree916bafae8e95c06971d8a185a2a787b2b81e7385targetblank916bafaa">
 <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-<strong>Repository version:</strong> <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/8255c241a80231919c022a91ab9f226505b1e73c" target="_blank">8255c24</a>
+<strong>Repository version:</strong> <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/916bafae8e95c06971d8a185a2a787b2b81e7385" target="_blank">916bafa</a>
 </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree8255c241a80231919c022a91ab9f226505b1e73ctargetblank8255c24a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree916bafae8e95c06971d8a185a2a787b2b81e7385targetblank916bafaa" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and
 connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/8255c241a80231919c022a91ab9f226505b1e73c" target="_blank">8255c24</a>.
+The results in this page were generated with repository version <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/916bafae8e95c06971d8a185a2a787b2b81e7385" target="_blank">916bafa</a>.
 See the <em>Past versions</em> tab to see a history of the changes made to the
 R Markdown and HTML files.
 </p>
@@ -566,21 +566,18 @@ Ignored files:
     Ignored:    data/190930_A00152_0150_BHTYCMDSXX/
     Ignored:    data/CellRanger/
     Ignored:    data/GSE127465_RAW/
+    Ignored:    data/Homo_sapiens.gene_info
     Ignored:    data/SCEs/02_ZILIONIS.sct_normalised.SEU.rds
     Ignored:    data/SCEs/03_C133_Neeland.demultiplexed.SCE.rds
     Ignored:    data/SCEs/03_C133_Neeland.emptyDrops.SCE.rds
-    Ignored:    data/SCEs/03_C133_Neeland.nuclear_fraction_calls.rds
     Ignored:    data/SCEs/03_C133_Neeland.preprocessed.SCE.rds
     Ignored:    data/SCEs/03_CF_BAL_Pilot.CellRanger_v6.SCE.rds
     Ignored:    data/SCEs/03_CF_BAL_Pilot.emptyDrops.SCE.rds
-    Ignored:    data/SCEs/03_CF_BAL_Pilot.nuclear_fraction_calls.rds
     Ignored:    data/SCEs/03_CF_BAL_Pilot.preprocessed.SCE.rds
     Ignored:    data/SCEs/03_COMBO.clustered.SEU.rds
     Ignored:    data/SCEs/03_COMBO.clustered_annotated_macrophages_diet.SEU.rds
     Ignored:    data/SCEs/03_COMBO.clustered_annotated_others_diet.SEU.rds
     Ignored:    data/SCEs/03_COMBO.clustered_annotated_tcells_diet.SEU.rds
-    Ignored:    data/SCEs/03_COMBO.clustered_azimuth.SEU.rds
-    Ignored:    data/SCEs/03_COMBO.clustered_azimuth_v2.SEU.rds
     Ignored:    data/SCEs/03_COMBO.clustered_diet.SEU.rds
     Ignored:    data/SCEs/03_COMBO.integrated.SEU.rds
     Ignored:    data/SCEs/03_COMBO.zilionis_mapped.SEU.rds
@@ -630,20 +627,28 @@ Ignored files:
     Ignored:    data/SCEs/05_COMBO.others_integrated.SEU.rds
     Ignored:    data/SCEs/05_COMBO.tcells_clustered.SEU.rds
     Ignored:    data/SCEs/05_COMBO.tcells_integrated.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.clean_clustered.DIET.rds
     Ignored:    data/SCEs/06_COMBO.clean_clustered.SEU.rds
     Ignored:    data/SCEs/06_COMBO.clean_integrated.SEU.rds
     Ignored:    data/SCEs/06_COMBO.clean_macrophages_diet.SEU.rds
     Ignored:    data/SCEs/06_COMBO.clean_others_diet.SEU.rds
     Ignored:    data/SCEs/06_COMBO.clean_tcells_diet.SEU.rds
     Ignored:    data/SCEs/06_COMBO.macrophages_clustered.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.macrophages_clustered_dbl.SEU.rds
     Ignored:    data/SCEs/06_COMBO.macrophages_integrated.SEU.rds
+    Ignored:    data/SCEs/06_COMBO.macrophages_integrated_dbl.SEU.rds
     Ignored:    data/SCEs/06_COMBO.others_clustered.SEU.rds
     Ignored:    data/SCEs/06_COMBO.others_integrated.SEU.rds
     Ignored:    data/SCEs/06_COMBO.tcells_clustered.SEU.rds
     Ignored:    data/SCEs/06_COMBO.tcells_integrated.SEU.rds
+    Ignored:    data/SCEs/07_COMBO.macrophages_clustered.SEU.rds
+    Ignored:    data/SCEs/07_COMBO.macrophages_integrated.SEU.rds
     Ignored:    data/SCEs/C133_Neeland.CellRanger.SCE.rds
+    Ignored:    data/SCEs/experiment1_doublets.rds
+    Ignored:    data/SCEs/experiment2_doublets.rds
     Ignored:    data/SCEs/obsolete/
-    Ignored:    data/emptyDrops/
+    Ignored:    data/cellsnp-lite/
+    Ignored:    data/emptyDrops/obsolete/
     Ignored:    data/obsolete/
     Ignored:    data/sample_sheets/obsolete/
     Ignored:    output/marker-analysis/obsolete/
@@ -653,23 +658,13 @@ Ignored files:
     Ignored:    renv/staging/
     Ignored:    wflow_background.R
 
+Untracked files:
+    Untracked:  output/marker-analysis/06-COMBO-macrophages/
+
 Unstaged changes:
     Modified:   .gitignore
     Modified:   .renvignore
-    Deleted:    analysis/03_C133_Neeland.demultiplex.Rmd
-    Deleted:    analysis/03_C133_Neeland.preprocess.Rmd
-    Deleted:    analysis/03_COMBO.clustering_annotation.Rmd
-    Deleted:    analysis/04_CF_BAL_Pilot.emptyDrops.Rmd
-    Deleted:    analysis/04_CF_BAL_Pilot.preprocess.Rmd
-    Deleted:    analysis/04_COMBO.transfer_proteins.Rmd
-    Deleted:    analysis/05_COMBO.cluster_macrophages.Rmd
-    Deleted:    analysis/05_COMBO.cluster_others.Rmd
-    Deleted:    analysis/05_COMBO.cluster_tcells.Rmd
-    Deleted:    analysis/05_COMBO.expression_analysis.Rmd
-    Deleted:    analysis/05_COMBO.postprocess_all.Rmd
-    Deleted:    analysis/05_COMBO.postprocess_macrophages.Rmd
-    Deleted:    analysis/05_COMBO.postprocess_others.Rmd
-    Deleted:    analysis/05_COMBO.postprocess_tcells.Rmd
+    Modified:   analysis/index.Rmd
     Modified:   renv/.gitignore
     Modified:   renv/settings.dcf
 
@@ -718,10 +713,27 @@ Message
 <tbody>
 <tr>
 <td>
-html
+Rmd
 </td>
 <td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/92cb12d6b31b27deda190cf575c56c170c3d9f87/docs/03_C133_Neeland.emptyDrops.html" target="_blank">92cb12d</a>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/916bafae8e95c06971d8a185a2a787b2b81e7385/analysis/03_C133_Neeland.emptyDrops.Rmd" target="_blank">916bafa</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-15
+</td>
+<td>
+wflow_publish(c("analysis/<em>.emptyDrops.Rmd", "analysis/</em>postprocess_*.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/analysis/03_C133_Neeland.emptyDrops.Rmd" target="_blank">f3b7b92</a>
 </td>
 <td>
 Jovana Maksimovic
@@ -730,15 +742,15 @@ Jovana Maksimovic
 2022-06-16
 </td>
 <td>
-Build site.
+Submission version
 </td>
 </tr>
 <tr>
 <td>
-Rmd
+html
 </td>
 <td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f6c4e9683fb779953273fe913cdae6542f456be0/analysis/03_C133_Neeland.emptyDrops.Rmd" target="_blank">f6c4e96</a>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/03_C133_Neeland.emptyDrops.html" target="_blank">f3b7b92</a>
 </td>
 <td>
 Jovana Maksimovic
@@ -747,160 +759,7 @@ Jovana Maksimovic
 2022-06-16
 </td>
 <td>
-wflow_publish(c("analysis/03_C133_Neeland.emptyDrops.Rmd", "analysis/03_C133_Neeland.preprocess.Rmd",
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/350e4b0b4b43fedba70e4a407de651c91b8fafc8/docs/03_C133_Neeland.emptyDrops.html" target="_blank">350e4b0</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-06-15
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/906579f858f362f07042e07ad28c3de2f863ec9a/docs/03_C133_Neeland.emptyDrops.html" target="_blank">906579f</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-06-15
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/9e01443991045bc8eab1abcdcab13ccccc28e954/docs/03_C133_Neeland.emptyDrops.html" target="_blank">9e01443</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-06-03
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/57089aae6e203f689872363694a4f89ffea851ac/analysis/03_C133_Neeland.emptyDrops.Rmd" target="_blank">57089aa</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-06-03
-</td>
-<td>
-wflow_publish("analysis/03_C133_Neeland.emptyDrops.Rmd")
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/529329b703a16e5d34066fddf8616ee41d2f11a2/docs/03_C133_Neeland.emptyDrops.html" target="_blank">529329b</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-05-27
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/3fe246ade1a78878aa7180815e79f90c61f7275c/analysis/03_C133_Neeland.emptyDrops.Rmd" target="_blank">3fe246a</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-05-27
-</td>
-<td>
-wflow_publish("analysis/03_C133_Neeland.emptyDrops.Rmd")
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/262c32ab2a58c8c46757b7d8959ae87d1aef2d2b/docs/03_C133_Neeland.emptyDrops.html" target="_blank">262c32a</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-05-26
-</td>
-<td>
-Remove old analysis files
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/5e9642c9afb39e39b4aa18508993d306aeda5edd/docs/03_C133_Neeland.emptyDrops.html" target="_blank">5e9642c</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-03-07
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/ae63b78224b53db54d88bf114473ef55b5c59a02/analysis/03_C133_Neeland.emptyDrops.Rmd" target="_blank">ae63b78</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-03-07
-</td>
-<td>
-wflow_publish(c("analysis/03_C133_Neeland.emptyDrops.Rmd", "analysis/03_CF_BAL_Pilot.emptyDrops.Rmd",
+Submission version
 </td>
 </tr>
 </tbody>
@@ -923,6 +782,8 @@ suppressPackageStartupMessages(library(DropletUtils))
 suppressPackageStartupMessages(library(scran))
 suppressPackageStartupMessages(library(scater))
 suppressPackageStartupMessages(library(scuttle))
+suppressPackageStartupMessages(library(scds))
+suppressPackageStartupMessages(library(scDblFinder))
 set.seed(42)
 options(scipen=999)
 options(future.globals.maxSize = 6500 * 1024^2)</code></pre>
@@ -1035,35 +896,13 @@ Date
 <tbody>
 <tr>
 <td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/529329b703a16e5d34066fddf8616ee41d2f11a2/docs/figure/03_C133_Neeland.emptyDrops.Rmd/rankplot2-1.png" target="_blank">529329b</a>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/03_C133_Neeland.emptyDrops.Rmd/rankplot2-1.png" target="_blank">f3b7b92</a>
 </td>
 <td>
 Jovana Maksimovic
 </td>
 <td>
-2022-05-27
-</td>
-</tr>
-<tr>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/309b0c1eebb598aaa54b9d67e485ebe5381a233d/docs/figure/03_C133_Neeland.emptyDrops.Rmd/rankplot2-1.png" target="_blank">309b0c1</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-05-26
-</td>
-</tr>
-<tr>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/5e9642c9afb39e39b4aa18508993d306aeda5edd/docs/figure/03_C133_Neeland.emptyDrops.Rmd/rankplot2-1.png" target="_blank">5e9642c</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-03-07
+2022-06-16
 </td>
 </tr>
 </tbody>
@@ -1091,14 +930,41 @@ reducedDimNames(0):
 mainExpName: NULL
 altExpNames(2): HTO ADT</code></pre>
 </div>
-<div id="save-data" class="section level1" number="5">
-<h1><span class="header-section-number">5</span> Save data</h1>
+<div id="call-homogenic-doublets" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Call homogenic doublets</h1>
+<p>Use <code>scds</code> and <code>scDblFinder</code> to try to identify homogenic doublets. Doublets are called on each capture separately.</p>
+<pre class="r"><code>out &lt;- here(&quot;data/SCEs/experiment2_doublets.rds&quot;)
+
+if(!file.exists(out)){
+  
+  sceLst &lt;- sapply(levels(sce$capture), function(cap){
+    ## Annotate doublets using scds three step process as run in Demuxafy
+    sce1 &lt;- bcds(sce[, sce$capture == cap], 
+                 retRes = TRUE, estNdbl = TRUE)
+    sce1 &lt;- cxds(sce1, retRes = TRUE, estNdbl = TRUE)
+    sce1 &lt;- cxds_bcds_hybrid(sce1, estNdbl = TRUE)
+    ## Annotate doublets using scDblFInder with rate estimate from Demuxafy
+    sce1 &lt;- scDblFinder(sce1, dbr = ncol(sce1)/1000*0.008)
+    sce1
+  })  
+  
+  lapply(sceLst, function(s){
+    colData(s) %&gt;% 
+      data.frame %&gt;%
+      rownames_to_column(var = &quot;cell&quot;)
+  }) %&gt;% 
+    bind_rows() %&gt;% 
+    saveRDS(file = out)
+} </code></pre>
+</div>
+<div id="save-data" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Save data</h1>
 <p>Save the object.</p>
 <pre class="r"><code>out &lt;- here(&quot;data/SCEs/03_C133_Neeland.emptyDrops.SCE.rds&quot;)
 if (!file.exists(out)) saveRDS(sce, file = out)</code></pre>
 </div>
-<div id="session-info" class="section level1 appendix" number="6">
-<h1><span class="header-section-number">6</span> Session info</h1>
+<div id="session-info" class="section level1 appendix" number="7">
+<h1><span class="header-section-number">7</span> Session info</h1>
 <summary>
 The analysis and this document were prepared using the following software (click triangle to expand)
 </summary>
@@ -1114,7 +980,7 @@ The analysis and this document were prepared using the following software (click
  collate  en_AU.UTF-8
  ctype    en_AU.UTF-8
  tz       Australia/Melbourne
- date     2022-06-16
+ date     2022-12-15
  pandoc   2.17.1.1 @ /usr/lib/rstudio-server/bin/quarto/bin/ (via rmarkdown)
 
 ─ Packages ───────────────────────────────────────────────────────────────────
@@ -1141,6 +1007,7 @@ The analysis and this document were prepared using the following software (click
  P cluster                2.1.2     2021-04-17 [?] CRAN (R 4.1.0)
  P colorspace             2.0-2     2021-06-24 [?] CRAN (R 4.0.2)
  P crayon                 1.4.2     2021-10-29 [?] CRAN (R 4.1.0)
+ P data.table             1.14.2    2021-09-27 [?] CRAN (R 4.1.0)
  P DBI                    1.1.2     2021-12-20 [?] CRAN (R 4.1.0)
  P dbplyr                 2.1.1     2021-04-06 [?] CRAN (R 4.1.0)
  P DelayedArray           0.20.0    2021-10-26 [?] Bioconductor
@@ -1189,6 +1056,7 @@ The analysis and this document were prepared using the following software (click
  P locfit                 1.5-9.4   2020-03-25 [?] CRAN (R 4.1.0)
  P lubridate              1.8.0     2021-10-07 [?] CRAN (R 4.1.0)
  P magrittr               2.0.1     2020-11-17 [?] CRAN (R 4.0.2)
+ P MASS                   7.3-53.1  2021-02-12 [?] CRAN (R 4.0.2)
  P Matrix                 1.4-0     2021-12-08 [?] CRAN (R 4.1.0)
  P MatrixGenerics       * 1.6.0     2021-10-26 [?] Bioconductor
  P matrixStats          * 0.61.0    2021-09-17 [?] CRAN (R 4.1.0)
@@ -1197,6 +1065,8 @@ The analysis and this document were prepared using the following software (click
  P munsell                0.5.0     2018-06-12 [?] CRAN (R 4.1.0)
  P pillar                 1.6.4     2021-10-18 [?] CRAN (R 4.1.0)
  P pkgconfig              2.0.3     2019-09-22 [?] CRAN (R 4.1.0)
+ P plyr                   1.8.6     2020-03-03 [?] CRAN (R 4.0.2)
+ P pROC                   1.18.0    2021-09-03 [?] CRAN (R 4.1.0)
  P processx               3.5.2     2021-04-30 [?] CRAN (R 4.1.0)
  P promises               1.2.0.1   2021-02-11 [?] CRAN (R 4.0.2)
  P ps                     1.6.0     2021-02-28 [?] CRAN (R 4.1.0)
@@ -1225,6 +1095,8 @@ The analysis and this document were prepared using the following software (click
  P ScaledMatrix           1.2.0     2021-10-26 [?] Bioconductor
  P scales                 1.1.1     2020-05-11 [?] CRAN (R 4.0.2)
  P scater               * 1.22.0    2021-10-26 [?] Bioconductor
+ P scDblFinder          * 1.8.0     2021-10-26 [?] Bioconductor
+ P scds                 * 1.10.0    2021-10-26 [?] Bioconductor
  P scran                * 1.22.1    2021-11-14 [?] Bioconductor
  P scuttle              * 1.4.0     2021-10-26 [?] Bioconductor
  P sessioninfo            1.2.2     2021-12-06 [?] CRAN (R 4.1.0)
@@ -1248,6 +1120,7 @@ The analysis and this document were prepared using the following software (click
  P withr                  2.4.3     2021-11-30 [?] CRAN (R 4.1.0)
  P workflowr            * 1.7.0     2021-12-21 [?] CRAN (R 4.1.0)
  P xfun                   0.29      2021-12-14 [?] CRAN (R 4.1.0)
+ P xgboost                1.5.0.2   2021-11-21 [?] CRAN (R 4.1.0)
  P xml2                   1.3.3     2021-11-30 [?] CRAN (R 4.1.0)
  P XVector                0.34.0    2021-10-26 [?] Bioconductor
  P yaml                   2.2.1     2020-02-01 [?] CRAN (R 4.0.2)
@@ -1261,8 +1134,8 @@ The analysis and this document were prepared using the following software (click
 ──────────────────────────────────────────────────────────────────────────────</code></pre>
 </details>
 </div>
-<div id="references" class="section level1" number="7">
-<h1><span class="header-section-number">7</span> References</h1>
+<div id="references" class="section level1" number="8">
+<h1><span class="header-section-number">8</span> References</h1>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-lun2018distinguishing" class="csl-entry">
 Lun, A., S. Riesenfeld, T. Andrews, T. P. Dao, T. Gomes, participants in the 1st Human Cell Atlas Jamboree, and J. Marioni. 2018. <span>“Distinguishing Cells from Empty Droplets in Droplet-Based Single-Cell RNA Sequencing Data.”</span> <em>bioRxiv</em>. <a href="https://doi.org/10.1101/234872">https://doi.org/10.1101/234872</a>.
@@ -1298,77 +1171,81 @@ attached base packages:
 [8] base     
 
 other attached packages:
- [1] scater_1.22.0               scran_1.22.1               
- [3] scuttle_1.4.0               DropletUtils_1.14.1        
- [5] SingleCellExperiment_1.16.0 SummarizedExperiment_1.24.0
- [7] Biobase_2.54.0              GenomicRanges_1.46.1       
- [9] GenomeInfoDb_1.30.1         IRanges_2.28.0             
-[11] S4Vectors_0.32.3            BiocGenerics_0.40.0        
-[13] MatrixGenerics_1.6.0        matrixStats_0.61.0         
-[15] glue_1.6.0                  here_1.0.1                 
-[17] forcats_0.5.1               stringr_1.4.0              
-[19] dplyr_1.0.7                 purrr_0.3.4                
-[21] readr_2.1.1                 tidyr_1.1.4                
-[23] tibble_3.1.6                ggplot2_3.3.5              
-[25] tidyverse_1.3.1             BiocStyle_2.22.0           
-[27] workflowr_1.7.0            
+ [1] scDblFinder_1.8.0           scds_1.10.0                
+ [3] scater_1.22.0               scran_1.22.1               
+ [5] scuttle_1.4.0               DropletUtils_1.14.1        
+ [7] SingleCellExperiment_1.16.0 SummarizedExperiment_1.24.0
+ [9] Biobase_2.54.0              GenomicRanges_1.46.1       
+[11] GenomeInfoDb_1.30.1         IRanges_2.28.0             
+[13] S4Vectors_0.32.3            BiocGenerics_0.40.0        
+[15] MatrixGenerics_1.6.0        matrixStats_0.61.0         
+[17] glue_1.6.0                  here_1.0.1                 
+[19] forcats_0.5.1               stringr_1.4.0              
+[21] dplyr_1.0.7                 purrr_0.3.4                
+[23] readr_2.1.1                 tidyr_1.1.4                
+[25] tibble_3.1.6                ggplot2_3.3.5              
+[27] tidyverse_1.3.1             BiocStyle_2.22.0           
+[29] workflowr_1.7.0            
 
 loaded via a namespace (and not attached):
-  [1] ggbeeswarm_0.6.0          colorspace_2.0-2         
-  [3] ellipsis_0.3.2            rprojroot_2.0.2          
-  [5] bluster_1.4.0             XVector_0.34.0           
-  [7] BiocNeighbors_1.12.0      fs_1.5.2                 
-  [9] rstudioapi_0.13           ggrepel_0.9.1            
- [11] fansi_1.0.0               lubridate_1.8.0          
- [13] xml2_1.3.3                R.methodsS3_1.8.1        
- [15] sparseMatrixStats_1.6.0   knitr_1.37               
- [17] jsonlite_1.7.2            broom_0.7.11             
- [19] cluster_2.1.2             dbplyr_2.1.1             
- [21] R.oo_1.24.0               HDF5Array_1.22.1         
- [23] BiocManager_1.30.16       compiler_4.1.0           
- [25] httr_1.4.2                dqrng_0.3.0              
- [27] backports_1.4.1           assertthat_0.2.1         
- [29] Matrix_1.4-0              fastmap_1.1.0            
- [31] limma_3.50.0              cli_3.1.0                
- [33] BiocSingular_1.10.0       later_1.3.0              
- [35] htmltools_0.5.2           tools_4.1.0              
- [37] igraph_1.2.11             rsvd_1.0.5               
- [39] gtable_0.3.0              GenomeInfoDbData_1.2.7   
- [41] Rcpp_1.0.7                cellranger_1.1.0         
- [43] jquerylib_0.1.4           vctrs_0.3.8              
- [45] rhdf5filters_1.6.0        DelayedMatrixStats_1.16.0
- [47] xfun_0.29                 ps_1.6.0                 
- [49] beachmat_2.10.0           rvest_1.0.2              
- [51] irlba_2.3.5               lifecycle_1.0.1          
- [53] renv_0.15.0-14            statmod_1.4.36           
- [55] edgeR_3.36.0              getPass_0.2-2            
- [57] zlibbioc_1.40.0           scales_1.1.1             
- [59] hms_1.1.1                 promises_1.2.0.1         
- [61] parallel_4.1.0            rhdf5_2.38.0             
- [63] yaml_2.2.1                gridExtra_2.3            
- [65] sass_0.4.0                stringi_1.7.6            
- [67] highr_0.9                 ScaledMatrix_1.2.0       
- [69] BiocParallel_1.28.3       rlang_0.4.12             
- [71] pkgconfig_2.0.3           bitops_1.0-7             
- [73] evaluate_0.14             lattice_0.20-45          
- [75] Rhdf5lib_1.16.0           processx_3.5.2           
- [77] tidyselect_1.1.1          magrittr_2.0.1           
- [79] bookdown_0.24             R6_2.5.1                 
- [81] generics_0.1.1            metapod_1.2.0            
- [83] DelayedArray_0.20.0       DBI_1.1.2                
- [85] pillar_1.6.4              haven_2.4.3              
- [87] whisker_0.4               withr_2.4.3              
- [89] RCurl_1.98-1.6            modelr_0.1.8             
- [91] crayon_1.4.2              utf8_1.2.2               
- [93] tzdb_0.2.0                rmarkdown_2.11           
- [95] viridis_0.6.2             locfit_1.5-9.4           
- [97] grid_4.1.0                readxl_1.3.1             
- [99] callr_3.7.0               git2r_0.29.0             
-[101] reprex_2.0.1              digest_0.6.29            
-[103] httpuv_1.6.5              R.utils_2.11.0           
-[105] munsell_0.5.0             viridisLite_0.4.0        
-[107] beeswarm_0.4.0            vipor_0.4.5              
-[109] bslib_0.3.1               sessioninfo_1.2.2        </code></pre>
+  [1] readxl_1.3.1              backports_1.4.1          
+  [3] plyr_1.8.6                igraph_1.2.11            
+  [5] BiocParallel_1.28.3       digest_0.6.29            
+  [7] htmltools_0.5.2           viridis_0.6.2            
+  [9] fansi_1.0.0               magrittr_2.0.1           
+ [11] ScaledMatrix_1.2.0        cluster_2.1.2            
+ [13] tzdb_0.2.0                limma_3.50.0             
+ [15] modelr_0.1.8              R.utils_2.11.0           
+ [17] colorspace_2.0-2          rvest_1.0.2              
+ [19] ggrepel_0.9.1             haven_2.4.3              
+ [21] xfun_0.29                 callr_3.7.0              
+ [23] crayon_1.4.2              RCurl_1.98-1.6           
+ [25] jsonlite_1.7.2            gtable_0.3.0             
+ [27] zlibbioc_1.40.0           XVector_0.34.0           
+ [29] DelayedArray_0.20.0       BiocSingular_1.10.0      
+ [31] Rhdf5lib_1.16.0           HDF5Array_1.22.1         
+ [33] scales_1.1.1              DBI_1.1.2                
+ [35] edgeR_3.36.0              Rcpp_1.0.7               
+ [37] viridisLite_0.4.0         dqrng_0.3.0              
+ [39] rsvd_1.0.5                metapod_1.2.0            
+ [41] httr_1.4.2                ellipsis_0.3.2           
+ [43] pkgconfig_2.0.3           R.methodsS3_1.8.1        
+ [45] sass_0.4.0                dbplyr_2.1.1             
+ [47] locfit_1.5-9.4            utf8_1.2.2               
+ [49] tidyselect_1.1.1          rlang_0.4.12             
+ [51] later_1.3.0               munsell_0.5.0            
+ [53] cellranger_1.1.0          tools_4.1.0              
+ [55] xgboost_1.5.0.2           cli_3.1.0                
+ [57] generics_0.1.1            broom_0.7.11             
+ [59] evaluate_0.14             fastmap_1.1.0            
+ [61] yaml_2.2.1                processx_3.5.2           
+ [63] knitr_1.37                fs_1.5.2                 
+ [65] sparseMatrixStats_1.6.0   whisker_0.4              
+ [67] R.oo_1.24.0               xml2_1.3.3               
+ [69] compiler_4.1.0            rstudioapi_0.13          
+ [71] beeswarm_0.4.0            reprex_2.0.1             
+ [73] statmod_1.4.36            bslib_0.3.1              
+ [75] stringi_1.7.6             highr_0.9                
+ [77] ps_1.6.0                  lattice_0.20-45          
+ [79] bluster_1.4.0             Matrix_1.4-0             
+ [81] vctrs_0.3.8               pillar_1.6.4             
+ [83] lifecycle_1.0.1           rhdf5filters_1.6.0       
+ [85] BiocManager_1.30.16       jquerylib_0.1.4          
+ [87] BiocNeighbors_1.12.0      data.table_1.14.2        
+ [89] bitops_1.0-7              irlba_2.3.5              
+ [91] httpuv_1.6.5              R6_2.5.1                 
+ [93] bookdown_0.24             promises_1.2.0.1         
+ [95] renv_0.15.0-14            gridExtra_2.3            
+ [97] vipor_0.4.5               sessioninfo_1.2.2        
+ [99] MASS_7.3-53.1             assertthat_0.2.1         
+[101] rhdf5_2.38.0              rprojroot_2.0.2          
+[103] withr_2.4.3               GenomeInfoDbData_1.2.7   
+[105] parallel_4.1.0            hms_1.1.1                
+[107] grid_4.1.0                beachmat_2.10.0          
+[109] rmarkdown_2.11            DelayedMatrixStats_1.16.0
+[111] git2r_0.29.0              getPass_0.2-2            
+[113] pROC_1.18.0               lubridate_1.8.0          
+[115] ggbeeswarm_0.6.0         </code></pre>
 </div>
 </div>
 
