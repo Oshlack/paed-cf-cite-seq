@@ -11,7 +11,7 @@
 
 <meta name="author" content="Jovana Maksimovic" />
 
-<meta name="date" content="2022-12-15" />
+<meta name="date" content="2022-12-19" />
 
 <title>Analysis of scRNA-seq &amp; CITE-seq Data Combined</title>
 
@@ -375,7 +375,7 @@ div.tocify {
 <h1 class="title toc-ignore">Analysis of scRNA-seq &amp; CITE-seq Data Combined</h1>
 <h3 class="subtitle">Cell Type Proportions Analysis</h3>
 <h4 class="author">Jovana Maksimovic</h4>
-<h4 class="date">December 15, 2022</h4>
+<h4 class="date">December 19, 2022</h4>
 
 </div>
 
@@ -404,7 +404,7 @@ Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></sp
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-12-15
+<strong>Last updated:</strong> 2022-12-19
 </p>
 <p>
 <strong>Checks:</strong>
@@ -532,20 +532,20 @@ makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree916bafae8e95c06971d8a185a2a787b2b81e7385targetblank916bafaa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtreee799f52f925c88d9eaabb8dc12dba1f0e0ff1318targetblanke799f52a">
 <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-<strong>Repository version:</strong> <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/916bafae8e95c06971d8a185a2a787b2b81e7385" target="_blank">916bafa</a>
+<strong>Repository version:</strong> <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/e799f52f925c88d9eaabb8dc12dba1f0e0ff1318" target="_blank">e799f52</a>
 </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree916bafae8e95c06971d8a185a2a787b2b81e7385targetblank916bafaa" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtreee799f52f925c88d9eaabb8dc12dba1f0e0ff1318targetblanke799f52a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and
 connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/916bafae8e95c06971d8a185a2a787b2b81e7385" target="_blank">916bafa</a>.
+The results in this page were generated with repository version <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/e799f52f925c88d9eaabb8dc12dba1f0e0ff1318" target="_blank">e799f52</a>.
 See the <em>Past versions</em> tab to see a history of the changes made to the
 R Markdown and HTML files.
 </p>
@@ -658,16 +658,6 @@ Ignored files:
     Ignored:    renv/staging/
     Ignored:    wflow_background.R
 
-Untracked files:
-    Untracked:  output/marker-analysis/06-COMBO-macrophages/
-
-Unstaged changes:
-    Modified:   .gitignore
-    Modified:   .renvignore
-    Modified:   analysis/index.Rmd
-    Modified:   renv/.gitignore
-    Modified:   renv/settings.dcf
-
 </code></pre>
 <p>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not included in
@@ -711,6 +701,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/63f8ee8a3eea9d94fc3126cc4879becfb9e3b8ac/docs/14_COMBO.postprocess_all.html" target="_blank">63f8ee8</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-15
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -805,8 +812,8 @@ seu</code></pre>
 Active assay: RNA (16001 features, 0 variable features)
  2 other assays present: ADT.dsb, ADT.raw</code></pre>
 <pre><code>            used   (Mb) gc trigger    (Mb)   max used   (Mb)
-Ncells   9521540  508.6   14647012   782.3   11324208  604.8
-Vcells 493242590 3763.2 1637363445 12492.1 1249794122 9535.2</code></pre>
+Ncells   9521483  508.6   14593885   779.4   11309863  604.1
+Vcells 493242524 3763.2 1637363331 12492.1 1249794056 9535.2</code></pre>
 </div>
 <div id="visualise-combined-filtered-data" class="section level2" number="2.2">
 <h2><span class="header-section-number">2.2</span> Visualise combined, filtered data</h2>
@@ -873,8 +880,8 @@ if(!file.exists(out)) {
 
 }</code></pre>
 <pre><code>             used    (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells    9661370   516.0   14647012   782.3   14647012   782.3
-Vcells 2016823895 15387.2 2894174398 22080.8 2016878678 15387.6</code></pre>
+Ncells    9661313   516.0   14593885   779.4   14593885   779.4
+Vcells 2016823829 15387.2 2894174302 22080.8 2016878612 15387.6</code></pre>
 <div id="visualise-integrated-data" class="section level2" number="3.1">
 <h2><span class="header-section-number">3.1</span> Visualise integrated data</h2>
 <pre class="r"><code>seuInt &lt;- RunPCA(seuInt, npcs = 30, verbose = FALSE)
@@ -1203,6 +1210,43 @@ Jovana Maksimovic
 <h3><span class="header-section-number">4.4.1</span> APOC2 gene expression</h3>
 <pre class="r"><code>FeaturePlot(seuInt, features = &quot;APOC2&quot;)</code></pre>
 <p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-15-1">
+Past versions of unnamed-chunk-15-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-15-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/63f8ee8a3eea9d94fc3126cc4879becfb9e3b8ac/docs/figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-15-1.png" target="_blank">63f8ee8</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>VlnPlot(seuInt, features = &quot;APOC2&quot;, 
         group.by = &quot;Broad&quot;, pt.size = 0,
         log = TRUE) + 
@@ -1231,6 +1275,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/63f8ee8a3eea9d94fc3126cc4879becfb9e3b8ac/docs/figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-16-1.png" target="_blank">63f8ee8</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-16-1.png" target="_blank">f3b7b92</a>
@@ -1697,6 +1752,43 @@ DotPlot(seuInt,
                         high = pal[5]) -&gt; f1d
 f1d</code></pre>
 <p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-18-1.png" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-18-1">
+Past versions of unnamed-chunk-18-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-18-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/63f8ee8a3eea9d94fc3126cc4879becfb9e3b8ac/docs/figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-18-1.png" target="_blank">63f8ee8</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -2139,6 +2231,43 @@ ggplot(aes(x = Participant, y = Freq, fill = clusters)) +
   paletteer::scale_fill_paletteer_d(&quot;miscpalettes::pastel&quot;) -&gt; f1c
 f1c</code></pre>
 <p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-21-1">
+Past versions of unnamed-chunk-21-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-21-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/63f8ee8a3eea9d94fc3126cc4879becfb9e3b8ac/docs/figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-21-1.png" target="_blank">63f8ee8</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="cell-proportions-of-control-sample-relative-to-cf-samples-broad" class="section level3" number="5.2.2">
 <h3><span class="header-section-number">5.2.2</span> Cell proportions of control sample relative to CF samples (Broad)</h3>
@@ -2161,6 +2290,43 @@ ggplot(dat[dat$Participant != &quot;A1_Ctrl&quot;,],
   NoLegend() -&gt; p1
 p1</code></pre>
 <p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-1">
+Past versions of unnamed-chunk-22-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-22-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/63f8ee8a3eea9d94fc3126cc4879becfb9e3b8ac/docs/figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-22-1.png" target="_blank">63f8ee8</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="cell-proportions-of-control-sample-relative-to-cf-samples-fine" class="section level3" number="5.2.3">
 <h3><span class="header-section-number">5.2.3</span> Cell proportions of control sample relative to CF samples (Fine)</h3>
@@ -2212,6 +2378,43 @@ c(list(p1), p) -&gt; p
   plot_annotation(tag_levels = &quot;A&quot;) &amp;
   theme(plot.tag = element_text(size = 14, face = &quot;bold&quot;))</code></pre>
 <p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-23-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-23-1">
+Past versions of unnamed-chunk-23-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-23-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/63f8ee8a3eea9d94fc3126cc4879becfb9e3b8ac/docs/figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-23-1.png" target="_blank">63f8ee8</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -2666,8 +2869,8 @@ Active assay: RNA (16001 features, 0 variable features)
 <pre class="r"><code>rm(seuAdt)
 gc()</code></pre>
 <pre><code>             used    (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells   10000334   534.1   14647012   782.3   14647012   782.3
-Vcells 2921156407 22286.7 5001424558 38157.9 4935790492 37657.1</code></pre>
+Ncells   10000292   534.1   14593885   779.4   14593885   779.4
+Vcells 2921156909 22286.7 5001424392 38157.9 4935790568 37657.1</code></pre>
 </div>
 <div id="load-protein-annotations" class="section level2" number="7.2">
 <h2><span class="header-section-number">7.2</span> Load protein annotations</h2>
@@ -2826,7 +3029,7 @@ The analysis and this document were prepared using the following software (click
  collate  en_AU.UTF-8
  ctype    en_AU.UTF-8
  tz       Australia/Melbourne
- date     2022-12-15
+ date     2022-12-19
  pandoc   2.17.1.1 @ /usr/lib/rstudio-server/bin/quarto/bin/ (via rmarkdown)
 
 ─ Packages ───────────────────────────────────────────────────────────────────

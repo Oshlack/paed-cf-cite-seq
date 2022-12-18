@@ -11,7 +11,7 @@
 
 <meta name="author" content="Jovana Maksimovic (modified from code by Peter Hickey &amp; William Ho)" />
 
-<meta name="date" content="2022-12-15" />
+<meta name="date" content="2022-12-19" />
 
 <title>Analysis of C133_Neeland CITE-seq Data</title>
 
@@ -375,7 +375,7 @@ div.tocify {
 <h1 class="title toc-ignore">Analysis of C133_Neeland CITE-seq Data</h1>
 <h3 class="subtitle">Droplet Selection</h3>
 <h4 class="author">Jovana Maksimovic (modified from code by Peter Hickey &amp; William Ho)</h4>
-<h4 class="date">December 15, 2022</h4>
+<h4 class="date">December 19, 2022</h4>
 
 </div>
 
@@ -404,7 +404,7 @@ Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></sp
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-12-15
+<strong>Last updated:</strong> 2022-12-19
 </p>
 <p>
 <strong>Checks:</strong>
@@ -532,20 +532,20 @@ makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree916bafae8e95c06971d8a185a2a787b2b81e7385targetblank916bafaa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtreee799f52f925c88d9eaabb8dc12dba1f0e0ff1318targetblanke799f52a">
 <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-<strong>Repository version:</strong> <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/916bafae8e95c06971d8a185a2a787b2b81e7385" target="_blank">916bafa</a>
+<strong>Repository version:</strong> <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/e799f52f925c88d9eaabb8dc12dba1f0e0ff1318" target="_blank">e799f52</a>
 </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree916bafae8e95c06971d8a185a2a787b2b81e7385targetblank916bafaa" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtreee799f52f925c88d9eaabb8dc12dba1f0e0ff1318targetblanke799f52a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and
 connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/916bafae8e95c06971d8a185a2a787b2b81e7385" target="_blank">916bafa</a>.
+The results in this page were generated with repository version <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/e799f52f925c88d9eaabb8dc12dba1f0e0ff1318" target="_blank">e799f52</a>.
 See the <em>Past versions</em> tab to see a history of the changes made to the
 R Markdown and HTML files.
 </p>
@@ -658,16 +658,6 @@ Ignored files:
     Ignored:    renv/staging/
     Ignored:    wflow_background.R
 
-Untracked files:
-    Untracked:  output/marker-analysis/06-COMBO-macrophages/
-
-Unstaged changes:
-    Modified:   .gitignore
-    Modified:   .renvignore
-    Modified:   analysis/index.Rmd
-    Modified:   renv/.gitignore
-    Modified:   renv/settings.dcf
-
 </code></pre>
 <p>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not included in
@@ -711,6 +701,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/e799f52f925c88d9eaabb8dc12dba1f0e0ff1318/analysis/03_C133_Neeland.emptyDrops.Rmd" target="_blank">e799f52</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-19
+</td>
+<td>
+wflow_publish(c("analysis/<em>emptyDrops.Rmd", "analysis/</em>postprocess*.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/63f8ee8a3eea9d94fc3126cc4879becfb9e3b8ac/docs/03_C133_Neeland.emptyDrops.html" target="_blank">63f8ee8</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-15
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -930,9 +954,9 @@ reducedDimNames(0):
 mainExpName: NULL
 altExpNames(2): HTO ADT</code></pre>
 </div>
-<div id="call-homogenic-doublets" class="section level1" number="5">
-<h1><span class="header-section-number">5</span> Call homogenic doublets</h1>
-<p>Use <code>scds</code> and <code>scDblFinder</code> to try to identify homogenic doublets. Doublets are called on each capture separately.</p>
+<div id="call-within-sample-doublets" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Call within-sample doublets</h1>
+<p>Use <code>scds</code> and <code>scDblFinder</code> to try to identify within-sample doublets. Doublets are called on each capture separately.</p>
 <pre class="r"><code>out &lt;- here(&quot;data/SCEs/experiment2_doublets.rds&quot;)
 
 if(!file.exists(out)){
@@ -980,7 +1004,7 @@ The analysis and this document were prepared using the following software (click
  collate  en_AU.UTF-8
  ctype    en_AU.UTF-8
  tz       Australia/Melbourne
- date     2022-12-15
+ date     2022-12-19
  pandoc   2.17.1.1 @ /usr/lib/rstudio-server/bin/quarto/bin/ (via rmarkdown)
 
 ─ Packages ───────────────────────────────────────────────────────────────────

@@ -11,7 +11,7 @@
 
 <meta name="author" content="Jovana Maksimovic" />
 
-<meta name="date" content="2022-12-15" />
+<meta name="date" content="2022-12-19" />
 
 <title>Analysis of scRNA-seq &amp; CITE-seq Data Combined</title>
 
@@ -375,7 +375,7 @@ div.tocify {
 <h1 class="title toc-ignore">Analysis of scRNA-seq &amp; CITE-seq Data Combined</h1>
 <h3 class="subtitle">Sub-cluster Macrophages (Round 2)</h3>
 <h4 class="author">Jovana Maksimovic</h4>
-<h4 class="date">December 15, 2022</h4>
+<h4 class="date">December 19, 2022</h4>
 
 </div>
 
@@ -404,7 +404,7 @@ Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></sp
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-12-15
+<strong>Last updated:</strong> 2022-12-19
 </p>
 <p>
 <strong>Checks:</strong>
@@ -532,20 +532,20 @@ makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree916bafae8e95c06971d8a185a2a787b2b81e7385targetblank916bafaa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtreee799f52f925c88d9eaabb8dc12dba1f0e0ff1318targetblanke799f52a">
 <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-<strong>Repository version:</strong> <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/916bafae8e95c06971d8a185a2a787b2b81e7385" target="_blank">916bafa</a>
+<strong>Repository version:</strong> <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/e799f52f925c88d9eaabb8dc12dba1f0e0ff1318" target="_blank">e799f52</a>
 </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree916bafae8e95c06971d8a185a2a787b2b81e7385targetblank916bafaa" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtreee799f52f925c88d9eaabb8dc12dba1f0e0ff1318targetblanke799f52a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and
 connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/916bafae8e95c06971d8a185a2a787b2b81e7385" target="_blank">916bafa</a>.
+The results in this page were generated with repository version <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/e799f52f925c88d9eaabb8dc12dba1f0e0ff1318" target="_blank">e799f52</a>.
 See the <em>Past versions</em> tab to see a history of the changes made to the
 R Markdown and HTML files.
 </p>
@@ -658,16 +658,6 @@ Ignored files:
     Ignored:    renv/staging/
     Ignored:    wflow_background.R
 
-Untracked files:
-    Untracked:  output/marker-analysis/06-COMBO-macrophages/
-
-Unstaged changes:
-    Modified:   .gitignore
-    Modified:   .renvignore
-    Modified:   analysis/index.Rmd
-    Modified:   renv/.gitignore
-    Modified:   renv/settings.dcf
-
 </code></pre>
 <p>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not included in
@@ -711,6 +701,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/e799f52f925c88d9eaabb8dc12dba1f0e0ff1318/analysis/08_COMBO.cluster_macrophages_round2.Rmd" target="_blank">e799f52</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-19
+</td>
+<td>
+wflow_publish(c("analysis/<em>emptyDrops.Rmd", "analysis/</em>postprocess*.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/63f8ee8a3eea9d94fc3126cc4879becfb9e3b8ac/docs/08_COMBO.cluster_macrophages_round2.html" target="_blank">63f8ee8</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-15
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -812,7 +836,7 @@ Active assay: integrated (3000 features, 3000 variable features)
 </div>
 <div id="check-for-doublet-enrichment" class="section level2" number="2.2">
 <h2><span class="header-section-number">2.2</span> Check for doublet enrichment</h2>
-<p>The <em>macro-T</em> cluster expresses both macrophage and T-cell marker genes so we need to check if it is artefactual e.g. contains doublets. We have already removed a total of 3826 heterogenic doublets based on <code>vireo</code> and <code>hashedDrops</code> calls. However, those methods cannot detect heterotypic and homotypic doublets from the same individual (homogenic). We have also run <code>scds</code> and <code>scDblFinder</code> to detect putative homogenic doublets.</p>
+<p>The <em>macro-T</em> cluster expresses both macrophage and T-cell marker genes so we need to check if it is artefactual e.g. contains doublets. We have already removed a total of 3826 heterogenic, cross-sample doublets based on <code>vireo</code> and <code>hashedDrops</code> calls. However, those methods cannot detect heterotypic and homotypic within-sample doublets. We have also run <code>scds</code> and <code>scDblFinder</code> to detect putative within-sample doublets.</p>
 <p>Load doublet detection results and match up with annotated cells.</p>
 <pre class="r"><code>e1Doublets &lt;- readRDS(here(&quot;data/SCEs/experiment1_doublets.rds&quot;))
 e1Doublets$cell &lt;- paste0(&quot;A-&quot;, e1Doublets$cell)
@@ -961,8 +985,8 @@ Active assay: RNA (15578 features, 0 variable features)</code></pre>
 <pre class="r"><code>rm(seuInt)
 gc()</code></pre>
 <pre><code>            used   (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells  11665421  623.1   21569435  1152.0   18138021   968.7
-Vcells 388405181 2963.3 2457345810 18748.1 2532459103 19321.2</code></pre>
+Ncells  11665366  623.0   21569357  1152.0   18138030   968.7
+Vcells 388405267 2963.3 2457345909 18748.1 2532459186 19321.2</code></pre>
 </div>
 </div>
 <div id="subcluster-macrophages" class="section level1" number="3">
@@ -1698,8 +1722,8 @@ Active assay: RNA (15578 features, 0 variable features)
 <pre class="r"><code>rm(seuAdt)
 gc()</code></pre>
 <pre><code>             used    (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells   12136344   648.2   21569435  1152.0   21569435  1152.0
-Vcells 2454265627 18724.6 5180913374 39527.3 5180905174 39527.2</code></pre>
+Ncells   12136289   648.2   21569357  1152.0   21569357  1152.0
+Vcells 2454265713 18724.6 5180913551 39527.3 5180905326 39527.2</code></pre>
 </div>
 <div id="load-protein-annotations" class="section level2" number="7.2">
 <h2><span class="header-section-number">7.2</span> Load protein annotations</h2>
@@ -1960,7 +1984,7 @@ The analysis and this document were prepared using the following software (click
  collate  en_AU.UTF-8
  ctype    en_AU.UTF-8
  tz       Australia/Melbourne
- date     2022-12-15
+ date     2022-12-19
  pandoc   2.17.1.1 @ /usr/lib/rstudio-server/bin/quarto/bin/ (via rmarkdown)
 
 ─ Packages ───────────────────────────────────────────────────────────────────

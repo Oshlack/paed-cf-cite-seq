@@ -11,7 +11,7 @@
 
 <meta name="author" content="Jovana Maksimovic" />
 
-<meta name="date" content="2022-12-15" />
+<meta name="date" content="2022-12-19" />
 
 <title>Analysis of scRNA-seq &amp; CITE-seq Data Combined</title>
 
@@ -375,7 +375,7 @@ div.tocify {
 <h1 class="title toc-ignore">Analysis of scRNA-seq &amp; CITE-seq Data Combined</h1>
 <h3 class="subtitle">Post-process Macrophage Sub-clustering Results</h3>
 <h4 class="author">Jovana Maksimovic</h4>
-<h4 class="date">December 15, 2022</h4>
+<h4 class="date">December 19, 2022</h4>
 
 </div>
 
@@ -404,7 +404,7 @@ Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></sp
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-12-15
+<strong>Last updated:</strong> 2022-12-19
 </p>
 <p>
 <strong>Checks:</strong>
@@ -532,20 +532,20 @@ makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree916bafae8e95c06971d8a185a2a787b2b81e7385targetblank916bafaa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtreee799f52f925c88d9eaabb8dc12dba1f0e0ff1318targetblanke799f52a">
 <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-<strong>Repository version:</strong> <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/916bafae8e95c06971d8a185a2a787b2b81e7385" target="_blank">916bafa</a>
+<strong>Repository version:</strong> <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/e799f52f925c88d9eaabb8dc12dba1f0e0ff1318" target="_blank">e799f52</a>
 </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree916bafae8e95c06971d8a185a2a787b2b81e7385targetblank916bafaa" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtreee799f52f925c88d9eaabb8dc12dba1f0e0ff1318targetblanke799f52a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and
 connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/916bafae8e95c06971d8a185a2a787b2b81e7385" target="_blank">916bafa</a>.
+The results in this page were generated with repository version <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/e799f52f925c88d9eaabb8dc12dba1f0e0ff1318" target="_blank">e799f52</a>.
 See the <em>Past versions</em> tab to see a history of the changes made to the
 R Markdown and HTML files.
 </p>
@@ -658,16 +658,6 @@ Ignored files:
     Ignored:    renv/staging/
     Ignored:    wflow_background.R
 
-Untracked files:
-    Untracked:  output/marker-analysis/06-COMBO-macrophages/
-
-Unstaged changes:
-    Modified:   .gitignore
-    Modified:   .renvignore
-    Modified:   analysis/index.Rmd
-    Modified:   renv/.gitignore
-    Modified:   renv/settings.dcf
-
 </code></pre>
 <p>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not included in
@@ -711,6 +701,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/e799f52f925c88d9eaabb8dc12dba1f0e0ff1318/analysis/11_COMBO.postprocess_macrophages.Rmd" target="_blank">e799f52</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-19
+</td>
+<td>
+wflow_publish(c("analysis/<em>emptyDrops.Rmd", "analysis/</em>postprocess*.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/63f8ee8a3eea9d94fc3126cc4879becfb9e3b8ac/docs/11_COMBO.postprocess_macrophages.html" target="_blank">63f8ee8</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-15
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -774,12 +798,12 @@ Submission version
 </div>
 <div id="load-data" class="section level1" number="2">
 <h1><span class="header-section-number">2</span> Load Data</h1>
-<pre class="r"><code>out &lt;- here(&quot;data/SCEs/06_COMBO.macrophages_clustered.SEU.rds&quot;)
+<pre class="r"><code>out &lt;- here(&quot;data/SCEs/07_COMBO.macrophages_clustered.SEU.rds&quot;)
 seuInt &lt;- readRDS(file = out)
 
 seuInt</code></pre>
 <pre><code>An object of class Seurat 
-33301 features across 33161 samples within 3 assays 
+33118 features across 30847 samples within 3 assays 
 Active assay: integrated (3000 features, 3000 variable features)
  2 other assays present: RNA, SCT
  2 dimensional reductions calculated: pca, umap</code></pre>
@@ -788,9 +812,10 @@ Active assay: integrated (3000 features, 3000 variable features)
 <h1><span class="header-section-number">3</span> Sub-cluster annotation</h1>
 <div id="load-manual-annotations" class="section level2" number="3.1">
 <h2><span class="header-section-number">3.1</span> Load manual annotations</h2>
-<pre class="r"><code>labels &lt;- read_csv(here(&quot;data/macrophage_subcluster_annotation_29.05.22.csv&quot;))
+<pre class="r"><code>labels &lt;- read_csv(here(&quot;data/macrophage_subcluster_annotation_16.12.22.csv&quot;))
 
 seuInt@meta.data %&gt;%
+  dplyr::select(-Annotation, -Broad) %&gt;%
   left_join(labels %&gt;%
               mutate(Annotation = ifelse(is.na(Annotation),
                                          &quot;SUSPECT&quot;,
@@ -809,7 +834,7 @@ seuInt$Annotation &lt;- fct_drop(seuInt$Annotation)
 seuInt$Broad &lt;- fct_drop(seuInt$Broad)
 seuInt</code></pre>
 <pre><code>An object of class Seurat 
-33301 features across 33161 samples within 3 assays 
+33118 features across 30847 samples within 3 assays 
 Active assay: integrated (3000 features, 3000 variable features)
  2 other assays present: RNA, SCT
  2 dimensional reductions calculated: pca, umap</code></pre>
@@ -929,26 +954,26 @@ sapply(1:ncol(cepoMarkers$stats), function(i){
 
 colnames(dat) &lt;- colnames(cepoMarkers$stats)
 dat %&gt;% knitr::kable()</code></pre>
-<table style="width:100%;">
+<table>
 <colgroup>
 <col width="7%" />
+<col width="7%" />
 <col width="5%" />
-<col width="9%" />
-<col width="6%" />
+<col width="10%" />
+<col width="7%" />
 <col width="5%" />
 <col width="10%" />
 <col width="6%" />
-<col width="4%" />
 <col width="5%" />
-<col width="6%" />
-<col width="4%" />
+<col width="5%" />
 <col width="7%" />
 <col width="6%" />
-<col width="13%" />
+<col width="14%" />
 </colgroup>
 <thead>
 <tr class="header">
 <th align="left">alveolar.macs</th>
+<th align="left">macro..ifna.b</th>
 <th align="left">macro.CCL</th>
 <th align="left">macro.cholesterol</th>
 <th align="left">macro.ifna.b</th>
@@ -958,331 +983,309 @@ dat %&gt;% knitr::kable()</code></pre>
 <th align="left">macro.MT</th>
 <th align="left">macro.reg</th>
 <th align="left">macro.repair</th>
-<th align="left">macro.T</th>
-<th align="left">macro.vesicle</th>
 <th align="left">macro.viral</th>
-<th align="left">proliferating.macrophage</th>
+<th align="left">proliferating.macrophages</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="left">GPD1</td>
+<td align="left">IFI27</td>
 <td align="left">TNFAIP6</td>
 <td align="left">MSMO1</td>
 <td align="left">IFI27</td>
 <td align="left">VCAN</td>
 <td align="left">CCL13</td>
 <td align="left">MT2A</td>
-<td align="left">MT2A</td>
+<td align="left">MT1X</td>
 <td align="left">ATF4</td>
 <td align="left">CDKN1A</td>
-<td align="left">CD3E</td>
-<td align="left">AZU1</td>
-<td align="left">IFIT1</td>
+<td align="left">IFI44L</td>
 <td align="left">PCLAF</td>
 </tr>
 <tr class="even">
 <td align="left">INHBA</td>
-<td align="left">SOD2</td>
-<td align="left">FDFT1</td>
 <td align="left">IGF1</td>
+<td align="left">CCL4</td>
+<td align="left">INSIG1</td>
+<td align="left">GPD1</td>
 <td align="left">FCN1</td>
 <td align="left">MARCKS</td>
 <td align="left">RBP4</td>
-<td align="left">MT1X</td>
-<td align="left">GDF15</td>
+<td align="left">MT2A</td>
+<td align="left">CXCR4</td>
 <td align="left">MDM2</td>
-<td align="left">TRAC</td>
-<td align="left">HP</td>
-<td align="left">IFI44L</td>
-<td align="left">MKI67</td>
+<td align="left">IFIT1</td>
+<td align="left">TK1</td>
 </tr>
 <tr class="odd">
-<td align="left">MME</td>
-<td align="left">CCL4</td>
-<td align="left">INHBA</td>
-<td align="left">GPD1</td>
-<td align="left">FPR3</td>
-<td align="left">STAB1</td>
-<td align="left">NUPR1</td>
-<td align="left">MT1G</td>
-<td align="left">RND3</td>
-<td align="left">GDF15</td>
-<td align="left">IL32</td>
-<td align="left">PLAC8</td>
-<td align="left">RSAD2</td>
-<td align="left">BIRC5</td>
-</tr>
-<tr class="even">
-<td align="left">MCEMP1</td>
-<td align="left">MARCKS</td>
-<td align="left">PCOLCE2</td>
+<td align="left">ITIH5</td>
+<td align="left">ITIH5</td>
+<td align="left">SOD2</td>
+<td align="left">IDI1</td>
 <td align="left">INHBA</td>
 <td align="left">CORO1A</td>
 <td align="left">FCGR2B</td>
-<td align="left">PLTP</td>
-<td align="left">MT1E</td>
-<td align="left">CXCR4</td>
+<td align="left">NUPR1</td>
+<td align="left">MT1G</td>
+<td align="left">KLF6</td>
 <td align="left">INHBA</td>
-<td align="left">TRBC2</td>
-<td align="left">ITIH5</td>
-<td align="left">MX1</td>
-<td align="left">TYMS</td>
-</tr>
-<tr class="odd">
-<td align="left">FABP4</td>
-<td align="left">CCL20</td>
-<td align="left">GPD1</td>
-<td align="left">ITIH5</td>
-<td align="left">TMEM176B</td>
-<td align="left">F13A1</td>
-<td align="left">MT1E</td>
-<td align="left">MT1F</td>
-<td align="left">CYP27A1</td>
-<td align="left">MCEMP1</td>
-<td align="left">CCL5</td>
-<td align="left">IGF1</td>
-<td align="left">IFIT2</td>
-<td align="left">TK1</td>
+<td align="left">RSAD2</td>
+<td align="left">MKI67</td>
 </tr>
 <tr class="even">
-<td align="left">AQP3</td>
-<td align="left">CCL4L2</td>
-<td align="left">AQP3</td>
-<td align="left">MCEMP1</td>
-<td align="left">C15orf48</td>
-<td align="left">RNASE1</td>
-<td align="left">SCD</td>
-<td align="left">MT1H</td>
-<td align="left">PHLDA3</td>
-<td align="left">AQP3</td>
-<td align="left">CD2</td>
-<td align="left">ACKR3</td>
-<td align="left">CXCL10</td>
-<td align="left">CENPM</td>
+<td align="left">MME</td>
+<td align="left">INHBA</td>
+<td align="left">CCL20</td>
+<td align="left">FDFT1</td>
+<td align="left">ITIH5</td>
+<td align="left">FPR3</td>
+<td align="left">F13A1</td>
+<td align="left">PLTP</td>
+<td align="left">MT1F</td>
+<td align="left">CYP27A1</td>
+<td align="left">IL1RN</td>
+<td align="left">MX1</td>
+<td align="left">BIRC5</td>
 </tr>
 <tr class="odd">
-<td align="left">CA2</td>
-<td align="left">TNIP3</td>
-<td align="left">MCEMP1</td>
+<td align="left">ACKR3</td>
+<td align="left">PCOLCE2</td>
+<td align="left">CCL4L2</td>
+<td align="left">INHBA</td>
 <td align="left">PHLDA3</td>
-<td align="left">FGL2</td>
+<td align="left">TMEM176B</td>
 <td align="left">SLC40A1</td>
-<td align="left">CES1</td>
-<td align="left">MT1M</td>
-<td align="left">ZFAS1</td>
-<td align="left">ABHD5</td>
+<td align="left">CXCR4</td>
+<td align="left">MT1E</td>
 <td align="left">ARL4C</td>
-<td align="left">CD2</td>
+<td align="left">ABHD5</td>
+<td align="left">IFIT2</td>
+<td align="left">TYMS</td>
+</tr>
+<tr class="even">
+<td align="left">MCEMP1</td>
+<td align="left">HP</td>
+<td align="left">MARCKS</td>
+<td align="left">CYP51A1</td>
+<td align="left">MME</td>
+<td align="left">C15orf48</td>
+<td align="left">STAB1</td>
+<td align="left">MT1E</td>
+<td align="left">MT1M</td>
+<td align="left">NEAT1</td>
+<td align="left">AQP3</td>
+<td align="left">HERC5</td>
+<td align="left">GGH</td>
+</tr>
+<tr class="odd">
+<td align="left">AQP3</td>
+<td align="left">MLPH</td>
+<td align="left">TNIP3</td>
+<td align="left">PCOLCE2</td>
+<td align="left">AQP3</td>
+<td align="left">FGL2</td>
+<td align="left">FOLR2</td>
+<td align="left">CES1</td>
+<td align="left">MT1H</td>
+<td align="left">RBP4</td>
+<td align="left">GPD1</td>
 <td align="left">NT5C3A</td>
+<td align="left">CENPM</td>
+</tr>
+<tr class="even">
+<td align="left">LPL</td>
+<td align="left">ACO1</td>
+<td align="left">CCL3</td>
+<td align="left">GPD1</td>
+<td align="left">MLPH</td>
+<td align="left">TMEM176A</td>
+<td align="left">RNASE1</td>
+<td align="left">SCD</td>
+<td align="left">GPD1</td>
+<td align="left">CES1</td>
+<td align="left">PHLDA3</td>
+<td align="left">IFIT3</td>
+<td align="left">GTSE1</td>
+</tr>
+<tr class="odd">
+<td align="left">SVIL</td>
+<td align="left">MCEMP1</td>
+<td align="left">ICAM1</td>
+<td align="left">AQP3</td>
+<td align="left">DEFB1</td>
+<td align="left">SOCS3</td>
+<td align="left">TMEM176B</td>
+<td align="left">GCHFR</td>
+<td align="left">DEFB1</td>
+<td align="left">MLPH</td>
+<td align="left">MCEMP1</td>
+<td align="left">CXCL10</td>
 <td align="left">TOP2A</td>
 </tr>
 <tr class="even">
-<td align="left">LPL</td>
-<td align="left">TNFAIP2</td>
-<td align="left">RND3</td>
-<td align="left">AQP3</td>
-<td align="left">FCGR2B</td>
-<td align="left">FOLR2</td>
-<td align="left">GCHFR</td>
-<td align="left">GPD1</td>
-<td align="left">CDKN1A</td>
-<td align="left">EVL</td>
-<td align="left">CORO1A</td>
-<td align="left">STMN1</td>
-<td align="left">HERC5</td>
+<td align="left">MLPH</td>
+<td align="left">QSOX1</td>
+<td align="left">CXCL8</td>
+<td align="left">RGCC</td>
+<td align="left">MCEMP1</td>
+<td align="left">PMP22</td>
+<td align="left">RNASE6</td>
+<td align="left">A2M</td>
+<td align="left">HP</td>
+<td align="left">PPP1R15A</td>
+<td align="left">FCN1</td>
+<td align="left">ISG15</td>
 <td align="left">ASPM</td>
 </tr>
 <tr class="odd">
-<td align="left">ITIH5</td>
-<td align="left">MIR3945HG</td>
-<td align="left">ITIH5</td>
 <td align="left">PCOLCE2</td>
-<td align="left">CLEC10A</td>
-<td align="left">TMEM176B</td>
-<td align="left">A2M</td>
-<td align="left">AQP3</td>
-<td align="left">BCL2A1</td>
-<td align="left">FCN1</td>
-<td align="left">EMB</td>
-<td align="left">PCOLCE2</td>
-<td align="left">IFIT3</td>
-<td align="left">RRM2</td>
-</tr>
-<tr class="even">
-<td align="left">ACKR3</td>
-<td align="left">CCL23</td>
+<td align="left">TCF7L2</td>
+<td align="left">TNFAIP2</td>
 <td align="left">TUBA1A</td>
 <td align="left">FAM89A</td>
-<td align="left">TMEM176A</td>
-<td align="left">FPR3</td>
-<td align="left">CXCR4</td>
-<td align="left">MCEMP1</td>
-<td align="left">SNHG12</td>
-<td align="left">TREM2</td>
-<td align="left">GNLY</td>
-<td align="left">MCEMP1</td>
-<td align="left">ISG15</td>
-<td align="left">TPX2</td>
-</tr>
-<tr class="odd">
-<td align="left">ABCG1</td>
-<td align="left">ICAM1</td>
-<td align="left">TCF7L2</td>
-<td align="left">SVIL</td>
-<td align="left">PLA2G7</td>
-<td align="left">LGMN</td>
-<td align="left">MT1X</td>
-<td align="left">DEFB1</td>
-<td align="left">CD9</td>
-<td align="left">GPD1</td>
-<td align="left">LTB</td>
-<td align="left">S100A13</td>
-<td align="left">IFITM3</td>
-<td align="left">CDK1</td>
-</tr>
-<tr class="even">
-<td align="left">SVIL</td>
-<td align="left">CCL3</td>
-<td align="left">FAM89A</td>
-<td align="left">SERPING1</td>
-<td align="left">SOCS3</td>
-<td align="left">RNASE6</td>
-<td align="left">ACO1</td>
-<td align="left">RETN</td>
-<td align="left">SLC3A2</td>
-<td align="left">CA2</td>
-<td align="left">GPR183</td>
-<td align="left">INHBA</td>
-<td align="left">TNFSF10</td>
-<td align="left">UBE2C</td>
-</tr>
-<tr class="odd">
-<td align="left">PHLDA3</td>
-<td align="left">C15orf48</td>
-<td align="left">IGF1</td>
-<td align="left">QSOX1</td>
 <td align="left">ZFP36L1</td>
-<td align="left">GPR183</td>
-<td align="left">MME</td>
-<td align="left">HP</td>
-<td align="left">CES1</td>
-<td align="left">PHLDA3</td>
-<td align="left">RAC2</td>
-<td align="left">RETN</td>
-<td align="left">GBP1</td>
-<td align="left">HMMR</td>
-</tr>
-<tr class="even">
-<td align="left">TGM2</td>
-<td align="left">CXCL8</td>
-<td align="left">SVIL</td>
-<td align="left">FABP4</td>
-<td align="left">CD14</td>
-<td align="left">GAL3ST4</td>
-<td align="left">ABCG1</td>
-<td align="left">ITIH5</td>
-<td align="left">FAM89A</td>
-<td align="left">CD9</td>
-<td align="left">KLF6</td>
-<td align="left">TCF7L2</td>
-<td align="left">MIR3945HG</td>
-<td align="left">CCNB2</td>
-</tr>
-<tr class="odd">
-<td align="left">QSOX1</td>
-<td align="left">BCL2A1</td>
-<td align="left">PPARG</td>
-<td align="left">DEFB1</td>
-<td align="left">SDS</td>
-<td align="left">TMEM176A</td>
-<td align="left">SERPING1</td>
-<td align="left">FABP4</td>
-<td align="left">RBP4</td>
-<td align="left">PCNA</td>
-<td align="left">CXCR4</td>
-<td align="left">ACO1</td>
-<td align="left">IGF1</td>
+<td align="left">FPR3</td>
+<td align="left">MGST1</td>
+<td align="left">AQP3</td>
+<td align="left">EMB</td>
+<td align="left">EVL</td>
+<td align="left">IFITM3</td>
 <td align="left">CENPF</td>
 </tr>
 <tr class="even">
-<td align="left">PPARG</td>
-<td align="left">CXCL5</td>
-<td align="left">CKS1B</td>
-<td align="left">MME</td>
-<td align="left">EMP1</td>
-<td align="left">MAMDC2</td>
-<td align="left">CYP27A1</td>
+<td align="left">HP</td>
+<td align="left">FAM89A</td>
+<td align="left">MIR3945HG</td>
+<td align="left">ITIH5</td>
 <td align="left">PCOLCE2</td>
-<td align="left">PLD3</td>
-<td align="left">RGCC</td>
-<td align="left">EVL</td>
-<td align="left">FOLR3</td>
-<td align="left">IFI6</td>
-<td align="left">CDKN3</td>
+<td align="left">PLEKHO1</td>
+<td align="left">LGMN</td>
+<td align="left">ACO1</td>
+<td align="left">MLPH</td>
+<td align="left">CA2</td>
+<td align="left">TCF7L2</td>
+<td align="left">TNFSF10</td>
+<td align="left">RRM2</td>
 </tr>
 <tr class="odd">
-<td align="left">IL1A</td>
+<td align="left">PHLDA3</td>
+<td align="left">GPD1</td>
+<td align="left">CCL23</td>
+<td align="left">MCEMP1</td>
+<td align="left">SVIL</td>
+<td align="left">IER3</td>
+<td align="left">TMEM176A</td>
+<td align="left">MME</td>
+<td align="left">CCND3</td>
+<td align="left">BCL2A1</td>
+<td align="left">TREM2</td>
+<td align="left">IL1RN</td>
+<td align="left">CDK1</td>
+</tr>
+<tr class="even">
+<td align="left">FAM89A</td>
+<td align="left">DEFB1</td>
 <td align="left">TNFAIP3</td>
-<td align="left">RGCC</td>
-<td align="left">CES1</td>
-<td align="left">PLEKHO1</td>
-<td align="left">CLEC10A</td>
+<td align="left">TCF7L2</td>
+<td align="left">CCND3</td>
+<td align="left">PLA2G7</td>
+<td align="left">GPR183</td>
+<td align="left">CCL18</td>
+<td align="left">RETN</td>
+<td align="left">MME</td>
 <td align="left">CDC42EP3</td>
-<td align="left">CES1</td>
-<td align="left">MAFB</td>
-<td align="left">MRC1</td>
-<td align="left">CCL4</td>
-<td align="left">MS4A6A</td>
 <td align="left">GPD1</td>
 <td align="left">PTTG1</td>
 </tr>
-<tr class="even">
-<td align="left">PCOLCE2</td>
+<tr class="odd">
+<td align="left">RETN</td>
+<td align="left">CCND3</td>
 <td align="left">CD83</td>
-<td align="left">IL1A</td>
-<td align="left">LPL</td>
-<td align="left">PMP22</td>
-<td align="left">MAFB</td>
-<td align="left">FCGR3A</td>
-<td align="left">RAC2</td>
+<td align="left">SVIL</td>
+<td align="left">PPARG</td>
+<td align="left">EMP1</td>
+<td align="left">GAL3ST4</td>
+<td align="left">MT1X</td>
+<td align="left">ITIH5</td>
+<td align="left">ITIH5</td>
 <td align="left">CA2</td>
-<td align="left">TCF7L2</td>
-<td align="left">TNFAIP3</td>
-<td align="left">DEFB1</td>
+<td align="left">ITIH5</td>
+<td align="left">UBE2C</td>
+</tr>
+<tr class="even">
+<td align="left">CCND3</td>
+<td align="left">RBP4</td>
+<td align="left">BCL2A1</td>
+<td align="left">FAM89A</td>
 <td align="left">SERPING1</td>
-<td align="left">NUSAP1</td>
+<td align="left">BASP1</td>
+<td align="left">MAFB</td>
+<td align="left">CCL23</td>
+<td align="left">MCEMP1</td>
+<td align="left">NAMPT</td>
+<td align="left">PCNA</td>
+<td align="left">RETN</td>
+<td align="left">TPX2</td>
 </tr>
 <tr class="odd">
-<td align="left">FAM89A</td>
-<td align="left">ACSL1</td>
+<td align="left">FABP4</td>
 <td align="left">FOLR3</td>
-<td align="left">HP</td>
-<td align="left">CCL2</td>
-<td align="left">CMKLR1</td>
-<td align="left">PLIN2</td>
-<td align="left">EVL</td>
-<td align="left">FABP3</td>
+<td align="left">ACSL1</td>
+<td align="left">PPARG</td>
+<td align="left">CES1</td>
+<td align="left">FCGR2B</td>
+<td align="left">ZFP36L1</td>
+<td align="left">ABCG1</td>
+<td align="left">PCOLCE2</td>
+<td align="left">MGST1</td>
 <td align="left">TGM2</td>
-<td align="left">DUSP2</td>
-<td align="left">QSOX1</td>
-<td align="left">TGM2</td>
-<td align="left">LPL</td>
+<td align="left">GBP1</td>
+<td align="left">CCNB2</td>
 </tr>
 <tr class="even">
+<td align="left">QSOX1</td>
+<td align="left">CES1</td>
+<td align="left">C15orf48</td>
 <td align="left">HP</td>
-<td align="left">S100A8</td>
-<td align="left">MIR3945HG</td>
-<td align="left">PPARG</td>
-<td align="left">BASP1</td>
-<td align="left">ZFP36L1</td>
-<td align="left">CCL18</td>
-<td align="left">S100A9</td>
-<td align="left">DAB2</td>
+<td align="left">ACKR3</td>
+<td align="left">RASSF2</td>
+<td align="left">GAS6</td>
 <td align="left">CDC42EP3</td>
-<td align="left">CRIP2</td>
-<td align="left">PLTP</td>
-<td align="left">ITIH5</td>
+<td align="left">CES1</td>
+<td align="left">FAM89A</td>
+<td align="left">MME</td>
+<td align="left">UBE2S</td>
+<td align="left">NUCB2</td>
+</tr>
+<tr class="odd">
+<td align="left">ABCG1</td>
+<td align="left">SVIL</td>
+<td align="left">CXCL5</td>
+<td align="left">SCD</td>
+<td align="left">PNPLA6</td>
+<td align="left">CD14</td>
+<td align="left">CLEC10A</td>
+<td align="left">PDK4</td>
+<td align="left">RAC2</td>
+<td align="left">PHLDA3</td>
+<td align="left">RGCC</td>
+<td align="left">MIR3945HG</td>
+<td align="left">HMMR</td>
+</tr>
+<tr class="even">
+<td align="left">PPARG</td>
+<td align="left">G0S2</td>
+<td align="left">NAMPT</td>
+<td align="left">CKS1B</td>
+<td align="left">ACO1</td>
+<td align="left">S100A8</td>
+<td align="left">MAMDC2</td>
+<td align="left">CYP27A1</td>
+<td align="left">ACKR3</td>
+<td align="left">ABHD5</td>
+<td align="left">IGSF6</td>
+<td align="left">QSOX1</td>
 <td align="left">SMC4</td>
 </tr>
 </tbody>
@@ -1437,15 +1440,15 @@ all(colnames(seuAdt) == colnames(seuInt))</code></pre>
 seuInt[[&quot;ADT.raw&quot;]] &lt;- seuAdt[[&quot;ADT.raw&quot;]]
 seuInt</code></pre>
 <pre><code>An object of class Seurat 
-33623 features across 33161 samples within 5 assays 
+33440 features across 30847 samples within 5 assays 
 Active assay: RNA (15578 features, 0 variable features)
  4 other assays present: SCT, integrated, ADT.dsb, ADT.raw
  2 dimensional reductions calculated: pca, umap</code></pre>
 <pre class="r"><code>rm(seuAdt)
 gc()</code></pre>
 <pre><code>             used   (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells    9795252  523.2   14699745   785.1   14699745   785.1
-Vcells 1196693989 9130.1 2666472556 20343.6 2552006687 19470.3</code></pre>
+Ncells    9796674  523.2   14699668   785.1   14699668   785.1
+Vcells 1104297029 8425.2 2481833969 18934.9 2388834092 18225.4</code></pre>
 </div>
 <div id="load-protein-annotations" class="section level2" number="4.2">
 <h2><span class="header-section-number">4.2</span> Load protein annotations</h2>
@@ -1782,7 +1785,7 @@ info %&gt;% knitr::kable()</code></pre>
 props &lt;- getTransformedProps(clusters = seuInt$Annotation,
                              sample = seuInt$donor, transform=&quot;asin&quot;)
 props$Proportions %&gt;% knitr::kable()</code></pre>
-<table>
+<table style="width:100%;">
 <colgroup>
 <col width="17%" />
 <col width="6%" />
@@ -1817,214 +1820,199 @@ props$Proportions %&gt;% knitr::kable()</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">alveolar-macs</td>
-<td align="right">0.4897346</td>
-<td align="right">0.4301559</td>
-<td align="right">0.3960069</td>
-<td align="right">0.3960939</td>
-<td align="right">0.3228656</td>
-<td align="right">0.3323643</td>
-<td align="right">0.3956835</td>
-<td align="right">0.5182704</td>
-<td align="right">0.4684592</td>
-<td align="right">0.5177684</td>
-<td align="right">0.2932961</td>
-<td align="right">0.3889428</td>
+<td align="left">alveolar macs</td>
+<td align="right">0.5566239</td>
+<td align="right">0.4515093</td>
+<td align="right">0.4607198</td>
+<td align="right">0.4629552</td>
+<td align="right">0.3303213</td>
+<td align="right">0.3632653</td>
+<td align="right">0.4266023</td>
+<td align="right">0.5591532</td>
+<td align="right">0.4853265</td>
+<td align="right">0.5505030</td>
+<td align="right">0.3051712</td>
+<td align="right">0.4080489</td>
 </tr>
 <tr class="even">
+<td align="left">macro- ifna/b</td>
+<td align="right">0.0170940</td>
+<td align="right">0.0163776</td>
+<td align="right">0.0644350</td>
+<td align="right">0.0576409</td>
+<td align="right">0.0311245</td>
+<td align="right">0.0214286</td>
+<td align="right">0.0627154</td>
+<td align="right">0.0386052</td>
+<td align="right">0.0425532</td>
+<td align="right">0.0217304</td>
+<td align="right">0.0254916</td>
+<td align="right">0.0565461</td>
+</tr>
+<tr class="odd">
 <td align="left">macro-CCL</td>
-<td align="right">0.0425638</td>
-<td align="right">0.0923261</td>
-<td align="right">0.0164931</td>
-<td align="right">0.0181261</td>
-<td align="right">0.0215898</td>
-<td align="right">0.0474806</td>
-<td align="right">0.0320471</td>
-<td align="right">0.0213155</td>
-<td align="right">0.0162013</td>
-<td align="right">0.0256018</td>
-<td align="right">0.0614525</td>
-<td align="right">0.0150339</td>
+<td align="right">0.0320513</td>
+<td align="right">0.0937701</td>
+<td align="right">0.0179954</td>
+<td align="right">0.0141994</td>
+<td align="right">0.0210843</td>
+<td align="right">0.0448980</td>
+<td align="right">0.0310131</td>
+<td align="right">0.0174346</td>
+<td align="right">0.0135730</td>
+<td align="right">0.0233400</td>
+<td align="right">0.0480699</td>
+<td align="right">0.0112073</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">macro-cholesterol</td>
-<td align="right">0.0090135</td>
-<td align="right">0.0089928</td>
-<td align="right">0.0125000</td>
-<td align="right">0.0245086</td>
-<td align="right">0.0009814</td>
-<td align="right">0.0077519</td>
-<td align="right">0.0189666</td>
-<td align="right">0.0267966</td>
-<td align="right">0.0117201</td>
-<td align="right">0.0179595</td>
-<td align="right">0.0006983</td>
-<td align="right">0.0276431</td>
+<td align="right">0.0080128</td>
+<td align="right">0.0077071</td>
+<td align="right">0.0150929</td>
+<td align="right">0.0226346</td>
+<td align="right">0.0010040</td>
+<td align="right">0.0051020</td>
+<td align="right">0.0227429</td>
+<td align="right">0.0255293</td>
+<td align="right">0.0139398</td>
+<td align="right">0.0197183</td>
+<td align="right">0.0007283</td>
+<td align="right">0.0275089</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">macro-ifna/b</td>
-<td align="right">0.0691037</td>
-<td align="right">0.0776379</td>
-<td align="right">0.2439236</td>
-<td align="right">0.2066633</td>
-<td align="right">0.0981354</td>
-<td align="right">0.1007752</td>
-<td align="right">0.2190974</td>
-<td align="right">0.1321559</td>
-<td align="right">0.1254740</td>
-<td align="right">0.0970577</td>
-<td align="right">0.1927374</td>
-<td align="right">0.2230844</td>
+<td align="right">0.0496795</td>
+<td align="right">0.0587669</td>
+<td align="right">0.1735681</td>
+<td align="right">0.1429776</td>
+<td align="right">0.0622490</td>
+<td align="right">0.0755102</td>
+<td align="right">0.1447278</td>
+<td align="right">0.0884184</td>
+<td align="right">0.0796038</td>
+<td align="right">0.0732394</td>
+<td align="right">0.1544064</td>
+<td align="right">0.1619969</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">macro-int</td>
-<td align="right">0.1432148</td>
-<td align="right">0.0863309</td>
-<td align="right">0.0979167</td>
-<td align="right">0.0830993</td>
-<td align="right">0.3415113</td>
-<td align="right">0.1850775</td>
-<td align="right">0.0837148</td>
-<td align="right">0.0822168</td>
-<td align="right">0.0823854</td>
-<td align="right">0.0867405</td>
-<td align="right">0.2597765</td>
-<td align="right">0.0654704</td>
+<td align="right">0.1452991</td>
+<td align="right">0.0918433</td>
+<td align="right">0.0998452</td>
+<td align="right">0.0856179</td>
+<td align="right">0.3463855</td>
+<td align="right">0.1938776</td>
+<td align="right">0.0875258</td>
+<td align="right">0.0853051</td>
+<td align="right">0.0917095</td>
+<td align="right">0.0905433</td>
+<td align="right">0.2694829</td>
+<td align="right">0.0718288</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">macro-interstitial</td>
-<td align="right">0.0020030</td>
-<td align="right">0.0026978</td>
-<td align="right">0.0067708</td>
-<td align="right">0.0051059</td>
-<td align="right">0.0049068</td>
-<td align="right">0.0038760</td>
-<td align="right">0.0019621</td>
-<td align="right">0.0097442</td>
-<td align="right">0.0051706</td>
-<td align="right">0.0042033</td>
-<td align="right">0.0272346</td>
-<td align="right">0.0053346</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0025690</td>
+<td align="right">0.0075464</td>
+<td align="right">0.0042176</td>
+<td align="right">0.0040161</td>
+<td align="right">0.0040816</td>
+<td align="right">0.0020675</td>
+<td align="right">0.0093400</td>
+<td align="right">0.0051357</td>
+<td align="right">0.0040241</td>
+<td align="right">0.0284050</td>
+<td align="right">0.0050942</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">macro-lipid</td>
-<td align="right">0.0605909</td>
-<td align="right">0.1372902</td>
-<td align="right">0.0406250</td>
-<td align="right">0.0991830</td>
-<td align="right">0.1177625</td>
-<td align="right">0.2189922</td>
-<td align="right">0.0627861</td>
-<td align="right">0.0676005</td>
-<td align="right">0.1289211</td>
-<td align="right">0.1047000</td>
-<td align="right">0.0530726</td>
-<td align="right">0.0872939</td>
+<td align="right">0.0625000</td>
+<td align="right">0.1361593</td>
+<td align="right">0.0381192</td>
+<td align="right">0.1054407</td>
+<td align="right">0.1194779</td>
+<td align="right">0.2051020</td>
+<td align="right">0.0654721</td>
+<td align="right">0.0653798</td>
+<td align="right">0.1338958</td>
+<td align="right">0.1078471</td>
+<td align="right">0.0691916</td>
+<td align="right">0.0896587</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">macro-MT</td>
-<td align="right">0.0175263</td>
-<td align="right">0.0158873</td>
-<td align="right">0.0300347</td>
-<td align="right">0.0340822</td>
-<td align="right">0.0127576</td>
-<td align="right">0.0038760</td>
-<td align="right">0.0137345</td>
-<td align="right">0.0085262</td>
-<td align="right">0.0168907</td>
-<td align="right">0.0183416</td>
-<td align="right">0.0041899</td>
-<td align="right">0.0339476</td>
+<td align="right">0.0192308</td>
+<td align="right">0.0147720</td>
+<td align="right">0.0317337</td>
+<td align="right">0.0336004</td>
+<td align="right">0.0130522</td>
+<td align="right">0.0040816</td>
+<td align="right">0.0151620</td>
+<td align="right">0.0080946</td>
+<td align="right">0.0179751</td>
+<td align="right">0.0185111</td>
+<td align="right">0.0058267</td>
+<td align="right">0.0341314</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">macro-reg</td>
-<td align="right">0.0050075</td>
-<td align="right">0.0038969</td>
-<td align="right">0.0053819</td>
-<td align="right">0.0037018</td>
-<td align="right">0.0009814</td>
-<td align="right">0.0038760</td>
-<td align="right">0.0006540</td>
-<td align="right">0.0024361</td>
-<td align="right">0.0051706</td>
-<td align="right">0.0011464</td>
-<td align="right">0.0006983</td>
-<td align="right">0.0290980</td>
+<td align="right">0.0085470</td>
+<td align="right">0.0077071</td>
+<td align="right">0.0075464</td>
+<td align="right">0.0059047</td>
+<td align="right">0.0130522</td>
+<td align="right">0.0071429</td>
+<td align="right">0.0027567</td>
+<td align="right">0.0043587</td>
+<td align="right">0.0066031</td>
+<td align="right">0.0020121</td>
+<td align="right">0.0029133</td>
+<td align="right">0.0320937</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">macro-repair</td>
-<td align="right">0.0480721</td>
-<td align="right">0.0293765</td>
-<td align="right">0.0227431</td>
-<td align="right">0.0123819</td>
-<td align="right">0.0058881</td>
-<td align="right">0.0300388</td>
-<td align="right">0.0281230</td>
-<td align="right">0.0194884</td>
-<td align="right">0.0248190</td>
-<td align="right">0.0156668</td>
-<td align="right">0.0216480</td>
-<td align="right">0.0179437</td>
-</tr>
-<tr class="odd">
-<td align="left">macro-T</td>
-<td align="right">0.0135203</td>
-<td align="right">0.0101918</td>
-<td align="right">0.0251736</td>
-<td align="right">0.0187644</td>
-<td align="right">0.0098135</td>
-<td align="right">0.0038760</td>
-<td align="right">0.0071942</td>
-<td align="right">0.0030451</td>
-<td align="right">0.0079283</td>
-<td align="right">0.0084066</td>
-<td align="right">0.0069832</td>
-<td align="right">0.0063046</td>
+<td align="right">0.0523504</td>
+<td align="right">0.0324342</td>
+<td align="right">0.0241873</td>
+<td align="right">0.0140588</td>
+<td align="right">0.0060241</td>
+<td align="right">0.0265306</td>
+<td align="right">0.0282564</td>
+<td align="right">0.0236613</td>
+<td align="right">0.0256787</td>
+<td align="right">0.0148893</td>
+<td align="right">0.0233066</td>
+<td align="right">0.0152827</td>
 </tr>
 <tr class="even">
-<td align="left">macro-vesicle</td>
-<td align="right">0.0555834</td>
-<td align="right">0.0146882</td>
-<td align="right">0.0420139</td>
-<td align="right">0.0454429</td>
-<td align="right">0.0058881</td>
-<td align="right">0.0067829</td>
-<td align="right">0.0281230</td>
-<td align="right">0.0359318</td>
-<td align="right">0.0186143</td>
-<td align="right">0.0217807</td>
-<td align="right">0.0062849</td>
-<td align="right">0.0038797</td>
-</tr>
-<tr class="odd">
 <td align="left">macro-viral</td>
-<td align="right">0.0315473</td>
-<td align="right">0.0278777</td>
-<td align="right">0.0144097</td>
-<td align="right">0.0172326</td>
-<td align="right">0.0107949</td>
-<td align="right">0.0193798</td>
-<td align="right">0.0405494</td>
-<td align="right">0.0249695</td>
-<td align="right">0.0189590</td>
-<td align="right">0.0194880</td>
-<td align="right">0.0307263</td>
-<td align="right">0.0155189</td>
+<td align="right">0.0373932</td>
+<td align="right">0.0327553</td>
+<td align="right">0.0178019</td>
+<td align="right">0.0195417</td>
+<td align="right">0.0170683</td>
+<td align="right">0.0224490</td>
+<td align="right">0.0461751</td>
+<td align="right">0.0298879</td>
+<td align="right">0.0234776</td>
+<td align="right">0.0233400</td>
+<td align="right">0.0320466</td>
+<td align="right">0.0168110</td>
 </tr>
-<tr class="even">
-<td align="left">proliferating-macrophage</td>
-<td align="right">0.0125188</td>
-<td align="right">0.0626499</td>
-<td align="right">0.0460069</td>
-<td align="right">0.0356140</td>
-<td align="right">0.0461237</td>
-<td align="right">0.0358527</td>
-<td align="right">0.0673643</td>
-<td align="right">0.0475030</td>
-<td align="right">0.0692865</td>
-<td align="right">0.0611387</td>
-<td align="right">0.0412011</td>
-<td align="right">0.0805044</td>
+<tr class="odd">
+<td align="left">proliferating macrophages</td>
+<td align="right">0.0112179</td>
+<td align="right">0.0536288</td>
+<td align="right">0.0414087</td>
+<td align="right">0.0312105</td>
+<td align="right">0.0351406</td>
+<td align="right">0.0265306</td>
+<td align="right">0.0647829</td>
+<td align="right">0.0448319</td>
+<td align="right">0.0605282</td>
+<td align="right">0.0503018</td>
+<td align="right">0.0349599</td>
+<td align="right">0.0697911</td>
 </tr>
 </tbody>
 </table>
@@ -2161,6 +2149,43 @@ ggplot(dat[dat$Participant != &quot;A1_Ctrl&quot;,],
   NoLegend() -&gt; f
 f</code></pre>
 <p><img src="figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-20-1">
+Past versions of unnamed-chunk-20-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-20-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/63f8ee8a3eea9d94fc3126cc4879becfb9e3b8ac/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-20-1.png" target="_blank">63f8ee8</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -2194,6 +2219,43 @@ if(!file.exists(out)){
   plot_annotation(tag_levels = &quot;A&quot;) &amp;
   theme(plot.tag = element_text(size = 14, face = &quot;bold&quot;))</code></pre>
 <p><img src="figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-22-1.png" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-1">
+Past versions of unnamed-chunk-22-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-22-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/63f8ee8a3eea9d94fc3126cc4879becfb9e3b8ac/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-22-1.png" target="_blank">63f8ee8</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="session-info" class="section level1 appendix" number="8">
 <h1><span class="header-section-number">8</span> Session info</h1>
@@ -2212,7 +2274,7 @@ The analysis and this document were prepared using the following software (click
  collate  en_AU.UTF-8
  ctype    en_AU.UTF-8
  tz       Australia/Melbourne
- date     2022-12-15
+ date     2022-12-19
  pandoc   2.17.1.1 @ /usr/lib/rstudio-server/bin/quarto/bin/ (via rmarkdown)
 
 ─ Packages ───────────────────────────────────────────────────────────────────
