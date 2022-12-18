@@ -73,6 +73,80 @@ seuInt$Annotation <- fct_drop(seuInt$Annotation)
 seuInt$Broad <- fct_drop(seuInt$Broad)
 seuInt
 ```
+## Check for doublet enrichment
+We have already removed a total of 3826 heterogenic, cross-sample doublets based on `vireo` and `hashedDrops` calls. However, those methods cannot detect heterotypic and homotypic within-sample doublets. We have also run `scds` and `scDblFinder` to detect putative within-sample doublets. 
+
+Load doublet detection results and match up with annotated cells.
+
+```{r}
+e1Doublets <- readRDS(here("data/SCEs/experiment1_doublets.rds"))
+e1Doublets$cell <- paste0("A-", e1Doublets$cell)
+e2Doublets <- readRDS(here("data/SCEs/experiment2_doublets.rds"))
+e2Doublets$cell <- paste0("B-", e2Doublets$cell)
+
+doublets <- rbind(e1Doublets, e2Doublets)
+m <- match(colnames(seuInt), doublets$cell)
+doublets <- doublets[m,]
+all(doublets$cell == colnames(seuInt))
+```
+
+No clusters are comprised of >10% putative doublets.
+
+```{r}
+table(doublets$scDblFinder.class == "doublet" & doublets$hybrid_call, 
+      seuInt$Annotation) %>%
+  data.frame %>% 
+  group_by(Var2) %>%
+  mutate(prop = Freq/sum(Freq)) %>%
+  ungroup() %>%
+  ggplot(aes(x = Var2, y = prop, fill = Var1)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  geom_hline(yintercept = 0.1, linetype = "dashed") +
+  labs(fill = "Doublet",
+       x = "Fine annotation",
+       y = "Proportion") -> p1
+
+table(doublets$scDblFinder.class == "doublet" & doublets$hybrid_call, 
+      seuInt$Annotation) %>%
+  data.frame %>% 
+  ggplot(aes(x = Var2, y = Freq, fill = Var1)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  labs(fill = "Doublet",
+       x = "Fine annotation",
+       y = "Frequency") -> p2
+
+(p2 | p1) + plot_layout(guides = "collect") &
+  theme(legend.position = "bottom")
+```
+
+Calculate if doublets are statistically over-represented in any clusters using Fisher's Exact Test. Only the SUSPECT cluster and the neutrophil-like clusters are significantly over-represented for putative doublets. As the SUSPECT cluster will be filtered out and the neutrophil-like cluster has <10% putative doublets, there will be no further cell filtering.   
+
+```{r}
+tab <- table(doublets$scDblFinder.class == "doublet" & doublets$hybrid_call, 
+      seuInt$Annotation)
+dblStats <- table(doublets$scDblFinder.class == "doublet" & doublets$hybrid_call)
+
+apply(tab, 2, function(x){
+  dblFreq <- matrix(c(x[2], dblStats[2] - x[2], x[1], dblStats[1] - x[1]), 
+                      nrow = 2,
+	              dimnames = list(c("In cluster", "Not in cluster"),
+	                              c("Doublet", "Singlet")))
+  fisher.test(dblFreq, alternative = "greater")$p.value
+}) -> pvals
+
+pvals %>% 
+  data.frame %>%
+  rownames_to_column(var = "cell") %>%
+  dplyr::rename("p.value" = ".") %>%
+  mutate(FDR = p.adjust(p.value, method = "BH")) %>%
+  ggplot(aes(y = -log10(FDR), x = cell,
+             fill = FDR < 0.05)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  geom_col() 
+```
+
 ## Visulalise annotations
 
 ```{r, fig.width=10, fig.asp=0.4}

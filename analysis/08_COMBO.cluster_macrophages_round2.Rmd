@@ -83,7 +83,7 @@ seuInt
 ```
 
 ## Check for doublet enrichment
-The *macro-T* cluster expresses both macrophage and T-cell marker genes so we need to check if it is artefactual e.g. contains doublets. We have already removed a total of 3826 heterogenic doublets based on `vireo` and `hashedDrops` calls. However, those methods cannot detect heterotypic and homotypic doublets from the same individual (homogenic). We have also run `scds` and `scDblFinder` to detect putative homogenic doublets. 
+The *macro-T* cluster expresses both macrophage and T-cell marker genes so we need to check if it is artefactual e.g. contains doublets. We have already removed a total of 3826 heterogenic, cross-sample doublets based on `vireo` and `hashedDrops` calls. However, those methods cannot detect heterotypic and homotypic within-sample doublets. We have also run `scds` and `scDblFinder` to detect putative within-sample doublets. 
 
 Load doublet detection results and match up with annotated cells.
 

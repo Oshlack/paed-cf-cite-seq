@@ -107,8 +107,8 @@ sce
 ```
 
 
-# Call homogenic doublets
-Use `scds` and `scDblFinder` to try to identify homogenic doublets. Doublets are called on each capture separately. 
+# Call within-sample doublets
+Use `scds` and `scDblFinder` to try to identify within-sample doublets. Doublets are called on each capture separately. 
 
 ```{r}
 out <- here("data/SCEs/experiment1_doublets.rds")

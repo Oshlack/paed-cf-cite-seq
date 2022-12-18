@@ -44,7 +44,7 @@ options(future.globals.maxSize = 6500 * 1024^2)
 # Load Data
 
 ```{r, warning=FALSE, message=FALSE, fig.asp=1.25}
-out <- here("data/SCEs/06_COMBO.macrophages_clustered.SEU.rds")
+out <- here("data/SCEs/07_COMBO.macrophages_clustered.SEU.rds")
 seuInt <- readRDS(file = out)
 
 seuInt
@@ -54,9 +54,10 @@ seuInt
 ## Load manual annotations
 
 ```{r}
-labels <- read_csv(here("data/macrophage_subcluster_annotation_29.05.22.csv"))
+labels <- read_csv(here("data/macrophage_subcluster_annotation_16.12.22.csv"))
 
 seuInt@meta.data %>%
+  dplyr::select(-Annotation, -Broad) %>%
   left_join(labels %>%
               mutate(Annotation = ifelse(is.na(Annotation),
                                          "SUSPECT",
