@@ -10,7 +10,7 @@
 
 
 
-<meta name="date" content="2022-12-15" />
+<meta name="date" content="2022-12-19" />
 
 <title>Multimodal single-cell analysis of bronchoalveolar lavage from children with cystic fibrosis reveals novel cell phenotypes</title>
 
@@ -373,7 +373,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Multimodal single-cell analysis of bronchoalveolar lavage from children with cystic fibrosis reveals novel cell phenotypes</h1>
 <h4 class="author">Jovana Maksimovic</h4>
-<h4 class="date">2022-12-15</h4>
+<h4 class="date">2022-12-19</h4>
 
 </div>
 
@@ -402,7 +402,7 @@ Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></sp
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-12-15
+<strong>Last updated:</strong> 2022-12-19
 </p>
 <p>
 <strong>Checks:</strong>
@@ -530,20 +530,20 @@ makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree5f15c9b636ccd775d31026745606fc7e10d94f58targetblank5f15c9ba">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree99078c4e8adb15035ea95f6e4355ed0b295baadctargetblank99078c4a">
 <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-<strong>Repository version:</strong> <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/5f15c9b636ccd775d31026745606fc7e10d94f58" target="_blank">5f15c9b</a>
+<strong>Repository version:</strong> <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/99078c4e8adb15035ea95f6e4355ed0b295baadc" target="_blank">99078c4</a>
 </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree5f15c9b636ccd775d31026745606fc7e10d94f58targetblank5f15c9ba" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree99078c4e8adb15035ea95f6e4355ed0b295baadctargetblank99078c4a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and
 connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/5f15c9b636ccd775d31026745606fc7e10d94f58" target="_blank">5f15c9b</a>.
+The results in this page were generated with repository version <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/99078c4e8adb15035ea95f6e4355ed0b295baadc" target="_blank">99078c4</a>.
 See the <em>Past versions</em> tab to see a history of the changes made to the
 R Markdown and HTML files.
 </p>
@@ -639,6 +639,8 @@ Ignored files:
     Ignored:    data/SCEs/06_COMBO.others_integrated.SEU.rds
     Ignored:    data/SCEs/06_COMBO.tcells_clustered.SEU.rds
     Ignored:    data/SCEs/06_COMBO.tcells_integrated.SEU.rds
+    Ignored:    data/SCEs/07_COMBO.clean_integrated.SEU.rds
+    Ignored:    data/SCEs/07_COMBO.clean_macrophages_diet.SEU.rds
     Ignored:    data/SCEs/07_COMBO.macrophages_clustered.SEU.rds
     Ignored:    data/SCEs/07_COMBO.macrophages_integrated.SEU.rds
     Ignored:    data/SCEs/C133_Neeland.CellRanger.SCE.rds
@@ -655,15 +657,6 @@ Ignored files:
     Ignored:    renv/library/
     Ignored:    renv/staging/
     Ignored:    wflow_background.R
-
-Untracked files:
-    Untracked:  output/marker-analysis/06-COMBO-macrophages/
-
-Unstaged changes:
-    Modified:   .gitignore
-    Modified:   .renvignore
-    Modified:   renv/.gitignore
-    Modified:   renv/settings.dcf
 
 </code></pre>
 <p>
@@ -708,6 +701,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/99078c4e8adb15035ea95f6e4355ed0b295baadc/analysis/index.Rmd" target="_blank">99078c4</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-19
+</td>
+<td>
+wflow_publish(c("analysis/11_COMBO.postprocess_macrophages.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f7bdd55838d6670125cd6700bac0be3a8c48cfc8/docs/index.html" target="_blank">f7bdd55</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-15
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -997,7 +1024,26 @@ can be downloaded as RDS files from <a href="https://doi.org/10.5281/zenodo.6651
 <p>Follow the links below to view the different parts of the analysis.</p>
 <div id="abstract" class="section level1 unnumbered">
 <h1>Abstract</h1>
-<p>To be updated</p>
+<div id="rationale" class="section level2" number="0.1">
+<h2><span class="header-section-number">0.1</span> Rationale</h2>
+<p>Inflammation is a key driver of cystic fibrosis (CF) lung disease, which is not addressed by current standard care. Improved understanding of the mechanisms leading to aberrant inflammation may assist the development of effective anti-inflammatory therapy. Single-cell RNA sequencing allows profiling of cell composition and function at previously unprecedented resolution. Here, we employ multiomic single-cell RNA sequencing (scRNA-seq) to generate the first immune cell atlas of the pediatric lower airway in preschool children with CF.</p>
+</div>
+<div id="objectives" class="section level2" number="0.2">
+<h2><span class="header-section-number">0.2</span> Objectives</h2>
+<p>To use multimodal single-cell analysis to comprehensively define immune cell phenotypes, proportions and functional characteristics in preschool children with CF.</p>
+</div>
+<div id="methods" class="section level2" number="0.3">
+<h2><span class="header-section-number">0.3</span> Methods</h2>
+<p>We analyzed 42,658 cells from bronchoalveolar lavage of 11 preschool children with CF and a healthy control using scRNA-seq and parallel assessment of 154 cell surface proteins. Validation of cell types identified by single-cell RNA seq was achieved by assessment of samples by spectral flow cytometry.</p>
+</div>
+<div id="measurements-and-main-results" class="section level2" number="0.4">
+<h2><span class="header-section-number">0.4</span> Measurements and Main Results</h2>
+<p>Analysis of transcriptome expression and cell surface protein expression, combined with functional pathway analysis, revealed 41 immune and epithelial cell populations in BAL. Spectral flow cytometry analysis of over 256,000 cells from a subset of the same patients revealed high correlation in major cell type proportions across the two technologies. Macrophages consisted of 13 functionally distinct sub populations, including previously undescribed populations enriched for markers of vesicle production, T-cell interaction and regulatory/repair functions. Other novel cell populations included CD4 T cells expressing inflammatory IFNα/β and NFκB signalling genes.</p>
+</div>
+<div id="conclusions" class="section level2" number="0.5">
+<h2><span class="header-section-number">0.5</span> Conclusions</h2>
+<p>Our work provides a comprehensive cellular analysis of the pediatric lower airway in preschool children with CF, reveals novel cell types and provides a reference for investigation of inflammation in early life CF.</p>
+</div>
 </div>
 <div id="authors" class="section level1 unnumbered">
 <h1>Authors</h1>

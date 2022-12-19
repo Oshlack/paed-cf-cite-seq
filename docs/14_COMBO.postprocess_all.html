@@ -532,20 +532,20 @@ makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtreee799f52f925c88d9eaabb8dc12dba1f0e0ff1318targetblanke799f52a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree99078c4e8adb15035ea95f6e4355ed0b295baadctargetblank99078c4a">
 <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-<strong>Repository version:</strong> <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/e799f52f925c88d9eaabb8dc12dba1f0e0ff1318" target="_blank">e799f52</a>
+<strong>Repository version:</strong> <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/99078c4e8adb15035ea95f6e4355ed0b295baadc" target="_blank">99078c4</a>
 </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtreee799f52f925c88d9eaabb8dc12dba1f0e0ff1318targetblanke799f52a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree99078c4e8adb15035ea95f6e4355ed0b295baadctargetblank99078c4a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and
 connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/e799f52f925c88d9eaabb8dc12dba1f0e0ff1318" target="_blank">e799f52</a>.
+The results in this page were generated with repository version <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/99078c4e8adb15035ea95f6e4355ed0b295baadc" target="_blank">99078c4</a>.
 See the <em>Past versions</em> tab to see a history of the changes made to the
 R Markdown and HTML files.
 </p>
@@ -641,6 +641,8 @@ Ignored files:
     Ignored:    data/SCEs/06_COMBO.others_integrated.SEU.rds
     Ignored:    data/SCEs/06_COMBO.tcells_clustered.SEU.rds
     Ignored:    data/SCEs/06_COMBO.tcells_integrated.SEU.rds
+    Ignored:    data/SCEs/07_COMBO.clean_integrated.SEU.rds
+    Ignored:    data/SCEs/07_COMBO.clean_macrophages_diet.SEU.rds
     Ignored:    data/SCEs/07_COMBO.macrophages_clustered.SEU.rds
     Ignored:    data/SCEs/07_COMBO.macrophages_integrated.SEU.rds
     Ignored:    data/SCEs/C133_Neeland.CellRanger.SCE.rds
@@ -701,6 +703,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/99078c4e8adb15035ea95f6e4355ed0b295baadc/analysis/14_COMBO.postprocess_all.Rmd" target="_blank">99078c4</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-19
+</td>
+<td>
+wflow_publish(c("analysis/11_COMBO.postprocess_macrophages.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/16ace9e29de0c45f034829f2fc969d4afc871c3d/docs/14_COMBO.postprocess_all.html" target="_blank">16ace9e</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-19
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -802,18 +838,18 @@ options(future.globals.maxSize = 6500 * 1024^2)</code></pre>
 <h1><span class="header-section-number">2</span> Analyse cell proportions</h1>
 <div id="load-data" class="section level2" number="2.1">
 <h2><span class="header-section-number">2.1</span> Load Data</h2>
-<pre class="r"><code>seu1 &lt;- readRDS(here(&quot;data/SCEs/06_COMBO.clean_macrophages_diet.SEU.rds&quot;))
+<pre class="r"><code>seu1 &lt;- readRDS(here(&quot;data/SCEs/07_COMBO.clean_macrophages_diet.SEU.rds&quot;))
 seu2 &lt;- readRDS(here(&quot;data/SCEs/06_COMBO.clean_tcells_diet.SEU.rds&quot;))
 seu3 &lt;- readRDS(here(&quot;data/SCEs/06_COMBO.clean_others_diet.SEU.rds&quot;))
 seu &lt;- merge(seu1, y = c(seu2, seu3))
 seu</code></pre>
 <pre><code>An object of class Seurat 
-16323 features across 44972 samples within 3 assays 
+16323 features across 42658 samples within 3 assays 
 Active assay: RNA (16001 features, 0 variable features)
  2 other assays present: ADT.dsb, ADT.raw</code></pre>
 <pre><code>            used   (Mb) gc trigger    (Mb)   max used   (Mb)
-Ncells   9521483  508.6   14593885   779.4   11309863  604.1
-Vcells 493242524 3763.2 1637363331 12492.1 1249794056 9535.2</code></pre>
+Ncells   9516753  508.3   14700177   785.1   11566507  617.8
+Vcells 458772009 3500.2 1520189579 11598.2 1162014192 8865.5</code></pre>
 </div>
 <div id="visualise-combined-filtered-data" class="section level2" number="2.2">
 <h2><span class="header-section-number">2.2</span> Visualise combined, filtered data</h2>
@@ -868,7 +904,7 @@ Jovana Maksimovic
 <div id="integrate-data" class="section level1" number="3">
 <h1><span class="header-section-number">3</span> Integrate data</h1>
 <p>Normalise the data using <code>SCTransform</code> and integrate across batches/individuals.</p>
-<pre class="r"><code>out &lt;- here(&quot;data/SCEs/06_COMBO.clean_integrated.SEU.rds&quot;)
+<pre class="r"><code>out &lt;- here(&quot;data/SCEs/07_COMBO.clean_integrated.SEU.rds&quot;)
 
 if(!file.exists(out)) {
   seuInt &lt;- intDat(seu, split = &quot;donor&quot;, type = &quot;RNA&quot;,
@@ -880,8 +916,8 @@ if(!file.exists(out)) {
 
 }</code></pre>
 <pre><code>             used    (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells    9661313   516.0   14593885   779.4   14593885   779.4
-Vcells 2016823829 15387.2 2894174302 22080.8 2016878612 15387.6</code></pre>
+Ncells    9656567   515.8   14700177   785.1   14700177   785.1
+Vcells 1882913834 14365.5 2702067288 20615.2 1882968378 14366.0</code></pre>
 <div id="visualise-integrated-data" class="section level2" number="3.1">
 <h2><span class="header-section-number">3.1</span> Visualise integrated data</h2>
 <pre class="r"><code>seuInt &lt;- RunPCA(seuInt, npcs = 30, verbose = FALSE)
@@ -927,22 +963,12 @@ Jovana Maksimovic
 </div>
 </div>
 </div>
-</div>
-<div id="cluster-data" class="section level1" number="4">
-<h1><span class="header-section-number">4</span> Cluster data</h1>
-<div id="perform-linear-dimensional-reduction" class="section level2" number="4.1">
-<h2><span class="header-section-number">4.1</span> Perform linear dimensional reduction</h2>
-<pre class="r"><code>p1 &lt;- DimPlot(seuInt, reduction = &quot;pca&quot;, group.by = &quot;donor&quot;)
-p2 &lt;- DimPlot(seuInt, reduction = &quot;pca&quot;, dims = c(1,3), group.by = &quot;donor&quot;)
-p3 &lt;- DimPlot(seuInt, reduction = &quot;pca&quot;, dims = c(2,3), group.by = &quot;donor&quot;)
-p4 &lt;- DimPlot(seuInt, reduction = &quot;pca&quot;, dims = c(3,4), group.by = &quot;donor&quot;)
-
-((p1 | p2) / (p3 | p4)) + plot_layout(guides = &quot;collect&quot;) &amp;
-  theme(legend.text = element_text(size = 8),
-        plot.title = element_text(size = 10),
-        axis.title = element_text(size = 9),
-        axis.text = element_text(size = 8))</code></pre>
-<p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="visualise-labels" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Visualise labels</h2>
+<pre class="r"><code>options(ggrepel.max.overlaps = Inf)
+DimPlot(seuInt, reduction = &#39;umap&#39;, label = TRUE, repel = TRUE,
+        label.size = 2.5, group.by = &quot;Annotation&quot;) + NoLegend()</code></pre>
+<p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-10-1.png" width="864" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-1">
 Past versions of unnamed-chunk-10-1.png
@@ -980,8 +1006,18 @@ Jovana Maksimovic
 </table>
 </div>
 </div>
-<pre class="r"><code>DimHeatmap(seuInt, dims = 1:30, cells = 500, balanced = TRUE)</code></pre>
-<p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-11-1.png" width="864" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>DimPlot(seuInt, reduction = &#39;umap&#39;, label = TRUE, repel = TRUE,
+        label.size = 3, group.by = &quot;Broad&quot;,
+        cols = paletteer::paletteer_d(&quot;miscpalettes::pastel&quot;, 
+                                      length(unique(seuInt$Broad)))) + 
+  NoLegend() -&gt; f1b
+
+f1b</code></pre>
+<p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-10-2.png" width="864" style="display: block; margin: auto;" /></p>
+<div id="apoc2-gene-expression" class="section level3" number="3.2.1">
+<h3><span class="header-section-number">3.2.1</span> APOC2 gene expression</h3>
+<pre class="r"><code>FeaturePlot(seuInt, features = &quot;APOC2&quot;)</code></pre>
+<p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-1">
 Past versions of unnamed-chunk-11-1.png
@@ -1019,10 +1055,11 @@ Jovana Maksimovic
 </table>
 </div>
 </div>
-</div>
-<div id="determine-the-dimensionality-of-the-dataset" class="section level2" number="4.2">
-<h2><span class="header-section-number">4.2</span> Determine the <em>dimensionality</em> of the dataset</h2>
-<pre class="r"><code>ElbowPlot(seuInt, ndims = 30)</code></pre>
+<pre class="r"><code>VlnPlot(seuInt, features = &quot;APOC2&quot;, 
+        group.by = &quot;Broad&quot;, pt.size = 0,
+        log = TRUE) + 
+  NoLegend() +
+  paletteer::scale_fill_paletteer_d(&quot;miscpalettes::pastel&quot;)</code></pre>
 <p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-1">
@@ -1062,249 +1099,9 @@ Jovana Maksimovic
 </div>
 </div>
 </div>
-<div id="cluster-the-cells" class="section level2" number="4.3">
-<h2><span class="header-section-number">4.3</span> Cluster the cells</h2>
-<pre class="r"><code>out &lt;- here(&quot;data/SCEs/06_COMBO.clean_clustered.SEU.rds&quot;)
-
-if(!file.exists(out)) {
-  seuInt &lt;- FindNeighbors(seuInt, reduction = &quot;pca&quot;, dims = 1:30)
-  seuInt &lt;- FindClusters(seuInt, algorithm = 3,
-                         resolution = 1)
-  seuInt &lt;- RunUMAP(seuInt, dims = 1:30)
-  saveRDS(seuInt, file = out)
-
-} else {
-  seuInt &lt;- readRDS(out)
-
-}</code></pre>
 </div>
-<div id="visualise-clustering" class="section level2" number="4.4">
-<h2><span class="header-section-number">4.4</span> Visualise clustering</h2>
-<pre class="r"><code>options(ggrepel.max.overlaps = Inf)
-DimPlot(seuInt, reduction = &#39;umap&#39;, label = TRUE, repel = TRUE,
-        label.size = 2.5, group.by = &quot;integrated_snn_res.1&quot;) + NoLegend()</code></pre>
-<p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-14-1.png" width="864" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-1">
-Past versions of unnamed-chunk-14-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-14-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-14-1.png" target="_blank">f3b7b92</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-06-16
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>DimPlot(seuInt, reduction = &#39;umap&#39;, label = TRUE, repel = TRUE,
-        label.size = 2.5, group.by = &quot;Annotation&quot;) + NoLegend()</code></pre>
-<p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-14-2.png" width="864" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-2">
-Past versions of unnamed-chunk-14-2.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-14-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-14-2.png" target="_blank">f3b7b92</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-06-16
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>DimPlot(seuInt, reduction = &#39;umap&#39;, label = TRUE, repel = TRUE,
-        label.size = 3, group.by = &quot;Broad&quot;,
-        cols = paletteer::paletteer_d(&quot;miscpalettes::pastel&quot;, 
-                                      length(unique(seuInt$Broad)))) + 
-  NoLegend() -&gt; f1b
-
-f1b</code></pre>
-<p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-14-3.png" width="864" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-3">
-Past versions of unnamed-chunk-14-3.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-14-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-14-3.png" target="_blank">f3b7b92</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-06-16
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div id="apoc2-gene-expression" class="section level3" number="4.4.1">
-<h3><span class="header-section-number">4.4.1</span> APOC2 gene expression</h3>
-<pre class="r"><code>FeaturePlot(seuInt, features = &quot;APOC2&quot;)</code></pre>
-<p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-15-1">
-Past versions of unnamed-chunk-15-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-15-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/63f8ee8a3eea9d94fc3126cc4879becfb9e3b8ac/docs/figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-15-1.png" target="_blank">63f8ee8</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-12-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>VlnPlot(seuInt, features = &quot;APOC2&quot;, 
-        group.by = &quot;Broad&quot;, pt.size = 0,
-        log = TRUE) + 
-  NoLegend() +
-  paletteer::scale_fill_paletteer_d(&quot;miscpalettes::pastel&quot;)</code></pre>
-<p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-16-1">
-Past versions of unnamed-chunk-16-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-16-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/63f8ee8a3eea9d94fc3126cc4879becfb9e3b8ac/docs/figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-16-1.png" target="_blank">63f8ee8</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-12-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-16-1.png" target="_blank">f3b7b92</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-06-16
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-</div>
-<div id="cepo-cluster-marker-genes" class="section level2" number="4.5">
-<h2><span class="header-section-number">4.5</span> <code>Cepo</code> cluster marker genes</h2>
+<div id="cepo-cluster-marker-genes" class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> <code>Cepo</code> cluster marker genes</h2>
 <pre class="r"><code>cepoMarkers &lt;- Cepo(seuInt[[&quot;RNA&quot;]]@data, 
                    seuInt$Broad, 
                    exprsPct = 0.1,
@@ -1383,8 +1180,8 @@ dat %&gt;% knitr::kable()</code></pre>
 <td align="left">KRT7</td>
 <td align="left">TRDC</td>
 <td align="left">MAL</td>
-<td align="left">MS4A4A</td>
-<td align="left">MS4A2</td>
+<td align="left">FFAR4</td>
+<td align="left">CPA3</td>
 <td align="left">FPR3</td>
 <td align="left">CD300E</td>
 <td align="left">XCL1</td>
@@ -1400,12 +1197,12 @@ dat %&gt;% knitr::kable()</code></pre>
 <td align="left">RAMP2</td>
 <td align="left">KRT17</td>
 <td align="left">KLRB1</td>
-<td align="left">XCL1</td>
-<td align="left">FFAR4</td>
-<td align="left">CPA3</td>
+<td align="left">CD27</td>
+<td align="left">PPARG</td>
+<td align="left">MS4A2</td>
 <td align="left">CSF1R</td>
 <td align="left">VCAN</td>
-<td align="left">KLRF1</td>
+<td align="left">XCL2</td>
 <td align="left">KIR2DL4</td>
 <td align="left">MS4A4A</td>
 <td align="left">PCLAF</td>
@@ -1418,12 +1215,12 @@ dat %&gt;% knitr::kable()</code></pre>
 <td align="left">CLDN5</td>
 <td align="left">FXYD3</td>
 <td align="left">TRGC1</td>
-<td align="left">CD27</td>
-<td align="left">PPARG</td>
+<td align="left">XCL1</td>
+<td align="left">MS4A4A</td>
 <td align="left">SLC18A2</td>
 <td align="left">FCGR2B</td>
 <td align="left">LILRB2</td>
-<td align="left">XCL2</td>
+<td align="left">KLRF1</td>
 <td align="left">LINC02446</td>
 <td align="left">CYP27A1</td>
 <td align="left">RRM2</td>
@@ -1437,7 +1234,7 @@ dat %&gt;% knitr::kable()</code></pre>
 <td align="left">CLDN4</td>
 <td align="left">KLRG1</td>
 <td align="left">ZNF683</td>
-<td align="left">FCGR1A</td>
+<td align="left">GPD1</td>
 <td align="left">GATA2</td>
 <td align="left">MARCH1</td>
 <td align="left">FPR1</td>
@@ -1448,14 +1245,14 @@ dat %&gt;% knitr::kable()</code></pre>
 </tr>
 <tr class="even">
 <td align="left">FCRL5</td>
-<td align="left">CD3D</td>
+<td align="left">CTLA4</td>
 <td align="left">LINC02446</td>
 <td align="left">MARCH1</td>
 <td align="left">CLEC14A</td>
 <td align="left">KRT19</td>
 <td align="left">GZMM</td>
 <td align="left">TRDC</td>
-<td align="left">GPD1</td>
+<td align="left">FCGR1A</td>
 <td align="left">HDC</td>
 <td align="left">F13A1</td>
 <td align="left">IL1B</td>
@@ -1466,7 +1263,7 @@ dat %&gt;% knitr::kable()</code></pre>
 </tr>
 <tr class="odd">
 <td align="left">BANK1</td>
-<td align="left">CTLA4</td>
+<td align="left">CD3D</td>
 <td align="left">KLRD1</td>
 <td align="left">FCER1A</td>
 <td align="left">RAMP3</td>
@@ -1477,9 +1274,9 @@ dat %&gt;% knitr::kable()</code></pre>
 <td align="left">TPSB2</td>
 <td align="left">FGL2</td>
 <td align="left">LILRB3</td>
-<td align="left">KRT81</td>
+<td align="left">GNLY</td>
 <td align="left">ZNF683</td>
-<td align="left">SLC7A7</td>
+<td align="left">FFAR4</td>
 <td align="left">TOP2A</td>
 </tr>
 <tr class="even">
@@ -1490,14 +1287,14 @@ dat %&gt;% knitr::kable()</code></pre>
 <td align="left">ADIRF</td>
 <td align="left">SLPI</td>
 <td align="left">GZMA</td>
-<td align="left">KLRC2</td>
+<td align="left">LINC02446</td>
 <td align="left">PILRA</td>
 <td align="left">IL1RL1</td>
 <td align="left">MS4A6A</td>
 <td align="left">LILRA5</td>
-<td align="left">GNLY</td>
+<td align="left">KRT81</td>
 <td align="left">IFNG</td>
-<td align="left">FFAR4</td>
+<td align="left">HNMT</td>
 <td align="left">ASF1B</td>
 </tr>
 <tr class="odd">
@@ -1508,26 +1305,26 @@ dat %&gt;% knitr::kable()</code></pre>
 <td align="left">TM4SF18</td>
 <td align="left">EPCAM</td>
 <td align="left">SLC4A10</td>
-<td align="left">LINC02446</td>
-<td align="left">LRP1</td>
+<td align="left">KLRC2</td>
+<td align="left">PARAL1</td>
 <td align="left">KIT</td>
 <td align="left">LILRB3</td>
 <td align="left">C15orf48</td>
 <td align="left">TXK</td>
 <td align="left">GZMB</td>
-<td align="left">HNMT</td>
+<td align="left">SLC7A7</td>
 <td align="left">CLSPN</td>
 </tr>
 <tr class="even">
 <td align="left">CD22</td>
-<td align="left">CD6</td>
+<td align="left">TRAC</td>
 <td align="left">CXCR6</td>
 <td align="left">TSPAN33</td>
 <td align="left">VWF</td>
 <td align="left">S100A2</td>
 <td align="left">ZBTB16</td>
 <td align="left">NCR3</td>
-<td align="left">PARAL1</td>
+<td align="left">LRP1</td>
 <td align="left">KCNH2</td>
 <td align="left">SLC8A1</td>
 <td align="left">SMIM25</td>
@@ -1538,7 +1335,7 @@ dat %&gt;% knitr::kable()</code></pre>
 </tr>
 <tr class="odd">
 <td align="left">TLR10</td>
-<td align="left">TRAC</td>
+<td align="left">CD6</td>
 <td align="left">PRF1</td>
 <td align="left">CD86</td>
 <td align="left">TM4SF1</td>
@@ -1551,8 +1348,8 @@ dat %&gt;% knitr::kable()</code></pre>
 <td align="left">VEGFA</td>
 <td align="left">NCAM1</td>
 <td align="left">CD160</td>
-<td align="left">PHLDA3</td>
-<td align="left">CENPM</td>
+<td align="left">LRP1</td>
+<td align="left">TPX2</td>
 </tr>
 <tr class="even">
 <td align="left">LINC00926</td>
@@ -1568,39 +1365,39 @@ dat %&gt;% knitr::kable()</code></pre>
 <td align="left">TREM2</td>
 <td align="left">S100A8</td>
 <td align="left">KRT86</td>
-<td align="left">GZMH</td>
-<td align="left">PPARG</td>
-<td align="left">TPX2</td>
+<td align="left">CD8A</td>
+<td align="left">PHLDA3</td>
+<td align="left">CENPM</td>
 </tr>
 <tr class="odd">
 <td align="left">FCRLA</td>
 <td align="left">CXCR6</td>
-<td align="left">CD3D</td>
+<td align="left">LAG3</td>
 <td align="left">BASP1</td>
 <td align="left">NR2F2</td>
 <td align="left">CHST9</td>
 <td align="left">LAG3</td>
 <td align="left">CD7</td>
 <td align="left">PHLDA3</td>
-<td align="left">SIGLEC6</td>
+<td align="left">GCSAML</td>
 <td align="left">AXL</td>
 <td align="left">CSF1R</td>
 <td align="left">PTGDR</td>
-<td align="left">CD8A</td>
-<td align="left">LRP1</td>
+<td align="left">GZMH</td>
+<td align="left">PPARG</td>
 <td align="left">BIRC5</td>
 </tr>
 <tr class="even">
 <td align="left">VPREB3</td>
 <td align="left">TNFRSF25</td>
-<td align="left">LAG3</td>
-<td align="left">PLD4</td>
+<td align="left">CD3D</td>
+<td align="left">PPP1R14A</td>
 <td align="left">DNASE1L3</td>
 <td align="left">MUC16</td>
 <td align="left">DPP4</td>
-<td align="left">KLRC3</td>
+<td align="left">CD8B</td>
 <td align="left">ITIH5</td>
-<td align="left">GCSAML</td>
+<td align="left">SIGLEC6</td>
 <td align="left">CLEC5A</td>
 <td align="left">CSF3R</td>
 <td align="left">KLRD1</td>
@@ -1612,12 +1409,12 @@ dat %&gt;% knitr::kable()</code></pre>
 <td align="left">LINC02397</td>
 <td align="left">LCK</td>
 <td align="left">CD3E</td>
-<td align="left">PPP1R14A</td>
+<td align="left">PLD4</td>
 <td align="left">TIMP3</td>
 <td align="left">TSPAN1</td>
 <td align="left">SPOCK2</td>
-<td align="left">CD8B</td>
-<td align="left">GPNMB</td>
+<td align="left">KLRC3</td>
+<td align="left">PCOLCE2</td>
 <td align="left">LIF</td>
 <td align="left">CLEC7A</td>
 <td align="left">MARCH1</td>
@@ -1628,25 +1425,25 @@ dat %&gt;% knitr::kable()</code></pre>
 </tr>
 <tr class="even">
 <td align="left">CD79B</td>
-<td align="left">CD2</td>
+<td align="left">GZMM</td>
 <td align="left">BCL11B</td>
 <td align="left">RNASE6</td>
 <td align="left">CAVIN1</td>
 <td align="left">ELF3</td>
 <td align="left">CXCR6</td>
 <td align="left">CD3D</td>
-<td align="left">PCOLCE2</td>
+<td align="left">GPNMB</td>
 <td align="left">NTRK1</td>
 <td align="left">RAB31</td>
-<td align="left">FGL2</td>
+<td align="left">FPR3</td>
 <td align="left">SPINK2</td>
 <td align="left">SCML4</td>
-<td align="left">RETN</td>
+<td align="left">OLR1</td>
 <td align="left">ASPM</td>
 </tr>
 <tr class="odd">
 <td align="left">IGHD</td>
-<td align="left">GZMM</td>
+<td align="left">CD2</td>
 <td align="left">GZMB</td>
 <td align="left">GAS6</td>
 <td align="left">RNASE1</td>
@@ -1656,19 +1453,19 @@ dat %&gt;% knitr::kable()</code></pre>
 <td align="left">OLR1</td>
 <td align="left">TPSD1</td>
 <td align="left">CD86</td>
-<td align="left">FPR3</td>
+<td align="left">FGL2</td>
 <td align="left">IL2RB</td>
 <td align="left">PRF1</td>
-<td align="left">OLR1</td>
+<td align="left">RETN</td>
 <td align="left">EZH2</td>
 </tr>
 <tr class="even">
-<td align="left">RALGPS2</td>
+<td align="left">MEF2C</td>
 <td align="left">TRBC2</td>
-<td align="left">TRAC</td>
+<td align="left">LINC01871</td>
 <td align="left">SLC8A1</td>
 <td align="left">PALMD</td>
-<td align="left">DSP</td>
+<td align="left">CLDN3</td>
 <td align="left">KLRC1</td>
 <td align="left">CD3G</td>
 <td align="left">NCF2</td>
@@ -1681,45 +1478,45 @@ dat %&gt;% knitr::kable()</code></pre>
 <td align="left">UBE2C</td>
 </tr>
 <tr class="odd">
-<td align="left">MEF2C</td>
+<td align="left">RALGPS2</td>
 <td align="left">CD247</td>
-<td align="left">CCL4</td>
+<td align="left">TRAC</td>
 <td align="left">P2RY13</td>
 <td align="left">FAM167B</td>
-<td align="left">CLDN3</td>
-<td align="left">CD3G</td>
+<td align="left">DSP</td>
+<td align="left">CD247</td>
 <td align="left">CD8A</td>
 <td align="left">TCF7L2</td>
 <td align="left">CDK15</td>
 <td align="left">GAS6</td>
-<td align="left">MARCKS</td>
+<td align="left">TMEM176B</td>
 <td align="left">CD7</td>
 <td align="left">CSF1</td>
-<td align="left">OSCAR</td>
+<td align="left">NCF2</td>
 <td align="left">MYBL2</td>
 </tr>
 <tr class="even">
 <td align="left">BLK</td>
 <td align="left">TRAT1</td>
-<td align="left">GZMK</td>
-<td align="left">MS4A6A</td>
+<td align="left">CCL4</td>
+<td align="left">MEF2C</td>
 <td align="left">CAVIN2</td>
-<td align="left">PITX1</td>
-<td align="left">CD247</td>
+<td align="left">TMC5</td>
+<td align="left">CD3G</td>
 <td align="left">CD3E</td>
 <td align="left">C5AR1</td>
 <td align="left">PBX1</td>
 <td align="left">FCGR2A</td>
-<td align="left">TMEM176B</td>
+<td align="left">MARCKS</td>
 <td align="left">PRF1</td>
 <td align="left">CLNK</td>
-<td align="left">NCF2</td>
+<td align="left">MNDA</td>
 <td align="left">CDCA7</td>
 </tr>
 </tbody>
 </table>
-<div id="cepo-marker-gene-dot-plot" class="section level3" number="4.5.1">
-<h3><span class="header-section-number">4.5.1</span> <code>Cepo</code> marker gene dot plot</h3>
+<div id="cepo-marker-gene-dot-plot" class="section level3" number="3.3.1">
+<h3><span class="header-section-number">3.3.1</span> <code>Cepo</code> marker gene dot plot</h3>
 <p>Genes duplicated between clusters are excluded.</p>
 <pre class="r"><code>DefaultAssay(seuInt) &lt;- &quot;RNA&quot;
 
@@ -1751,13 +1548,13 @@ DotPlot(seuInt,
                         mid = pal[3], 
                         high = pal[5]) -&gt; f1d
 f1d</code></pre>
-<p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-18-1.png" width="960" style="display: block; margin: auto;" /></p>
+<p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-14-1.png" width="960" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-18-1">
-Past versions of unnamed-chunk-18-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-1">
+Past versions of unnamed-chunk-14-1.png
 </button>
 </p>
-<div id="fig-unnamed-chunk-18-1" class="collapse">
+<div id="fig-unnamed-chunk-14-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1776,13 +1573,13 @@ Date
 <tbody>
 <tr>
 <td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/63f8ee8a3eea9d94fc3126cc4879becfb9e3b8ac/docs/figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-18-1.png" target="_blank">63f8ee8</a>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-14-1.png" target="_blank">f3b7b92</a>
 </td>
 <td>
 Jovana Maksimovic
 </td>
 <td>
-2022-12-15
+2022-06-16
 </td>
 </tr>
 </tbody>
@@ -1792,10 +1589,10 @@ Jovana Maksimovic
 </div>
 </div>
 </div>
-<div id="analyse-cell-type-proportions" class="section level1" number="5">
-<h1><span class="header-section-number">5</span> Analyse cell type proportions</h1>
-<div id="load-clinical-information" class="section level2" number="5.1">
-<h2><span class="header-section-number">5.1</span> Load clinical information</h2>
+<div id="analyse-cell-type-proportions" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Analyse cell type proportions</h1>
+<div id="load-clinical-information" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Load clinical information</h2>
 <p>Import clinical characteristics and patient information and associate with <code>genetic_donor</code> IDs.</p>
 <pre class="r"><code>info &lt;- read.csv(file = here(&quot;data/sample_sheets/Sample_information.csv&quot;))
 tab &lt;- table(seuInt$HTO, seuInt$donor)
@@ -1933,8 +1730,8 @@ info %&gt;% knitr::kable()</code></pre>
 </tbody>
 </table>
 </div>
-<div id="manual-annotation-proportions-broad" class="section level2" number="5.2">
-<h2><span class="header-section-number">5.2</span> Manual annotation proportions (Broad)</h2>
+<div id="manual-annotation-proportions-broad" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> Manual annotation proportions (Broad)</h2>
 <pre class="r"><code># Differences in cell type proportions
 props &lt;- getTransformedProps(clusters = seuInt$Broad, 
                              sample = seuInt$donor, transform=&quot;asin&quot;)
@@ -1975,68 +1772,68 @@ props$Proportions %&gt;% knitr::kable()</code></pre>
 <tbody>
 <tr class="odd">
 <td align="left">B cells</td>
-<td align="right">0.1367718</td>
-<td align="right">0.0192158</td>
-<td align="right">0.0441801</td>
-<td align="right">0.0096069</td>
-<td align="right">0.0639024</td>
-<td align="right">0.0906649</td>
-<td align="right">0.0055866</td>
-<td align="right">0.0147913</td>
-<td align="right">0.0054192</td>
-<td align="right">0.0042857</td>
-<td align="right">0.0070978</td>
-<td align="right">0.0034662</td>
+<td align="right">0.1408250</td>
+<td align="right">0.0200811</td>
+<td align="right">0.0476004</td>
+<td align="right">0.0104379</td>
+<td align="right">0.0646275</td>
+<td align="right">0.0939457</td>
+<td align="right">0.0058170</td>
+<td align="right">0.0150781</td>
+<td align="right">0.0057394</td>
+<td align="right">0.0044978</td>
+<td align="right">0.0072669</td>
+<td align="right">0.0036215</td>
 </tr>
 <tr class="even">
 <td align="left">CD4 T</td>
-<td align="right">0.0851946</td>
-<td align="right">0.0496894</td>
-<td align="right">0.0475786</td>
-<td align="right">0.0334585</td>
-<td align="right">0.1751220</td>
-<td align="right">0.0389523</td>
-<td align="right">0.0954799</td>
-<td align="right">0.0295827</td>
-<td align="right">0.0194453</td>
-<td align="right">0.0192857</td>
-<td align="right">0.1849369</td>
-<td align="right">0.0194974</td>
+<td align="right">0.0877193</td>
+<td align="right">0.0519270</td>
+<td align="right">0.0512619</td>
+<td align="right">0.0363527</td>
+<td align="right">0.1771090</td>
+<td align="right">0.0403619</td>
+<td align="right">0.0994183</td>
+<td align="right">0.0301562</td>
+<td align="right">0.0205942</td>
+<td align="right">0.0202399</td>
+<td align="right">0.1893419</td>
+<td align="right">0.0203712</td>
 </tr>
 <tr class="odd">
 <td align="left">CD8 T</td>
-<td align="right">0.0416763</td>
-<td align="right">0.0166925</td>
-<td align="right">0.0724603</td>
-<td align="right">0.0239620</td>
-<td align="right">0.0648780</td>
-<td align="right">0.0308932</td>
-<td align="right">0.0609446</td>
-<td align="right">0.0227153</td>
-<td align="right">0.0108384</td>
-<td align="right">0.0110714</td>
-<td align="right">0.0654574</td>
-<td align="right">0.0147314</td>
+<td align="right">0.0429113</td>
+<td align="right">0.0174442</td>
+<td align="right">0.0780698</td>
+<td align="right">0.0260348</td>
+<td align="right">0.0656142</td>
+<td align="right">0.0320111</td>
+<td align="right">0.0634585</td>
+<td align="right">0.0231556</td>
+<td align="right">0.0114787</td>
+<td align="right">0.0116192</td>
+<td align="right">0.0670166</td>
+<td align="right">0.0153916</td>
 </tr>
 <tr class="even">
 <td align="left">Dendritic</td>
-<td align="right">0.0103615</td>
-<td align="right">0.0357143</td>
-<td align="right">0.0599587</td>
-<td align="right">0.0224161</td>
-<td align="right">0.0804878</td>
-<td align="right">0.0416387</td>
-<td align="right">0.0182834</td>
-<td align="right">0.0306392</td>
-<td align="right">0.0191266</td>
-<td align="right">0.0117857</td>
-<td align="right">0.0532334</td>
-<td align="right">0.0186308</td>
+<td align="right">0.0106686</td>
+<td align="right">0.0373225</td>
+<td align="right">0.0646005</td>
+<td align="right">0.0243551</td>
+<td align="right">0.0814011</td>
+<td align="right">0.0431454</td>
+<td align="right">0.0190375</td>
+<td align="right">0.0312332</td>
+<td align="right">0.0202566</td>
+<td align="right">0.0123688</td>
+<td align="right">0.0545014</td>
+<td align="right">0.0194658</td>
 </tr>
 <tr class="odd">
 <td align="left">Endothelial</td>
-<td align="right">0.0375317</td>
-<td align="right">0.0298913</td>
+<td align="right">0.0386439</td>
+<td align="right">0.0312373</td>
 <td align="right">0.0000000</td>
 <td align="right">0.0000000</td>
 <td align="right">0.0000000</td>
@@ -2050,173 +1847,173 @@ props$Proportions %&gt;% knitr::kable()</code></pre>
 </tr>
 <tr class="even">
 <td align="left">Epithelial</td>
-<td align="right">0.1655538</td>
-<td align="right">0.1461568</td>
-<td align="right">0.0110450</td>
-<td align="right">0.0006625</td>
-<td align="right">0.0253659</td>
-<td align="right">0.0537273</td>
-<td align="right">0.0020315</td>
-<td align="right">0.0036978</td>
-<td align="right">0.0025502</td>
+<td align="right">0.1704599</td>
+<td align="right">0.1527383</td>
+<td align="right">0.0119001</td>
+<td align="right">0.0007199</td>
+<td align="right">0.0256537</td>
+<td align="right">0.0556715</td>
+<td align="right">0.0021153</td>
+<td align="right">0.0037695</td>
+<td align="right">0.0027009</td>
 <td align="right">0.0000000</td>
-<td align="right">0.0019716</td>
-<td align="right">0.0272964</td>
+<td align="right">0.0020186</td>
+<td align="right">0.0285197</td>
 </tr>
 <tr class="odd">
 <td align="left">Gamma delta T</td>
-<td align="right">0.0105918</td>
-<td align="right">0.0031056</td>
-<td align="right">0.0019420</td>
-<td align="right">0.0020981</td>
-<td align="right">0.0009756</td>
+<td align="right">0.0109056</td>
+<td align="right">0.0032454</td>
+<td align="right">0.0020923</td>
+<td align="right">0.0022795</td>
+<td align="right">0.0009867</td>
 <td align="right">0.0000000</td>
-<td align="right">0.0060945</td>
+<td align="right">0.0063458</td>
 <td align="right">0.0000000</td>
 <td align="right">0.0000000</td>
-<td align="right">0.0003571</td>
-<td align="right">0.0236593</td>
-<td align="right">0.0008666</td>
+<td align="right">0.0003748</td>
+<td align="right">0.0242229</td>
+<td align="right">0.0009054</td>
 </tr>
 <tr class="even">
 <td align="left">Innate lymphocyte</td>
-<td align="right">0.0138153</td>
-<td align="right">0.0110637</td>
-<td align="right">0.0125015</td>
-<td align="right">0.0234099</td>
-<td align="right">0.0131707</td>
-<td align="right">0.0047011</td>
-<td align="right">0.0121889</td>
-<td align="right">0.0137348</td>
-<td align="right">0.0054192</td>
-<td align="right">0.0003571</td>
-<td align="right">0.0453470</td>
-<td align="right">0.0056326</td>
+<td align="right">0.0142248</td>
+<td align="right">0.0115619</td>
+<td align="right">0.0134693</td>
+<td align="right">0.0254349</td>
+<td align="right">0.0133202</td>
+<td align="right">0.0048713</td>
+<td align="right">0.0126917</td>
+<td align="right">0.0140011</td>
+<td align="right">0.0057394</td>
+<td align="right">0.0003748</td>
+<td align="right">0.0464271</td>
+<td align="right">0.0058850</td>
 </tr>
 <tr class="odd">
 <td align="left">Macrophages</td>
-<td align="right">0.4540640</td>
-<td align="right">0.6069488</td>
-<td align="right">0.6669499</td>
-<td align="right">0.8342535</td>
-<td align="right">0.4741463</td>
-<td align="right">0.6682337</td>
-<td align="right">0.7242255</td>
-<td align="right">0.8262018</td>
-<td align="right">0.8606949</td>
-<td align="right">0.8775000</td>
-<td align="right">0.5414038</td>
-<td align="right">0.8214905</td>
+<td align="right">0.4388336</td>
+<td align="right">0.5977688</td>
+<td align="right">0.6478358</td>
+<td align="right">0.8267546</td>
+<td align="right">0.4740997</td>
+<td align="right">0.6638831</td>
+<td align="right">0.7176097</td>
+<td align="right">0.8260635</td>
+<td align="right">0.8646185</td>
+<td align="right">0.8845577</td>
+<td align="right">0.5349213</td>
+<td align="right">0.8266184</td>
 </tr>
 <tr class="even">
 <td align="left">Mast cells</td>
-<td align="right">0.0020723</td>
-<td align="right">0.0005823</td>
-<td align="right">0.0007282</td>
+<td align="right">0.0021337</td>
+<td align="right">0.0006085</td>
+<td align="right">0.0007846</td>
 <td align="right">0.0000000</td>
-<td align="right">0.0102439</td>
-<td align="right">0.0040296</td>
-<td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0103601</td>
+<td align="right">0.0041754</td>
 <td align="right">0.0000000</td>
 <td align="right">0.0000000</td>
 <td align="right">0.0000000</td>
-<td align="right">0.0004333</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0004527</td>
 </tr>
 <tr class="odd">
 <td align="left">Monocytes</td>
-<td align="right">0.0027631</td>
-<td align="right">0.0058230</td>
-<td align="right">0.0226969</td>
-<td align="right">0.0075088</td>
-<td align="right">0.0136585</td>
-<td align="right">0.0100739</td>
-<td align="right">0.0055866</td>
-<td align="right">0.0110935</td>
-<td align="right">0.0082882</td>
-<td align="right">0.0146429</td>
-<td align="right">0.0138013</td>
-<td align="right">0.0099653</td>
+<td align="right">0.0028450</td>
+<td align="right">0.0060852</td>
+<td align="right">0.0244540</td>
+<td align="right">0.0081584</td>
+<td align="right">0.0138135</td>
+<td align="right">0.0104384</td>
+<td align="right">0.0058170</td>
+<td align="right">0.0113086</td>
+<td align="right">0.0087779</td>
+<td align="right">0.0153673</td>
+<td align="right">0.0141300</td>
+<td align="right">0.0104120</td>
 </tr>
 <tr class="even">
 <td align="left">Neutrophils</td>
-<td align="right">0.0062169</td>
-<td align="right">0.0034938</td>
-<td align="right">0.0089817</td>
-<td align="right">0.0020981</td>
-<td align="right">0.0326829</td>
-<td align="right">0.0094023</td>
-<td align="right">0.0030472</td>
-<td align="right">0.0036978</td>
-<td align="right">0.0009563</td>
-<td align="right">0.0010714</td>
-<td align="right">0.0047319</td>
-<td align="right">0.0008666</td>
+<td align="right">0.0064011</td>
+<td align="right">0.0036511</td>
+<td align="right">0.0096770</td>
+<td align="right">0.0022795</td>
+<td align="right">0.0330538</td>
+<td align="right">0.0097425</td>
+<td align="right">0.0031729</td>
+<td align="right">0.0037695</td>
+<td align="right">0.0010128</td>
+<td align="right">0.0011244</td>
+<td align="right">0.0048446</td>
+<td align="right">0.0009054</td>
 </tr>
 <tr class="odd">
 <td align="left">NK cells</td>
-<td align="right">0.0174994</td>
-<td align="right">0.0102873</td>
-<td align="right">0.0080107</td>
-<td align="right">0.0035336</td>
-<td align="right">0.0102439</td>
-<td align="right">0.0060443</td>
-<td align="right">0.0081260</td>
-<td align="right">0.0010565</td>
-<td align="right">0.0028690</td>
-<td align="right">0.0017857</td>
-<td align="right">0.0216877</td>
-<td align="right">0.0008666</td>
+<td align="right">0.0180180</td>
+<td align="right">0.0107505</td>
+<td align="right">0.0086308</td>
+<td align="right">0.0038392</td>
+<td align="right">0.0103601</td>
+<td align="right">0.0062630</td>
+<td align="right">0.0084611</td>
+<td align="right">0.0010770</td>
+<td align="right">0.0030385</td>
+<td align="right">0.0018741</td>
+<td align="right">0.0222043</td>
+<td align="right">0.0009054</td>
 </tr>
 <tr class="even">
 <td align="left">NK T</td>
-<td align="right">0.0082892</td>
-<td align="right">0.0197981</td>
-<td align="right">0.0097099</td>
-<td align="right">0.0024293</td>
-<td align="right">0.0112195</td>
-<td align="right">0.0167898</td>
-<td align="right">0.0055866</td>
-<td align="right">0.0015848</td>
+<td align="right">0.0085349</td>
+<td align="right">0.0206897</td>
+<td align="right">0.0104616</td>
+<td align="right">0.0026395</td>
+<td align="right">0.0113468</td>
+<td align="right">0.0173974</td>
+<td align="right">0.0058170</td>
+<td align="right">0.0016155</td>
 <td align="right">0.0000000</td>
-<td align="right">0.0003571</td>
-<td align="right">0.0063091</td>
-<td align="right">0.0038995</td>
+<td align="right">0.0003748</td>
+<td align="right">0.0064594</td>
+<td align="right">0.0040742</td>
 </tr>
 <tr class="odd">
 <td align="left">Proliferating macrophages</td>
-<td align="right">0.0057564</td>
-<td align="right">0.0405668</td>
-<td align="right">0.0321641</td>
-<td align="right">0.0308083</td>
-<td align="right">0.0229268</td>
-<td align="right">0.0248489</td>
-<td align="right">0.0523108</td>
-<td align="right">0.0412044</td>
-<td align="right">0.0640740</td>
-<td align="right">0.0571429</td>
-<td align="right">0.0232650</td>
-<td align="right">0.0719237</td>
+<td align="right">0.0049787</td>
+<td align="right">0.0338742</td>
+<td align="right">0.0279848</td>
+<td align="right">0.0266347</td>
+<td align="right">0.0172669</td>
+<td align="right">0.0180932</td>
+<td align="right">0.0497091</td>
+<td align="right">0.0387722</td>
+<td align="right">0.0557056</td>
+<td align="right">0.0468516</td>
+<td align="right">0.0193783</td>
+<td align="right">0.0620190</td>
 </tr>
 <tr class="even">
 <td align="left">Proliferating NK/T</td>
-<td align="right">0.0018420</td>
-<td align="right">0.0009705</td>
-<td align="right">0.0010924</td>
-<td align="right">0.0037544</td>
-<td align="right">0.0009756</td>
+<td align="right">0.0018966</td>
+<td align="right">0.0010142</td>
+<td align="right">0.0011769</td>
+<td align="right">0.0040792</td>
+<td align="right">0.0009867</td>
 <td align="right">0.0000000</td>
-<td align="right">0.0005079</td>
+<td align="right">0.0005288</td>
 <td align="right">0.0000000</td>
-<td align="right">0.0003188</td>
-<td align="right">0.0003571</td>
-<td align="right">0.0070978</td>
-<td align="right">0.0004333</td>
+<td align="right">0.0003376</td>
+<td align="right">0.0003748</td>
+<td align="right">0.0072669</td>
+<td align="right">0.0004527</td>
 </tr>
 </tbody>
 </table>
-<div id="cell-proportions-by-donor-broad" class="section level3" number="5.2.1">
-<h3><span class="header-section-number">5.2.1</span> Cell proportions by donor (Broad)</h3>
+<div id="cell-proportions-by-donor-broad" class="section level3" number="4.2.1">
+<h3><span class="header-section-number">4.2.1</span> Cell proportions by donor (Broad)</h3>
 <pre class="r"><code>props$Proportions %&gt;%
   data.frame %&gt;%
   inner_join(info, by = c(&quot;sample&quot; = &quot;donor&quot;)) %&gt;%
@@ -2230,47 +2027,10 @@ ggplot(aes(x = Participant, y = Freq, fill = clusters)) +
   labs(y = &quot;Proportion&quot;, fill = &quot;Cell Label&quot;) + 
   paletteer::scale_fill_paletteer_d(&quot;miscpalettes::pastel&quot;) -&gt; f1c
 f1c</code></pre>
-<p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-21-1">
-Past versions of unnamed-chunk-21-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-21-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/63f8ee8a3eea9d94fc3126cc4879becfb9e3b8ac/docs/figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-21-1.png" target="_blank">63f8ee8</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-12-15
-</td>
-</tr>
-</tbody>
-</table>
+<p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-</div>
-</div>
-<div id="cell-proportions-of-control-sample-relative-to-cf-samples-broad" class="section level3" number="5.2.2">
-<h3><span class="header-section-number">5.2.2</span> Cell proportions of control sample relative to CF samples (Broad)</h3>
+<div id="cell-proportions-of-control-sample-relative-to-cf-samples-broad" class="section level3" number="4.2.2">
+<h3><span class="header-section-number">4.2.2</span> Cell proportions of control sample relative to CF samples (Broad)</h3>
 <pre class="r"><code>props$Proportions %&gt;%
   data.frame %&gt;%
   inner_join(info, by = c(&quot;sample&quot; = &quot;donor&quot;)) -&gt; dat
@@ -2289,13 +2049,13 @@ ggplot(dat[dat$Participant != &quot;A1_Ctrl&quot;,],
   labs(y = &quot;Proportion&quot;) +
   NoLegend() -&gt; p1
 p1</code></pre>
-<p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-1">
-Past versions of unnamed-chunk-22-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-18-1">
+Past versions of unnamed-chunk-18-1.png
 </button>
 </p>
-<div id="fig-unnamed-chunk-22-1" class="collapse">
+<div id="fig-unnamed-chunk-18-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -2314,7 +2074,7 @@ Date
 <tbody>
 <tr>
 <td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/63f8ee8a3eea9d94fc3126cc4879becfb9e3b8ac/docs/figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-22-1.png" target="_blank">63f8ee8</a>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/63f8ee8a3eea9d94fc3126cc4879becfb9e3b8ac/docs/figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-18-1.png" target="_blank">63f8ee8</a>
 </td>
 <td>
 Jovana Maksimovic
@@ -2328,8 +2088,8 @@ Jovana Maksimovic
 </div>
 </div>
 </div>
-<div id="cell-proportions-of-control-sample-relative-to-cf-samples-fine" class="section level3" number="5.2.3">
-<h3><span class="header-section-number">5.2.3</span> Cell proportions of control sample relative to CF samples (Fine)</h3>
+<div id="cell-proportions-of-control-sample-relative-to-cf-samples-fine" class="section level3" number="4.2.3">
+<h3><span class="header-section-number">4.2.3</span> Cell proportions of control sample relative to CF samples (Fine)</h3>
 <pre class="r"><code>macrophages &lt;- c(&quot;Macrophages&quot;)
 tcells &lt;- c(&quot;T cell lineage&quot;, &quot;Innate lymphoid cell NK&quot;)
 lung &lt;- c(&quot;AT1&quot;, &quot;EC arterial&quot;, &quot;Rare&quot;, &quot;Secretory&quot;, &quot;Basal&quot;,
@@ -2377,13 +2137,13 @@ c(list(p1), p) -&gt; p
                      axis.title.x = element_blank())))) +
   plot_annotation(tag_levels = &quot;A&quot;) &amp;
   theme(plot.tag = element_text(size = 14, face = &quot;bold&quot;))</code></pre>
-<p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-23-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-23-1">
-Past versions of unnamed-chunk-23-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-19-1">
+Past versions of unnamed-chunk-19-1.png
 </button>
 </p>
-<div id="fig-unnamed-chunk-23-1" class="collapse">
+<div id="fig-unnamed-chunk-19-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -2402,13 +2162,24 @@ Date
 <tbody>
 <tr>
 <td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/63f8ee8a3eea9d94fc3126cc4879becfb9e3b8ac/docs/figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-23-1.png" target="_blank">63f8ee8</a>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/63f8ee8a3eea9d94fc3126cc4879becfb9e3b8ac/docs/figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-19-1.png" target="_blank">63f8ee8</a>
 </td>
 <td>
 Jovana Maksimovic
 </td>
 <td>
 2022-12-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-19-1.png" target="_blank">f3b7b92</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-16
 </td>
 </tr>
 </tbody>
@@ -2418,12 +2189,12 @@ Jovana Maksimovic
 </div>
 </div>
 </div>
-<div id="compare-flow-cytometry-and-scrna-seq-proportions" class="section level1" number="6">
-<h1><span class="header-section-number">6</span> Compare flow cytometry and scRNA-seq proportions</h1>
-<div id="format-proportions-for-comparison" class="section level2" number="6.1">
-<h2><span class="header-section-number">6.1</span> Format proportions for comparison</h2>
-<div id="flow" class="section level3" number="6.1.1">
-<h3><span class="header-section-number">6.1.1</span> Flow</h3>
+<div id="compare-flow-cytometry-and-scrna-seq-proportions" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Compare flow cytometry and scRNA-seq proportions</h1>
+<div id="format-proportions-for-comparison" class="section level2" number="5.1">
+<h2><span class="header-section-number">5.1</span> Format proportions for comparison</h2>
+<div id="flow" class="section level3" number="5.1.1">
+<h3><span class="header-section-number">5.1.1</span> Flow</h3>
 <pre class="r"><code>flow &lt;- read_csv(file = here(&quot;data/CITE-seq_pilot_proportions_final.csv&quot;))
 
 flow %&gt;%
@@ -2495,8 +2266,8 @@ flowProps %&gt;% head(n = 10) %&gt;% knitr::kable()</code></pre>
 </tbody>
 </table>
 </div>
-<div id="scrna-seq" class="section level3" number="6.1.2">
-<h3><span class="header-section-number">6.1.2</span> scRNA-seq</h3>
+<div id="scrna-seq" class="section level3" number="5.1.2">
+<h3><span class="header-section-number">5.1.2</span> scRNA-seq</h3>
 <pre class="r"><code>props &lt;- getTransformedProps(clusters = ifelse(seuInt$Broad == &quot;Proliferating macrophages&quot;, 
                                                &quot;Macrophages&quot;, 
                                                seuInt$Broad), 
@@ -2522,60 +2293,60 @@ scProps %&gt;% head(n = 10) %&gt;% knitr::kable()</code></pre>
 <tbody>
 <tr class="odd">
 <td align="left">B cells</td>
-<td align="right">0.1367718</td>
+<td align="right">0.1408250</td>
 <td align="left">A</td>
 </tr>
 <tr class="even">
 <td align="left">B cells</td>
-<td align="right">0.0192158</td>
+<td align="right">0.0200811</td>
 <td align="left">B</td>
 </tr>
 <tr class="odd">
 <td align="left">B cells</td>
-<td align="right">0.0441801</td>
+<td align="right">0.0476004</td>
 <td align="left">C</td>
 </tr>
 <tr class="even">
 <td align="left">B cells</td>
-<td align="right">0.0096069</td>
+<td align="right">0.0104379</td>
 <td align="left">D</td>
 </tr>
 <tr class="odd">
 <td align="left">B cells</td>
-<td align="right">0.0639024</td>
+<td align="right">0.0646275</td>
 <td align="left">Human_HTO_8</td>
 </tr>
 <tr class="even">
 <td align="left">B cells</td>
-<td align="right">0.0906649</td>
+<td align="right">0.0939457</td>
 <td align="left">Human_HTO_1</td>
 </tr>
 <tr class="odd">
 <td align="left">B cells</td>
-<td align="right">0.0055866</td>
+<td align="right">0.0058170</td>
 <td align="left">Human_HTO_4</td>
 </tr>
 <tr class="even">
 <td align="left">B cells</td>
-<td align="right">0.0147913</td>
+<td align="right">0.0150781</td>
 <td align="left">Human_HTO_6</td>
 </tr>
 <tr class="odd">
 <td align="left">B cells</td>
-<td align="right">0.0054192</td>
+<td align="right">0.0057394</td>
 <td align="left">Human_HTO_3</td>
 </tr>
 <tr class="even">
 <td align="left">B cells</td>
-<td align="right">0.0042857</td>
+<td align="right">0.0044978</td>
 <td align="left">Human_HTO_5</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<div id="test-flow-cytometry-vs.-scrna-seq-proportions" class="section level2" number="6.2">
-<h2><span class="header-section-number">6.2</span> Test flow cytometry vs. scRNA-seq proportions</h2>
+<div id="test-flow-cytometry-vs.-scrna-seq-proportions" class="section level2" number="5.2">
+<h2><span class="header-section-number">5.2</span> Test flow cytometry vs. scRNA-seq proportions</h2>
 <p>Prepare the data for comparison.</p>
 <pre class="r"><code>flowProps %&gt;% left_join(scProps, by = c(&quot;HTO&quot;, &quot;cell&quot;)) %&gt;%
   left_join(info) -&gt; dat
@@ -2612,7 +2383,7 @@ top %&gt;% knitr::kable()</code></pre>
 <col width="14%" />
 <col width="13%" />
 <col width="13%" />
-<col width="13%" />
+<col width="14%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -2628,82 +2399,82 @@ top %&gt;% knitr::kable()</code></pre>
 <tbody>
 <tr class="odd">
 <td align="left">Neutrophils</td>
-<td align="right">0.0944973</td>
-<td align="right">0.1129363</td>
-<td align="right">5.1826648</td>
-<td align="right">0.0007282</td>
-<td align="right">0.0058260</td>
-<td align="right">-0.121615</td>
+<td align="right">0.0936506</td>
+<td align="right">0.1133596</td>
+<td align="right">5.1504648</td>
+<td align="right">0.0007631</td>
+<td align="right">0.0061050</td>
+<td align="right">-0.1641039</td>
 </tr>
 <tr class="even">
 <td align="left">Dendritic</td>
-<td align="right">-0.0728744</td>
-<td align="right">0.1373480</td>
-<td align="right">-3.8126108</td>
-<td align="right">0.0047309</td>
-<td align="right">0.0189237</td>
-<td align="right">-2.013322</td>
+<td align="right">-0.0755565</td>
+<td align="right">0.1386891</td>
+<td align="right">-3.9665266</td>
+<td align="right">0.0037965</td>
+<td align="right">0.0151861</td>
+<td align="right">-1.7848679</td>
 </tr>
 <tr class="odd">
 <td align="left">Macrophages</td>
-<td align="right">-0.1164158</td>
-<td align="right">1.0493190</td>
-<td align="right">-2.5235728</td>
-<td align="right">0.0344009</td>
-<td align="right">0.0917357</td>
-<td align="right">-3.994273</td>
+<td align="right">-0.1087933</td>
+<td align="right">1.0455078</td>
+<td align="right">-2.3693605</td>
+<td align="right">0.0440176</td>
+<td align="right">0.1173803</td>
+<td align="right">-4.2269994</td>
 </tr>
 <tr class="even">
 <td align="left">CD8 T</td>
-<td align="right">0.0367093</td>
-<td align="right">0.1966974</td>
-<td align="right">1.2381281</td>
-<td align="right">0.2492765</td>
-<td align="right">0.4622495</td>
-<td align="right">-5.806205</td>
+<td align="right">0.0339028</td>
+<td align="right">0.1981006</td>
+<td align="right">1.1544616</td>
+<td align="right">0.2802708</td>
+<td align="right">0.4633173</td>
+<td align="right">-5.8930122</td>
 </tr>
 <tr class="odd">
 <td align="left">Epithelial</td>
-<td align="right">0.0136424</td>
-<td align="right">0.0820780</td>
-<td align="right">1.1323063</td>
-<td align="right">0.2889059</td>
-<td align="right">0.4622495</td>
-<td align="right">-5.923752</td>
+<td align="right">0.0124804</td>
+<td align="right">0.0826590</td>
+<td align="right">1.0527742</td>
+<td align="right">0.3219457</td>
+<td align="right">0.4633173</td>
+<td align="right">-6.0002471</td>
 </tr>
 <tr class="even">
 <td align="left">B cells</td>
-<td align="right">-0.0101786</td>
-<td align="right">0.0998747</td>
-<td align="right">-0.8646877</td>
-<td align="right">0.4113108</td>
-<td align="right">0.5484144</td>
-<td align="right">-6.184958</td>
+<td align="right">-0.0116431</td>
+<td align="right">0.1006070</td>
+<td align="right">-0.9954292</td>
+<td align="right">0.3474880</td>
+<td align="right">0.4633173</td>
+<td align="right">-6.0574042</td>
 </tr>
 <tr class="odd">
 <td align="left">CD4 T</td>
-<td align="right">0.0186717</td>
-<td align="right">0.2639957</td>
-<td align="right">0.6692894</td>
-<td align="right">0.5213454</td>
-<td align="right">0.5958233</td>
-<td align="right">-6.338387</td>
+<td align="right">0.0147809</td>
+<td align="right">0.2659411</td>
+<td align="right">0.5366039</td>
+<td align="right">0.6055356</td>
+<td align="right">0.6920406</td>
+<td align="right">-6.4155994</td>
 </tr>
 <tr class="even">
 <td align="left">Monocytes</td>
-<td align="right">0.0084485</td>
-<td align="right">0.1081795</td>
-<td align="right">0.3599555</td>
-<td align="right">0.7277965</td>
-<td align="right">0.7277965</td>
-<td align="right">-6.507299</td>
+<td align="right">0.0066650</td>
+<td align="right">0.1090712</td>
+<td align="right">0.2818535</td>
+<td align="right">0.7849138</td>
+<td align="right">0.7849138</td>
+<td align="right">-6.5275829</td>
 </tr>
 </tbody>
 </table>
 <p>Neutrophils and dendritic cells show statistically significant differences in cell type proportions between technologies.</p>
 </div>
-<div id="visualise-flow-cytometry-vs.-scrna-seq-proportions" class="section level2" number="6.3">
-<h2><span class="header-section-number">6.3</span> Visualise flow cytometry vs. scRNA-seq proportions</h2>
+<div id="visualise-flow-cytometry-vs.-scrna-seq-proportions" class="section level2" number="5.3">
+<h2><span class="header-section-number">5.3</span> Visualise flow cytometry vs. scRNA-seq proportions</h2>
 <p>A statistically significant difference in cell type proportions between technologies is indicated with an asterisk (*).</p>
 <pre class="r"><code>p &lt;- vector(&quot;list&quot;, length(unique(dat$cell)))
 
@@ -2740,6 +2511,103 @@ wrap_plots(p, ncol = 3) +
   plot_layout(guides = &quot;collect&quot;) &amp;
   theme(legend.position = &quot;bottom&quot;,
         axis.title = element_text(size = 10))</code></pre>
+<p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>p &lt;- vector(&quot;list&quot;, length(unique(dat$cell)))
+
+for(i in 1:length(p)) {
+  tmp &lt;- dat %&gt;%
+    dplyr::filter(cell == unique(dat$cell)[i]) %&gt;%
+    rowwise() %&gt;%
+    mutate(avg = mean(c(value.x, value.y)),
+           diff = value.x - value.y)
+  
+  sig &lt;- ifelse(top[unique(dat$cell)[i], ]$adj.P.Val &lt; 0.05, &quot;*&quot;, &quot;&quot;)
+  lim &lt;- max(abs(tmp$diff)) 
+  if (lim &lt; 0.05) lim &lt;- 0.05
+  
+  p[[i]] &lt;- ggplot(tmp,
+                   aes(x = avg, y = diff, colour = Participant)) +
+    geom_point() +
+    geom_hline(yintercept = 0, linetype = &quot;dashed&quot;, colour = &quot;black&quot;) +
+    labs(x = &quot;Mean&quot;,
+         y = &quot;Difference (F - SC)&quot;) +
+    ylim(c(-lim, lim)) +
+    theme_classic() +
+    ggtitle(glue(&quot;{unique(dat$cell)[i]}{sig}&quot;))
+  
+}
+
+wrap_plots(p, ncol = 3) + 
+  plot_layout(guides = &quot;collect&quot;) &amp;
+  theme(legend.position = &quot;bottom&quot;,
+        axis.title = element_text(size = 10),
+        axis.text = element_text(size = 8))</code></pre>
+<p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-24-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="load-protein-data" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Load protein data</h1>
+<div id="add-to-seurat-object" class="section level2" number="6.1">
+<h2><span class="header-section-number">6.1</span> Add to <code>Seurat</code> object</h2>
+<pre class="r"><code>seuAdt &lt;- readRDS(here(&quot;data&quot;,
+                       &quot;SCEs&quot;,
+                       &quot;05_COMBO.clustered_annotated_adt_diet.SEU.rds&quot;))
+seuAdt &lt;- subset(seuAdt, cells = colnames(seuInt))
+all(colnames(seuAdt) == colnames(seuInt))</code></pre>
+<pre><code>[1] TRUE</code></pre>
+<pre class="r"><code>seuInt[[&quot;ADT.dsb&quot;]] &lt;- seuAdt[[&quot;ADT.dsb&quot;]]
+seuInt[[&quot;ADT.raw&quot;]] &lt;- seuAdt[[&quot;ADT.raw&quot;]]
+seuInt</code></pre>
+<pre><code>An object of class Seurat 
+35263 features across 42658 samples within 5 assays 
+Active assay: RNA (16001 features, 0 variable features)
+ 4 other assays present: ADT.dsb, ADT.raw, SCT, integrated
+ 2 dimensional reductions calculated: pca, umap</code></pre>
+<pre class="r"><code>rm(seuAdt)
+gc()</code></pre>
+<pre><code>             used    (Mb) gc trigger    (Mb)   max used    (Mb)
+Ncells    9984924   533.3   14700177   785.1   14700177   785.1
+Vcells 1385114558 10567.6 3242560745 24738.8 3240820426 24725.5</code></pre>
+</div>
+<div id="load-protein-annotations" class="section level2" number="6.2">
+<h2><span class="header-section-number">6.2</span> Load protein annotations</h2>
+<pre class="r"><code>prots &lt;- read_csv(file = here(&quot;data&quot;,
+                              &quot;sample_sheets&quot;,
+                              &quot;TotalSeq-A_Universal_Cocktail_v1.0.csv&quot;)) %&gt;%
+  dplyr::filter(grepl(&quot;^A0&quot;, id)) %&gt;%
+  dplyr::filter(!grepl(&quot;[Ii]sotype&quot;, name)) </code></pre>
+<div id="visualise-adts-of-interest" class="section level3" number="6.2.1">
+<h3><span class="header-section-number">6.2.1</span> Visualise ADTs of interest</h3>
+<pre class="r"><code>adt &lt;- read_csv(file = here(&quot;data/Proteins_broad_22.04.22.csv&quot;))
+adt &lt;- adt[!duplicated(adt$DNA_ID),]
+  
+cbind(seuInt@meta.data, 
+      as.data.frame(t(seuInt@assays$ADT.dsb@data))) %&gt;% 
+  dplyr::group_by(Broad, experiment) %&gt;% 
+  dplyr::summarize_at(.vars = adt$DNA_ID, .funs = median) %&gt;%
+  pivot_longer(c(-Broad, -experiment), names_to = &quot;ADT&quot;,
+               values_to = &quot;ADT Exp.&quot;) %&gt;%
+  left_join(adt, by = c(&quot;ADT&quot; = &quot;DNA_ID&quot;)) %&gt;%
+  dplyr::rename(`Cell Label` = Broad,
+                Protein = `Name for heatmap`) |&gt; 
+  dplyr::filter(experiment == 2) |&gt;
+  ungroup() %&gt;%
+    heatmap(
+        .column = Protein,
+        .row = `Cell Label`,
+        .value = `ADT Exp.`,
+        scale = &quot;none&quot;,
+        rect_gp = grid::gpar(col = &quot;white&quot;, lwd = 1),
+        show_row_names = TRUE,
+        column_names_gp = grid::gpar(fontsize = 10),
+        row_names_gp = grid::gpar(fontsize = 10),
+        palette_value = circlize::colorRamp2(seq(-1, 8, length.out = 256),
+                                         viridis::magma(256)),
+        column_title_side = &quot;bottom&quot;) |&gt;
+  add_tile(`Cell Label`, show_annotation_name = FALSE, show_legend = FALSE,
+           palette = paletteer_d(&quot;miscpalettes::pastel&quot;, ncol(dat)))-&gt; f1e
+
+wrap_heatmap(f1e)</code></pre>
 <p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-28-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-28-1">
@@ -2778,182 +2646,11 @@ Jovana Maksimovic
 </table>
 </div>
 </div>
-<pre class="r"><code>p &lt;- vector(&quot;list&quot;, length(unique(dat$cell)))
-
-for(i in 1:length(p)) {
-  tmp &lt;- dat %&gt;%
-    dplyr::filter(cell == unique(dat$cell)[i]) %&gt;%
-    rowwise() %&gt;%
-    mutate(avg = mean(c(value.x, value.y)),
-           diff = value.x - value.y)
-  
-  sig &lt;- ifelse(top[unique(dat$cell)[i], ]$adj.P.Val &lt; 0.05, &quot;*&quot;, &quot;&quot;)
-  lim &lt;- max(abs(tmp$diff)) 
-  if (lim &lt; 0.05) lim &lt;- 0.05
-  
-  p[[i]] &lt;- ggplot(tmp,
-                   aes(x = avg, y = diff, colour = Participant)) +
-    geom_point() +
-    geom_hline(yintercept = 0, linetype = &quot;dashed&quot;, colour = &quot;black&quot;) +
-    labs(x = &quot;Mean&quot;,
-         y = &quot;Difference (F - SC)&quot;) +
-    ylim(c(-lim, lim)) +
-    theme_classic() +
-    ggtitle(glue(&quot;{unique(dat$cell)[i]}{sig}&quot;))
-  
-}
-
-wrap_plots(p, ncol = 3) + 
-  plot_layout(guides = &quot;collect&quot;) &amp;
-  theme(legend.position = &quot;bottom&quot;,
-        axis.title = element_text(size = 10),
-        axis.text = element_text(size = 8))</code></pre>
-<p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-28-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-28-2">
-Past versions of unnamed-chunk-28-2.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-28-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-28-2.png" target="_blank">f3b7b92</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-06-16
-</td>
-</tr>
-</tbody>
-</table>
 </div>
 </div>
 </div>
-</div>
-<div id="load-protein-data" class="section level1" number="7">
-<h1><span class="header-section-number">7</span> Load protein data</h1>
-<div id="add-to-seurat-object" class="section level2" number="7.1">
-<h2><span class="header-section-number">7.1</span> Add to <code>Seurat</code> object</h2>
-<pre class="r"><code>seuAdt &lt;- readRDS(here(&quot;data&quot;,
-                       &quot;SCEs&quot;,
-                       &quot;05_COMBO.clustered_annotated_adt_diet.SEU.rds&quot;))
-seuAdt &lt;- subset(seuAdt, cells = colnames(seuInt))
-all(colnames(seuAdt) == colnames(seuInt))</code></pre>
-<pre><code>[1] TRUE</code></pre>
-<pre class="r"><code>seuInt[[&quot;ADT.dsb&quot;]] &lt;- seuAdt[[&quot;ADT.dsb&quot;]]
-seuInt[[&quot;ADT.raw&quot;]] &lt;- seuAdt[[&quot;ADT.raw&quot;]]
-seuInt</code></pre>
-<pre><code>An object of class Seurat 
-35276 features across 44972 samples within 5 assays 
-Active assay: RNA (16001 features, 0 variable features)
- 4 other assays present: ADT.dsb, ADT.raw, SCT, integrated
- 2 dimensional reductions calculated: pca, umap</code></pre>
-<pre class="r"><code>rm(seuAdt)
-gc()</code></pre>
-<pre><code>             used    (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells   10000292   534.1   14593885   779.4   14593885   779.4
-Vcells 2921156909 22286.7 5001424392 38157.9 4935790568 37657.1</code></pre>
-</div>
-<div id="load-protein-annotations" class="section level2" number="7.2">
-<h2><span class="header-section-number">7.2</span> Load protein annotations</h2>
-<pre class="r"><code>prots &lt;- read_csv(file = here(&quot;data&quot;,
-                              &quot;sample_sheets&quot;,
-                              &quot;TotalSeq-A_Universal_Cocktail_v1.0.csv&quot;)) %&gt;%
-  dplyr::filter(grepl(&quot;^A0&quot;, id)) %&gt;%
-  dplyr::filter(!grepl(&quot;[Ii]sotype&quot;, name)) </code></pre>
-<div id="visualise-adts-of-interest" class="section level3" number="7.2.1">
-<h3><span class="header-section-number">7.2.1</span> Visualise ADTs of interest</h3>
-<pre class="r"><code>adt &lt;- read_csv(file = here(&quot;data/Proteins_broad_22.04.22.csv&quot;))
-adt &lt;- adt[!duplicated(adt$DNA_ID),]
-  
-cbind(seuInt@meta.data, 
-      as.data.frame(t(seuInt@assays$ADT.dsb@data))) %&gt;% 
-  dplyr::group_by(Broad, experiment) %&gt;% 
-  dplyr::summarize_at(.vars = adt$DNA_ID, .funs = median) %&gt;%
-  pivot_longer(c(-Broad, -experiment), names_to = &quot;ADT&quot;,
-               values_to = &quot;ADT Exp.&quot;) %&gt;%
-  left_join(adt, by = c(&quot;ADT&quot; = &quot;DNA_ID&quot;)) %&gt;%
-  dplyr::rename(`Cell Label` = Broad,
-                Protein = `Name for heatmap`) |&gt; 
-  dplyr::filter(experiment == 2) |&gt;
-  ungroup() %&gt;%
-    heatmap(
-        .column = Protein,
-        .row = `Cell Label`,
-        .value = `ADT Exp.`,
-        scale = &quot;none&quot;,
-        rect_gp = grid::gpar(col = &quot;white&quot;, lwd = 1),
-        show_row_names = TRUE,
-        column_names_gp = grid::gpar(fontsize = 10),
-        row_names_gp = grid::gpar(fontsize = 10),
-        palette_value = circlize::colorRamp2(seq(-1, 8, length.out = 256),
-                                         viridis::magma(256)),
-        column_title_side = &quot;bottom&quot;) |&gt;
-  add_tile(`Cell Label`, show_annotation_name = FALSE, show_legend = FALSE,
-           palette = paletteer_d(&quot;miscpalettes::pastel&quot;, ncol(dat)))-&gt; f1e
-
-wrap_heatmap(f1e)</code></pre>
-<p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-32-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-32-1">
-Past versions of unnamed-chunk-32-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-32-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-32-1.png" target="_blank">f3b7b92</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-06-16
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div id="panel-figures" class="section level1" number="8">
-<h1><span class="header-section-number">8</span> Panel figures</h1>
+<div id="panel-figures" class="section level1" number="7">
+<h1><span class="header-section-number">7</span> Panel figures</h1>
 <pre class="r"><code>layout = &quot;AAAA
           AAAA
           BBBC
@@ -2973,47 +2670,10 @@ Jovana Maksimovic
   plot_layout(design = layout) +
   plot_annotation(tag_levels = &quot;A&quot;) &amp;
   theme(plot.tag = element_text(size = 14, face = &quot;bold&quot;))</code></pre>
-<p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-33-1.png" width="1152" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-33-1">
-Past versions of unnamed-chunk-33-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-33-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-33-1.png" target="_blank">f3b7b92</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-06-16
-</td>
-</tr>
-</tbody>
-</table>
+<p><img src="figure/14_COMBO.postprocess_all.Rmd/unnamed-chunk-29-1.png" width="1152" style="display: block; margin: auto;" /></p>
 </div>
-</div>
-</div>
-<div id="session-info" class="section level1 appendix" number="9">
-<h1><span class="header-section-number">9</span> Session info</h1>
+<div id="session-info" class="section level1 appendix" number="8">
+<h1><span class="header-section-number">8</span> Session info</h1>
 <summary>
 The analysis and this document were prepared using the following software (click triangle to expand)
 </summary>
