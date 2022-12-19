@@ -387,7 +387,7 @@ f
 # Save data
 
 ```{r}
-out <- here(glue("data/SCEs/06_COMBO.clean_macrophages_diet.SEU.rds"))
+out <- here(glue("data/SCEs/07_COMBO.clean_macrophages_diet.SEU.rds"))
 if(!file.exists(out)){
   DefaultAssay(seuInt) <- "RNA"
   saveRDS(DietSeurat(seuInt,

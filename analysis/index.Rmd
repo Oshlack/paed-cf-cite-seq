@@ -30,7 +30,21 @@ Follow the links below to view the different parts of the analysis.
 
 # Abstract {-}
 
-To be updated
+## Rationale
+Inflammation is a key driver of cystic fibrosis (CF) lung disease, which is not addressed by current standard care. Improved understanding of the mechanisms leading to aberrant inflammation may assist the development of effective anti-inflammatory therapy. Single-cell RNA sequencing allows profiling of cell composition and function at previously unprecedented resolution.  Here, we employ multiomic single-cell RNA sequencing (scRNA-seq) to generate the first immune cell atlas of the pediatric lower airway in preschool children with CF.
+
+## Objectives
+To use multimodal single-cell analysis to comprehensively define immune cell phenotypes, proportions and functional characteristics in preschool children with CF.
+
+## Methods
+We analyzed 42,658 cells from bronchoalveolar lavage of 11 preschool children with CF and a healthy control using  scRNA-seq and parallel assessment of 154 cell surface proteins. Validation of cell types identified by single-cell RNA seq was achieved by assessment of samples by  spectral flow cytometry. 
+
+## Measurements and Main Results
+Analysis of transcriptome expression and cell surface protein expression, combined with functional pathway analysis, revealed 41 immune and epithelial cell populations in BAL. Spectral flow cytometry analysis of over 256,000 cells from a subset of the same patients revealed high correlation in major cell type proportions across the two technologies. Macrophages consisted of 13 functionally distinct sub populations, including previously undescribed populations enriched for markers of vesicle production, T-cell interaction and regulatory/repair functions. Other novel cell populations included CD4 T cells expressing inflammatory IFNα/β and NFκB signalling genes. 
+
+## Conclusions
+Our work provides a comprehensive cellular analysis of the pediatric lower airway in preschool children with CF, reveals novel cell types and provides a reference for investigation of inflammation in early life CF.
+
 
 
 # Authors {-}
