@@ -1,6 +1,6 @@
-# Multimodal single cell analysis of the paediatric lower airway reveals novel immune cell phenotypes in early life health and disease
+# Multimodal single-cell analysis of bronchoalveolar lavage from children with cystic fibrosis reveals novel cell phenotypes
 
-This repository contains code and output for the analysis described in the pre-print: [*"Multimodal single cell analysis of the paediatric lower airway reveals novel immune cell phenotypes in early life health and disease"*](https://www.biorxiv.org/content/10.1101/2022.06.17.496207v1).
+This repository contains code and output for the analysis described in the pre-print: [*"Multimodal single-cell analysis of bronchoalveolar lavage from children with cystic fibrosis reveals novel cell phenotypes"*]().
 
 The raw single cell RNA-seq and CITE-seq count data generated for this study can be downloaded as RDS files from [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6651465.svg)](https://doi.org/10.5281/zenodo.6651465).
 
