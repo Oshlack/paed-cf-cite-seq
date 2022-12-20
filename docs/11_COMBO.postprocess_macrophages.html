@@ -11,7 +11,7 @@
 
 <meta name="author" content="Jovana Maksimovic" />
 
-<meta name="date" content="2022-12-19" />
+<meta name="date" content="2022-12-20" />
 
 <title>Analysis of scRNA-seq &amp; CITE-seq Data Combined</title>
 
@@ -375,7 +375,7 @@ div.tocify {
 <h1 class="title toc-ignore">Analysis of scRNA-seq &amp; CITE-seq Data Combined</h1>
 <h3 class="subtitle">Post-process Macrophage Sub-clustering Results</h3>
 <h4 class="author">Jovana Maksimovic</h4>
-<h4 class="date">December 19, 2022</h4>
+<h4 class="date">December 20, 2022</h4>
 
 </div>
 
@@ -404,7 +404,7 @@ Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></sp
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-12-19
+<strong>Last updated:</strong> 2022-12-20
 </p>
 <p>
 <strong>Checks:</strong>
@@ -532,20 +532,20 @@ makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree99078c4e8adb15035ea95f6e4355ed0b295baadctargetblank99078c4a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree508dee77c0dcb8a810c543c279a1ca3af892000dtargetblank508dee7a">
 <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-<strong>Repository version:</strong> <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/99078c4e8adb15035ea95f6e4355ed0b295baadc" target="_blank">99078c4</a>
+<strong>Repository version:</strong> <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/508dee77c0dcb8a810c543c279a1ca3af892000d" target="_blank">508dee7</a>
 </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree99078c4e8adb15035ea95f6e4355ed0b295baadctargetblank99078c4a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree508dee77c0dcb8a810c543c279a1ca3af892000dtargetblank508dee7a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and
 connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/99078c4e8adb15035ea95f6e4355ed0b295baadc" target="_blank">99078c4</a>.
+The results in this page were generated with repository version <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/508dee77c0dcb8a810c543c279a1ca3af892000d" target="_blank">508dee7</a>.
 See the <em>Past versions</em> tab to see a history of the changes made to the
 R Markdown and HTML files.
 </p>
@@ -660,6 +660,9 @@ Ignored files:
     Ignored:    renv/staging/
     Ignored:    wflow_background.R
 
+Unstaged changes:
+    Modified:   data/macrophage_subcluster_annotation_16.12.22.csv
+
 </code></pre>
 <p>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not included in
@@ -703,6 +706,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/508dee77c0dcb8a810c543c279a1ca3af892000d/analysis/11_COMBO.postprocess_macrophages.Rmd" target="_blank">508dee7</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-20
+</td>
+<td>
+wflow_publish(c("analysis/<em>postprocess_</em>.Rmd"))
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/2983a22f87bec42ae0fd9fe1cb6d9528a1f6ca87/docs/11_COMBO.postprocess_macrophages.html" target="_blank">2983a22</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-19
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -997,6 +1034,84 @@ Jovana Maksimovic
 </table>
 </div>
 </div>
+<pre class="r"><code>seuInt@meta.data %&gt;% 
+  count(Annotation) %&gt;% 
+  mutate(perc = round(n/sum(n)*100,1)) %&gt;%
+  dplyr::rename(`Cell Label` = &quot;Annotation&quot;, 
+                `No. Cells` = n,
+                `% Cells` = perc) %&gt;%
+  knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Cell Label</th>
+<th align="right">No. Cells</th>
+<th align="right">% Cells</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">alveolar macs</td>
+<td align="right">14235</td>
+<td align="right">46.1</td>
+</tr>
+<tr class="even">
+<td align="left">macro-CCL</td>
+<td align="right">867</td>
+<td align="right">2.8</td>
+</tr>
+<tr class="odd">
+<td align="left">macro-cholesterol</td>
+<td align="right">500</td>
+<td align="right">1.6</td>
+</tr>
+<tr class="even">
+<td align="left">macro-ifna/b</td>
+<td align="right">4954</td>
+<td align="right">16.1</td>
+</tr>
+<tr class="odd">
+<td align="left">macro-int</td>
+<td align="right">3468</td>
+<td align="right">11.2</td>
+</tr>
+<tr class="even">
+<td align="left">macro-interstitial</td>
+<td align="right">176</td>
+<td align="right">0.6</td>
+</tr>
+<tr class="odd">
+<td align="left">macro-lipid</td>
+<td align="right">2912</td>
+<td align="right">9.4</td>
+</tr>
+<tr class="even">
+<td align="left">macro-MT</td>
+<td align="right">707</td>
+<td align="right">2.3</td>
+</tr>
+<tr class="odd">
+<td align="left">macro-reg</td>
+<td align="right">242</td>
+<td align="right">0.8</td>
+</tr>
+<tr class="even">
+<td align="left">macro-repair</td>
+<td align="right">704</td>
+<td align="right">2.3</td>
+</tr>
+<tr class="odd">
+<td align="left">macro-viral</td>
+<td align="right">756</td>
+<td align="right">2.5</td>
+</tr>
+<tr class="even">
+<td align="left">proliferating macrophages</td>
+<td align="right">1326</td>
+<td align="right">4.3</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div id="cepo-cluster-marker-genes" class="section level2" number="3.3">
@@ -1014,24 +1129,22 @@ colnames(dat) &lt;- colnames(cepoMarkers$stats)
 dat %&gt;% knitr::kable()</code></pre>
 <table>
 <colgroup>
-<col width="7%" />
-<col width="7%" />
-<col width="5%" />
+<col width="8%" />
+<col width="6%" />
 <col width="10%" />
 <col width="7%" />
-<col width="5%" />
-<col width="10%" />
 <col width="6%" />
-<col width="5%" />
-<col width="5%" />
+<col width="11%" />
 <col width="7%" />
+<col width="5%" />
 <col width="6%" />
-<col width="14%" />
+<col width="7%" />
+<col width="7%" />
+<col width="15%" />
 </colgroup>
 <thead>
 <tr class="header">
 <th align="left">alveolar.macs</th>
-<th align="left">macro..ifna.b</th>
 <th align="left">macro.CCL</th>
 <th align="left">macro.cholesterol</th>
 <th align="left">macro.ifna.b</th>
@@ -1048,8 +1161,7 @@ dat %&gt;% knitr::kable()</code></pre>
 <tbody>
 <tr class="odd">
 <td align="left">GPD1</td>
-<td align="left">IFI27</td>
-<td align="left">TNFAIP6</td>
+<td align="left">CCL4</td>
 <td align="left">MSMO1</td>
 <td align="left">IFI27</td>
 <td align="left">VCAN</td>
@@ -1063,10 +1175,9 @@ dat %&gt;% knitr::kable()</code></pre>
 </tr>
 <tr class="even">
 <td align="left">INHBA</td>
-<td align="left">IGF1</td>
-<td align="left">CCL4</td>
+<td align="left">TNFAIP6</td>
 <td align="left">INSIG1</td>
-<td align="left">GPD1</td>
+<td align="left">IGF1</td>
 <td align="left">FCN1</td>
 <td align="left">MARCKS</td>
 <td align="left">RBP4</td>
@@ -1078,10 +1189,9 @@ dat %&gt;% knitr::kable()</code></pre>
 </tr>
 <tr class="odd">
 <td align="left">ITIH5</td>
-<td align="left">ITIH5</td>
 <td align="left">SOD2</td>
 <td align="left">IDI1</td>
-<td align="left">INHBA</td>
+<td align="left">GPD1</td>
 <td align="left">CORO1A</td>
 <td align="left">FCGR2B</td>
 <td align="left">NUPR1</td>
@@ -1093,10 +1203,9 @@ dat %&gt;% knitr::kable()</code></pre>
 </tr>
 <tr class="even">
 <td align="left">MME</td>
-<td align="left">INHBA</td>
 <td align="left">CCL20</td>
-<td align="left">FDFT1</td>
-<td align="left">ITIH5</td>
+<td align="left">INHBA</td>
+<td align="left">INHBA</td>
 <td align="left">FPR3</td>
 <td align="left">F13A1</td>
 <td align="left">PLTP</td>
@@ -1107,243 +1216,227 @@ dat %&gt;% knitr::kable()</code></pre>
 <td align="left">BIRC5</td>
 </tr>
 <tr class="odd">
-<td align="left">ACKR3</td>
-<td align="left">PCOLCE2</td>
+<td align="left">MCEMP1</td>
 <td align="left">CCL4L2</td>
-<td align="left">INHBA</td>
-<td align="left">PHLDA3</td>
+<td align="left">FDFT1</td>
+<td align="left">ITIH5</td>
 <td align="left">TMEM176B</td>
 <td align="left">SLC40A1</td>
-<td align="left">CXCR4</td>
+<td align="left">CES1</td>
 <td align="left">MT1E</td>
-<td align="left">ARL4C</td>
+<td align="left">MLPH</td>
 <td align="left">ABHD5</td>
 <td align="left">IFIT2</td>
 <td align="left">TYMS</td>
 </tr>
 <tr class="even">
-<td align="left">MCEMP1</td>
-<td align="left">HP</td>
+<td align="left">ACKR3</td>
 <td align="left">MARCKS</td>
 <td align="left">CYP51A1</td>
-<td align="left">MME</td>
-<td align="left">C15orf48</td>
+<td align="left">MLPH</td>
+<td align="left">FGL2</td>
 <td align="left">STAB1</td>
 <td align="left">MT1E</td>
 <td align="left">MT1M</td>
-<td align="left">NEAT1</td>
+<td align="left">RBP4</td>
 <td align="left">AQP3</td>
-<td align="left">HERC5</td>
+<td align="left">NT5C3A</td>
 <td align="left">GGH</td>
 </tr>
 <tr class="odd">
-<td align="left">AQP3</td>
-<td align="left">MLPH</td>
+<td align="left">PCOLCE2</td>
 <td align="left">TNIP3</td>
 <td align="left">PCOLCE2</td>
-<td align="left">AQP3</td>
-<td align="left">FGL2</td>
+<td align="left">PCOLCE2</td>
+<td align="left">C15orf48</td>
 <td align="left">FOLR2</td>
-<td align="left">CES1</td>
+<td align="left">SCD</td>
 <td align="left">MT1H</td>
-<td align="left">RBP4</td>
+<td align="left">CES1</td>
 <td align="left">GPD1</td>
-<td align="left">NT5C3A</td>
+<td align="left">HERC5</td>
 <td align="left">CENPM</td>
 </tr>
 <tr class="even">
-<td align="left">LPL</td>
-<td align="left">ACO1</td>
+<td align="left">AQP3</td>
 <td align="left">CCL3</td>
 <td align="left">GPD1</td>
-<td align="left">MLPH</td>
+<td align="left">DEFB1</td>
 <td align="left">TMEM176A</td>
 <td align="left">RNASE1</td>
-<td align="left">SCD</td>
+<td align="left">CXCR4</td>
 <td align="left">GPD1</td>
-<td align="left">CES1</td>
-<td align="left">PHLDA3</td>
+<td align="left">ARL4C</td>
+<td align="left">MCEMP1</td>
 <td align="left">IFIT3</td>
 <td align="left">GTSE1</td>
 </tr>
 <tr class="odd">
-<td align="left">SVIL</td>
-<td align="left">MCEMP1</td>
-<td align="left">ICAM1</td>
+<td align="left">MLPH</td>
+<td align="left">MIR3945HG</td>
 <td align="left">AQP3</td>
-<td align="left">DEFB1</td>
+<td align="left">MCEMP1</td>
 <td align="left">SOCS3</td>
 <td align="left">TMEM176B</td>
 <td align="left">GCHFR</td>
 <td align="left">DEFB1</td>
-<td align="left">MLPH</td>
-<td align="left">MCEMP1</td>
+<td align="left">ITIH5</td>
+<td align="left">PHLDA3</td>
 <td align="left">CXCL10</td>
 <td align="left">TOP2A</td>
 </tr>
 <tr class="even">
-<td align="left">MLPH</td>
-<td align="left">QSOX1</td>
+<td align="left">LPL</td>
 <td align="left">CXCL8</td>
-<td align="left">RGCC</td>
-<td align="left">MCEMP1</td>
+<td align="left">ITIH5</td>
+<td align="left">AQP3</td>
 <td align="left">PMP22</td>
 <td align="left">RNASE6</td>
-<td align="left">A2M</td>
+<td align="left">ACO1</td>
 <td align="left">HP</td>
-<td align="left">PPP1R15A</td>
-<td align="left">FCN1</td>
+<td align="left">NEAT1</td>
+<td align="left">TCF7L2</td>
 <td align="left">ISG15</td>
-<td align="left">ASPM</td>
+<td align="left">CENPF</td>
 </tr>
 <tr class="odd">
-<td align="left">PCOLCE2</td>
-<td align="left">TCF7L2</td>
-<td align="left">TNFAIP2</td>
-<td align="left">TUBA1A</td>
-<td align="left">FAM89A</td>
+<td align="left">HP</td>
+<td align="left">ICAM1</td>
+<td align="left">RGCC</td>
+<td align="left">PHLDA3</td>
 <td align="left">ZFP36L1</td>
+<td align="left">LGMN</td>
+<td align="left">MME</td>
+<td align="left">MLPH</td>
+<td align="left">PPP1R15A</td>
+<td align="left">EVL</td>
+<td align="left">IFITM3</td>
+<td align="left">ASPM</td>
+</tr>
+<tr class="even">
+<td align="left">SVIL</td>
+<td align="left">TNFAIP2</td>
+<td align="left">MCEMP1</td>
+<td align="left">FAM89A</td>
+<td align="left">IER3</td>
 <td align="left">FPR3</td>
 <td align="left">MGST1</td>
 <td align="left">AQP3</td>
-<td align="left">EMB</td>
-<td align="left">EVL</td>
-<td align="left">IFITM3</td>
-<td align="left">CENPF</td>
-</tr>
-<tr class="even">
-<td align="left">HP</td>
-<td align="left">FAM89A</td>
-<td align="left">MIR3945HG</td>
-<td align="left">ITIH5</td>
-<td align="left">PCOLCE2</td>
-<td align="left">PLEKHO1</td>
-<td align="left">LGMN</td>
-<td align="left">ACO1</td>
-<td align="left">MLPH</td>
-<td align="left">CA2</td>
-<td align="left">TCF7L2</td>
+<td align="left">MME</td>
+<td align="left">FCN1</td>
 <td align="left">TNFSF10</td>
 <td align="left">RRM2</td>
 </tr>
 <tr class="odd">
 <td align="left">PHLDA3</td>
-<td align="left">GPD1</td>
 <td align="left">CCL23</td>
-<td align="left">MCEMP1</td>
+<td align="left">TCF7L2</td>
 <td align="left">SVIL</td>
-<td align="left">IER3</td>
+<td align="left">PLEKHO1</td>
 <td align="left">TMEM176A</td>
-<td align="left">MME</td>
-<td align="left">CCND3</td>
-<td align="left">BCL2A1</td>
+<td align="left">A2M</td>
+<td align="left">ITIH5</td>
+<td align="left">CA2</td>
 <td align="left">TREM2</td>
-<td align="left">IL1RN</td>
+<td align="left">ITIH5</td>
 <td align="left">CDK1</td>
 </tr>
 <tr class="even">
 <td align="left">FAM89A</td>
-<td align="left">DEFB1</td>
 <td align="left">TNFAIP3</td>
-<td align="left">TCF7L2</td>
+<td align="left">TUBA1A</td>
 <td align="left">CCND3</td>
-<td align="left">PLA2G7</td>
+<td align="left">EMP1</td>
 <td align="left">GPR183</td>
-<td align="left">CCL18</td>
-<td align="left">RETN</td>
-<td align="left">MME</td>
+<td align="left">ABCG1</td>
+<td align="left">CCND3</td>
+<td align="left">BCL2A1</td>
 <td align="left">CDC42EP3</td>
-<td align="left">GPD1</td>
+<td align="left">IL1RN</td>
 <td align="left">PTTG1</td>
 </tr>
 <tr class="odd">
-<td align="left">RETN</td>
 <td align="left">CCND3</td>
 <td align="left">CD83</td>
 <td align="left">SVIL</td>
-<td align="left">PPARG</td>
-<td align="left">EMP1</td>
+<td align="left">MME</td>
+<td align="left">PLA2G7</td>
 <td align="left">GAL3ST4</td>
-<td align="left">MT1X</td>
-<td align="left">ITIH5</td>
-<td align="left">ITIH5</td>
+<td align="left">CCL23</td>
+<td align="left">MCEMP1</td>
+<td align="left">FAM89A</td>
 <td align="left">CA2</td>
-<td align="left">ITIH5</td>
+<td align="left">GPD1</td>
 <td align="left">UBE2C</td>
 </tr>
 <tr class="even">
-<td align="left">CCND3</td>
-<td align="left">RBP4</td>
+<td align="left">RETN</td>
 <td align="left">BCL2A1</td>
 <td align="left">FAM89A</td>
-<td align="left">SERPING1</td>
-<td align="left">BASP1</td>
-<td align="left">MAFB</td>
-<td align="left">CCL23</td>
-<td align="left">MCEMP1</td>
-<td align="left">NAMPT</td>
+<td align="left">HP</td>
+<td align="left">FCGR2B</td>
+<td align="left">GAS6</td>
+<td align="left">MT1X</td>
+<td align="left">RETN</td>
+<td align="left">EMB</td>
 <td align="left">PCNA</td>
 <td align="left">RETN</td>
 <td align="left">TPX2</td>
 </tr>
 <tr class="odd">
-<td align="left">FABP4</td>
-<td align="left">FOLR3</td>
+<td align="left">QSOX1</td>
 <td align="left">ACSL1</td>
 <td align="left">PPARG</td>
 <td align="left">CES1</td>
-<td align="left">FCGR2B</td>
-<td align="left">ZFP36L1</td>
-<td align="left">ABCG1</td>
+<td align="left">BASP1</td>
+<td align="left">MAFB</td>
+<td align="left">CDC42EP3</td>
 <td align="left">PCOLCE2</td>
-<td align="left">MGST1</td>
+<td align="left">PHLDA3</td>
 <td align="left">TGM2</td>
-<td align="left">GBP1</td>
+<td align="left">INHBA</td>
 <td align="left">CCNB2</td>
 </tr>
 <tr class="even">
-<td align="left">QSOX1</td>
-<td align="left">CES1</td>
-<td align="left">C15orf48</td>
+<td align="left">FABP4</td>
+<td align="left">CXCL5</td>
 <td align="left">HP</td>
-<td align="left">ACKR3</td>
+<td align="left">QSOX1</td>
 <td align="left">RASSF2</td>
-<td align="left">GAS6</td>
-<td align="left">CDC42EP3</td>
+<td align="left">ZFP36L1</td>
+<td align="left">CCL18</td>
 <td align="left">CES1</td>
-<td align="left">FAM89A</td>
+<td align="left">MGST1</td>
 <td align="left">MME</td>
-<td align="left">UBE2S</td>
+<td align="left">QSOX1</td>
 <td align="left">NUCB2</td>
 </tr>
 <tr class="odd">
 <td align="left">ABCG1</td>
-<td align="left">SVIL</td>
-<td align="left">CXCL5</td>
-<td align="left">SCD</td>
-<td align="left">PNPLA6</td>
-<td align="left">CD14</td>
+<td align="left">C15orf48</td>
+<td align="left">MLPH</td>
+<td align="left">SERPING1</td>
+<td align="left">S100A8</td>
 <td align="left">CLEC10A</td>
-<td align="left">PDK4</td>
+<td align="left">SERPING1</td>
 <td align="left">RAC2</td>
-<td align="left">PHLDA3</td>
+<td align="left">NAMPT</td>
 <td align="left">RGCC</td>
-<td align="left">MIR3945HG</td>
+<td align="left">IGF1</td>
 <td align="left">HMMR</td>
 </tr>
 <tr class="even">
 <td align="left">PPARG</td>
-<td align="left">G0S2</td>
 <td align="left">NAMPT</td>
-<td align="left">CKS1B</td>
+<td align="left">IGF1</td>
 <td align="left">ACO1</td>
-<td align="left">S100A8</td>
+<td align="left">CD14</td>
 <td align="left">MAMDC2</td>
-<td align="left">CYP27A1</td>
+<td align="left">PDK4</td>
 <td align="left">ACKR3</td>
 <td align="left">ABHD5</td>
-<td align="left">IGSF6</td>
-<td align="left">QSOX1</td>
+<td align="left">FOLR3</td>
+<td align="left">GBP1</td>
 <td align="left">SMC4</td>
 </tr>
 </tbody>
@@ -1383,79 +1476,7 @@ DotPlot(seuInt,
                         mid = pal[3], 
                         high = pal[5]) -&gt; f2c
 f2c</code></pre>
-<p><img src="figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-8-1.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-1">
-Past versions of unnamed-chunk-8-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-8-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/16ace9e29de0c45f034829f2fc969d4afc871c3d/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-8-1.png" target="_blank">16ace9e</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-12-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-8-1.png" target="_blank">f3b7b92</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-06-16
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-</div>
-<div id="visualise-cytokines-of-interest" class="section level2" number="3.4">
-<h2><span class="header-section-number">3.4</span> Visualise cytokines of interest</h2>
-<pre class="r"><code>markers &lt;- read_csv(file = here(&quot;data&quot;,
-                                &quot;macrophage_subcluster_cytokines.csv&quot;),
-                    col_names = FALSE)
-p &lt;- DotPlot(seuInt,
-             features = markers$X1,
-             cols = c(&quot;grey&quot;, &quot;red&quot;),
-             dot.scale = 5,
-             assay = &quot;RNA&quot;,
-             group.by = &quot;Annotation&quot;) +
-  theme(axis.text.x = element_text(angle = 90,
-                                   hjust = 1,
-                                   vjust = 0.5,
-                                   size = 8),
-        axis.text.y = element_text(size = 8),
-        text = element_text(size = 8)) +
-  coord_flip() +
-  labs(y = &quot;Label&quot;, x = &quot;Cytokine&quot;)
-
-p</code></pre>
-<p><img src="figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-9-1.png" width="960" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-1">
 Past versions of unnamed-chunk-9-1.png
@@ -1506,6 +1527,30 @@ Jovana Maksimovic
 </div>
 </div>
 </div>
+<div id="visualise-cytokines-of-interest" class="section level2" number="3.4">
+<h2><span class="header-section-number">3.4</span> Visualise cytokines of interest</h2>
+<pre class="r"><code>markers &lt;- read_csv(file = here(&quot;data&quot;,
+                                &quot;macrophage_subcluster_cytokines.csv&quot;),
+                    col_names = FALSE)
+p &lt;- DotPlot(seuInt,
+             features = markers$X1,
+             cols = c(&quot;grey&quot;, &quot;red&quot;),
+             dot.scale = 5,
+             assay = &quot;RNA&quot;,
+             group.by = &quot;Annotation&quot;) +
+  theme(axis.text.x = element_text(angle = 90,
+                                   hjust = 1,
+                                   vjust = 0.5,
+                                   size = 8),
+        axis.text.y = element_text(size = 8),
+        text = element_text(size = 8)) +
+  coord_flip() +
+  labs(y = &quot;Label&quot;, x = &quot;Cytokine&quot;)
+
+p</code></pre>
+<p><img src="figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
 <div id="load-protein-data" class="section level1" number="4">
 <h1><span class="header-section-number">4</span> Load protein data</h1>
 <div id="add-to-seurat-object" class="section level2" number="4.1">
@@ -1527,8 +1572,8 @@ Active assay: RNA (15578 features, 0 variable features)
 <pre class="r"><code>rm(seuAdt)
 gc()</code></pre>
 <pre><code>             used   (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells    9796679  523.2   14699675   785.1   14699675   785.1
-Vcells 1104297479 8425.2 2481834754 18934.9 2388834542 18225.4</code></pre>
+Ncells    9805026  523.7   14699877   785.1   14699877   785.1
+Vcells 1104284185 8425.1 2481889737 18935.4 2388821294 18225.3</code></pre>
 </div>
 <div id="load-protein-annotations" class="section level2" number="4.2">
 <h2><span class="header-section-number">4.2</span> Load protein annotations</h2>
@@ -1556,70 +1601,6 @@ Vcells 1104297479 8425.2 2481834754 18934.9 2388834542 18225.4</code></pre>
 plot(density(dat$`ADT Exp.`))
 topMax &lt;- 8
 abline(v = topMax, lty = 2, col = &quot;grey&quot;)</code></pre>
-<p><img src="figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-1">
-Past versions of unnamed-chunk-13-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-13-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/16ace9e29de0c45f034829f2fc969d4afc871c3d/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-13-1.png" target="_blank">16ace9e</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-12-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-13-1.png" target="_blank">f3b7b92</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-06-16
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>  dat |&gt; heatmap(
-    .column = `Cell Label`,
-    .row = Protein,
-    .value = `ADT Exp.`,
-    scale = &quot;none&quot;,
-    rect_gp = grid::gpar(col = &quot;white&quot;, lwd = 1),
-    show_row_names = TRUE,
-    column_names_gp = grid::gpar(fontsize = 10),
-    column_title_gp = grid::gpar(fontsize = 12),
-    row_names_gp = grid::gpar(fontsize = 8),
-    row_title_gp = grid::gpar(fontsize = 12),
-    column_title_side = &quot;top&quot;,
-    palette_value = circlize::colorRamp2(seq(-1, topMax, length.out = 256),
-                                         viridis::magma(256)),
-    heatmap_legend_param = list(direction = &quot;vertical&quot;)) </code></pre>
 <p><img src="figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-1">
@@ -1669,37 +1650,21 @@ Jovana Maksimovic
 </table>
 </div>
 </div>
-</div>
-<div id="visualise-adts-of-interest" class="section level2" number="4.4">
-<h2><span class="header-section-number">4.4</span> Visualise ADTs of interest</h2>
-<pre class="r"><code>adt &lt;- read_csv(file = here(&quot;data/Proteins_macs_22.04.22.csv&quot;))
-adt &lt;- adt[!duplicated(adt$DNA_ID),]
-
-dat |&gt;
-  dplyr::inner_join(adt, by = c(&quot;ADT&quot; = &quot;DNA_ID&quot;)) |&gt;
-  mutate(Protein = `Name for heatmap`) |&gt;
-  heatmap(
-    .column = Protein,
-    .row = `Cell Label`,
+<pre class="r"><code>  dat |&gt; heatmap(
+    .column = `Cell Label`,
+    .row = Protein,
     .value = `ADT Exp.`,
     scale = &quot;none&quot;,
     rect_gp = grid::gpar(col = &quot;white&quot;, lwd = 1),
     show_row_names = TRUE,
     column_names_gp = grid::gpar(fontsize = 10),
     column_title_gp = grid::gpar(fontsize = 12),
-    row_names_gp = grid::gpar(fontsize = 10),
+    row_names_gp = grid::gpar(fontsize = 8),
     row_title_gp = grid::gpar(fontsize = 12),
-    column_title_side = &quot;bottom&quot;,
-    heatmap_legend_param = list(direction = &quot;vertical&quot;),
+    column_title_side = &quot;top&quot;,
     palette_value = circlize::colorRamp2(seq(-1, topMax, length.out = 256),
                                          viridis::magma(256)),
-    column_title_side = &quot;bottom&quot;) |&gt;
-  add_tile(`Cell Label`, show_legend = FALSE,
-           show_annotation_name = FALSE,
-           palette = paletteer_d(&quot;miscpalettes::pastel&quot;, 
-                                 length(levels(seuInt$Annotation)))) -&gt; f2d
-
-wrap_heatmap(f2d)</code></pre>
+    heatmap_legend_param = list(direction = &quot;vertical&quot;)) </code></pre>
 <p><img src="figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-15-1">
@@ -1749,6 +1714,38 @@ Jovana Maksimovic
 </table>
 </div>
 </div>
+</div>
+<div id="visualise-adts-of-interest" class="section level2" number="4.4">
+<h2><span class="header-section-number">4.4</span> Visualise ADTs of interest</h2>
+<pre class="r"><code>adt &lt;- read_csv(file = here(&quot;data/Proteins_macs_22.04.22.csv&quot;))
+adt &lt;- adt[!duplicated(adt$DNA_ID),]
+
+dat |&gt;
+  dplyr::inner_join(adt, by = c(&quot;ADT&quot; = &quot;DNA_ID&quot;)) |&gt;
+  mutate(Protein = `Name for heatmap`) |&gt;
+  heatmap(
+    .column = Protein,
+    .row = `Cell Label`,
+    .value = `ADT Exp.`,
+    scale = &quot;none&quot;,
+    rect_gp = grid::gpar(col = &quot;white&quot;, lwd = 1),
+    show_row_names = TRUE,
+    column_names_gp = grid::gpar(fontsize = 10),
+    column_title_gp = grid::gpar(fontsize = 12),
+    row_names_gp = grid::gpar(fontsize = 10),
+    row_title_gp = grid::gpar(fontsize = 12),
+    column_title_side = &quot;bottom&quot;,
+    heatmap_legend_param = list(direction = &quot;vertical&quot;),
+    palette_value = circlize::colorRamp2(seq(-1, topMax, length.out = 256),
+                                         viridis::magma(256)),
+    column_title_side = &quot;bottom&quot;) |&gt;
+  add_tile(`Cell Label`, show_legend = FALSE,
+           show_annotation_name = FALSE,
+           palette = paletteer_d(&quot;miscpalettes::pastel&quot;, 
+                                 length(levels(seuInt$Annotation)))) -&gt; f2d
+
+wrap_heatmap(f2d)</code></pre>
+<p><img src="figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 <div id="proportions-analysis" class="section level1" number="5">
@@ -1948,21 +1945,6 @@ props$Proportions %&gt;% knitr::kable()</code></pre>
 <td align="right">0.4080489</td>
 </tr>
 <tr class="even">
-<td align="left">macro- ifna/b</td>
-<td align="right">0.0170940</td>
-<td align="right">0.0163776</td>
-<td align="right">0.0644350</td>
-<td align="right">0.0576409</td>
-<td align="right">0.0311245</td>
-<td align="right">0.0214286</td>
-<td align="right">0.0627154</td>
-<td align="right">0.0386052</td>
-<td align="right">0.0425532</td>
-<td align="right">0.0217304</td>
-<td align="right">0.0254916</td>
-<td align="right">0.0565461</td>
-</tr>
-<tr class="odd">
 <td align="left">macro-CCL</td>
 <td align="right">0.0320513</td>
 <td align="right">0.0937701</td>
@@ -1977,7 +1959,7 @@ props$Proportions %&gt;% knitr::kable()</code></pre>
 <td align="right">0.0480699</td>
 <td align="right">0.0112073</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">macro-cholesterol</td>
 <td align="right">0.0080128</td>
 <td align="right">0.0077071</td>
@@ -1992,22 +1974,22 @@ props$Proportions %&gt;% knitr::kable()</code></pre>
 <td align="right">0.0007283</td>
 <td align="right">0.0275089</td>
 </tr>
-<tr class="odd">
-<td align="left">macro-ifna/b</td>
-<td align="right">0.0496795</td>
-<td align="right">0.0587669</td>
-<td align="right">0.1735681</td>
-<td align="right">0.1429776</td>
-<td align="right">0.0622490</td>
-<td align="right">0.0755102</td>
-<td align="right">0.1447278</td>
-<td align="right">0.0884184</td>
-<td align="right">0.0796038</td>
-<td align="right">0.0732394</td>
-<td align="right">0.1544064</td>
-<td align="right">0.1619969</td>
-</tr>
 <tr class="even">
+<td align="left">macro-ifna/b</td>
+<td align="right">0.0667735</td>
+<td align="right">0.0751445</td>
+<td align="right">0.2380031</td>
+<td align="right">0.2006186</td>
+<td align="right">0.0933735</td>
+<td align="right">0.0969388</td>
+<td align="right">0.2074431</td>
+<td align="right">0.1270237</td>
+<td align="right">0.1221570</td>
+<td align="right">0.0949698</td>
+<td align="right">0.1798980</td>
+<td align="right">0.2185430</td>
+</tr>
+<tr class="odd">
 <td align="left">macro-int</td>
 <td align="right">0.1452991</td>
 <td align="right">0.0918433</td>
@@ -2022,7 +2004,7 @@ props$Proportions %&gt;% knitr::kable()</code></pre>
 <td align="right">0.2694829</td>
 <td align="right">0.0718288</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">macro-interstitial</td>
 <td align="right">0.0000000</td>
 <td align="right">0.0025690</td>
@@ -2037,7 +2019,7 @@ props$Proportions %&gt;% knitr::kable()</code></pre>
 <td align="right">0.0284050</td>
 <td align="right">0.0050942</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">macro-lipid</td>
 <td align="right">0.0625000</td>
 <td align="right">0.1361593</td>
@@ -2052,7 +2034,7 @@ props$Proportions %&gt;% knitr::kable()</code></pre>
 <td align="right">0.0691916</td>
 <td align="right">0.0896587</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">macro-MT</td>
 <td align="right">0.0192308</td>
 <td align="right">0.0147720</td>
@@ -2067,7 +2049,7 @@ props$Proportions %&gt;% knitr::kable()</code></pre>
 <td align="right">0.0058267</td>
 <td align="right">0.0341314</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">macro-reg</td>
 <td align="right">0.0085470</td>
 <td align="right">0.0077071</td>
@@ -2082,7 +2064,7 @@ props$Proportions %&gt;% knitr::kable()</code></pre>
 <td align="right">0.0029133</td>
 <td align="right">0.0320937</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">macro-repair</td>
 <td align="right">0.0523504</td>
 <td align="right">0.0324342</td>
@@ -2097,7 +2079,7 @@ props$Proportions %&gt;% knitr::kable()</code></pre>
 <td align="right">0.0233066</td>
 <td align="right">0.0152827</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">macro-viral</td>
 <td align="right">0.0373932</td>
 <td align="right">0.0327553</td>
@@ -2112,7 +2094,7 @@ props$Proportions %&gt;% knitr::kable()</code></pre>
 <td align="right">0.0320466</td>
 <td align="right">0.0168110</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">proliferating macrophages</td>
 <td align="right">0.0112179</td>
 <td align="right">0.0536288</td>
@@ -2144,75 +2126,7 @@ ggplot(aes(x = Participant, y = Freq, fill = clusters)) +
   labs( y = &quot;Proportion&quot;, fill = &quot;Cell Label&quot;) +
   scale_fill_paletteer_d(&quot;miscpalettes::pastel&quot;)  -&gt; f2b
 f2b</code></pre>
-<p><img src="figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-18-1">
-Past versions of unnamed-chunk-18-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-18-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/16ace9e29de0c45f034829f2fc969d4afc871c3d/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-18-1.png" target="_blank">16ace9e</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-12-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-18-1.png" target="_blank">f3b7b92</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-06-16
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="cell-proportions-by-donor-stratified-by-cell-type" class="section level3" number="5.2.2">
-<h3><span class="header-section-number">5.2.2</span> Cell proportions by donor, stratified by cell type</h3>
-<pre class="r"><code>props$Proportions %&gt;%
-  data.frame %&gt;%
-  inner_join(info, by = c(&quot;sample&quot; = &quot;donor&quot;)) %&gt;%
-ggplot(aes(x = Participant, y = Freq, fill = clusters)) +
-  geom_bar(stat = &quot;identity&quot;) +
-  facet_wrap(~clusters, scales = &quot;free_y&quot;) +
-  theme_classic() +
-  NoLegend() +
-  theme(axis.text.x = element_text(angle = 90,
-                                   vjust = 0.5,
-                                   hjust = 1,
-                                   size = 8),
-        strip.text = element_text(size = 10),
-        axis.text = element_text(size = 8)) +
-  labs( y = &quot;Proportion&quot;, fill = &quot;Cell label&quot;) +
-  scale_fill_paletteer_d(&quot;miscpalettes::pastel&quot;)</code></pre>
-<p><img src="figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-19-1.png" width="864" style="display: block; margin: auto;" /></p>
+<p><img src="figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-19-1">
 Past versions of unnamed-chunk-19-1.png
@@ -2262,28 +2176,25 @@ Jovana Maksimovic
 </div>
 </div>
 </div>
-<div id="cell-proportions-of-control-sample-relative-to-cf-samples" class="section level3" number="5.2.3">
-<h3><span class="header-section-number">5.2.3</span> Cell proportions of control sample relative to CF samples</h3>
+<div id="cell-proportions-by-donor-stratified-by-cell-type" class="section level3" number="5.2.2">
+<h3><span class="header-section-number">5.2.2</span> Cell proportions by donor, stratified by cell type</h3>
 <pre class="r"><code>props$Proportions %&gt;%
   data.frame %&gt;%
-  inner_join(info, by = c(&quot;sample&quot; = &quot;donor&quot;)) -&gt; dat
-
-ggplot(dat[dat$Participant != &quot;A1_Ctrl&quot;,], 
-       aes(x = clusters, y = Freq, fill = clusters)) +
-  geom_boxplot() +
-  geom_point(data = dat[dat$Participant == &quot;A1_Ctrl&quot;, ], 
-             aes(x = clusters, y = Freq),
-             color = &quot;red&quot;) +
+  inner_join(info, by = c(&quot;sample&quot; = &quot;donor&quot;)) %&gt;%
+ggplot(aes(x = Participant, y = Freq, fill = clusters)) +
+  geom_bar(stat = &quot;identity&quot;) +
+  facet_wrap(~clusters, scales = &quot;free_y&quot;) +
   theme_classic() +
+  NoLegend() +
   theme(axis.text.x = element_text(angle = 90,
                                    vjust = 0.5,
-                                   hjust = 1),
-        legend.text = element_text(size = 8)) +
-  labs( y = &quot;Proportion&quot;, x = &quot;Cell Label&quot;) +
-  scale_fill_paletteer_d(&quot;miscpalettes::pastel&quot;) +
-  NoLegend() -&gt; f
-f</code></pre>
-<p><img src="figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+                                   hjust = 1,
+                                   size = 8),
+        strip.text = element_text(size = 10),
+        axis.text = element_text(size = 8)) +
+  labs( y = &quot;Proportion&quot;, fill = &quot;Cell label&quot;) +
+  scale_fill_paletteer_d(&quot;miscpalettes::pastel&quot;)</code></pre>
+<p><img src="figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-20-1.png" width="864" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-20-1">
 Past versions of unnamed-chunk-20-1.png
@@ -2333,6 +2244,77 @@ Jovana Maksimovic
 </div>
 </div>
 </div>
+<div id="cell-proportions-of-control-sample-relative-to-cf-samples" class="section level3" number="5.2.3">
+<h3><span class="header-section-number">5.2.3</span> Cell proportions of control sample relative to CF samples</h3>
+<pre class="r"><code>props$Proportions %&gt;%
+  data.frame %&gt;%
+  inner_join(info, by = c(&quot;sample&quot; = &quot;donor&quot;)) -&gt; dat
+
+ggplot(dat[dat$Participant != &quot;A1_Ctrl&quot;,], 
+       aes(x = clusters, y = Freq, fill = clusters)) +
+  geom_boxplot() +
+  geom_point(data = dat[dat$Participant == &quot;A1_Ctrl&quot;, ], 
+             aes(x = clusters, y = Freq),
+             color = &quot;red&quot;) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90,
+                                   vjust = 0.5,
+                                   hjust = 1),
+        legend.text = element_text(size = 8)) +
+  labs( y = &quot;Proportion&quot;, x = &quot;Cell Label&quot;) +
+  scale_fill_paletteer_d(&quot;miscpalettes::pastel&quot;) +
+  NoLegend() -&gt; f
+f</code></pre>
+<p><img src="figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-21-1">
+Past versions of unnamed-chunk-21-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-21-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/63f8ee8a3eea9d94fc3126cc4879becfb9e3b8ac/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-21-1.png" target="_blank">63f8ee8</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/f3b7b921738125be32da474fb0701145e1707efd/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-21-1.png" target="_blank">f3b7b92</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-06-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div id="save-data" class="section level1" number="6">
@@ -2364,55 +2346,7 @@ if(!file.exists(out)){
   plot_layout(design = layout) +
   plot_annotation(tag_levels = &quot;A&quot;) &amp;
   theme(plot.tag = element_text(size = 14, face = &quot;bold&quot;))</code></pre>
-<p><img src="figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-22-1.png" width="960" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-1">
-Past versions of unnamed-chunk-22-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-22-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/16ace9e29de0c45f034829f2fc969d4afc871c3d/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-22-1.png" target="_blank">16ace9e</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-12-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/63f8ee8a3eea9d94fc3126cc4879becfb9e3b8ac/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-22-1.png" target="_blank">63f8ee8</a>
-</td>
-<td>
-Jovana Maksimovic
-</td>
-<td>
-2022-12-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-23-1.png" width="960" style="display: block; margin: auto;" /></p>
 </div>
 <div id="session-info" class="section level1 appendix" number="8">
 <h1><span class="header-section-number">8</span> Session info</h1>
@@ -2431,7 +2365,7 @@ The analysis and this document were prepared using the following software (click
  collate  en_AU.UTF-8
  ctype    en_AU.UTF-8
  tz       Australia/Melbourne
- date     2022-12-19
+ date     2022-12-20
  pandoc   2.17.1.1 @ /usr/lib/rstudio-server/bin/quarto/bin/ (via rmarkdown)
 
 ─ Packages ───────────────────────────────────────────────────────────────────
