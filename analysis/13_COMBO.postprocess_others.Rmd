@@ -200,6 +200,15 @@ DefaultAssay(seuInt) <- "integrated"
 seuInt <- RunPCA(seuInt, verbose = FALSE, dims = 1:30) %>%
   RunUMAP(verbose = FALSE, dims = 1:30)
 ```
+```{r}
+seuInt@meta.data %>% 
+  count(Annotation) %>% 
+  mutate(perc = round(n/sum(n)*100,1)) %>%
+  dplyr::rename(`Cell Label` = "Annotation", 
+                `No. Cells` = n,
+                `% Cells` = perc) %>%
+  knitr::kable()
+```
 
 ## Visualise annotations
 

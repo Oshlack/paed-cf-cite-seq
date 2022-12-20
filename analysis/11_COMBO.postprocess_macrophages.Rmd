@@ -106,6 +106,15 @@ seuInt@meta.data %>%
   NoLegend() +
   scale_fill_paletteer_d("miscpalettes::pastel")
 ```
+```{r}
+seuInt@meta.data %>% 
+  count(Annotation) %>% 
+  mutate(perc = round(n/sum(n)*100,1)) %>%
+  dplyr::rename(`Cell Label` = "Annotation", 
+                `No. Cells` = n,
+                `% Cells` = perc) %>%
+  knitr::kable()
+```
 
 
 ## `Cepo` cluster marker genes 
