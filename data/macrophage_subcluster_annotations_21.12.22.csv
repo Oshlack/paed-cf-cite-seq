@@ -9,7 +9,7 @@ Cluster,Annotation,Broad
 7,macro-int,Macrophages
 8,macro-ifna/b,Macrophages
 9,macro-int,Macrophages
-10,alveolar macs,Macrophages
+10,macro-vesicle,Macrophages
 11,macro-ifna/b,Macrophages
 12,macro-CCL,Macrophages
 13,macro-int,Macrophages
@@ -21,4 +21,36 @@ Cluster,Annotation,Broad
 19,proliferating macrophages,Proliferating macrophages
 20,proliferating macrophages,Proliferating macrophages
 21,macro-reg,Macrophages
-22,macro-interstitial,Macrophages
+22,macro-interstitial ,Macrophages
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
