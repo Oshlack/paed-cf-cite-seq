@@ -11,7 +11,7 @@
 
 <meta name="author" content="Jovana Maksimovic" />
 
-<meta name="date" content="2022-12-20" />
+<meta name="date" content="2022-12-22" />
 
 <title>Analysis of scRNA-seq &amp; CITE-seq Data Combined</title>
 
@@ -375,7 +375,7 @@ div.tocify {
 <h1 class="title toc-ignore">Analysis of scRNA-seq &amp; CITE-seq Data Combined</h1>
 <h3 class="subtitle">Post-process Macrophage Sub-clustering Results</h3>
 <h4 class="author">Jovana Maksimovic</h4>
-<h4 class="date">December 20, 2022</h4>
+<h4 class="date">December 22, 2022</h4>
 
 </div>
 
@@ -404,7 +404,7 @@ Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></sp
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-12-20
+<strong>Last updated:</strong> 2022-12-22
 </p>
 <p>
 <strong>Checks:</strong>
@@ -532,20 +532,20 @@ makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree508dee77c0dcb8a810c543c279a1ca3af892000dtargetblank508dee7a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree4e2053e06cf0d1e35a6a1548db33e02182b2d2c5targetblank4e2053ea">
 <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-<strong>Repository version:</strong> <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/508dee77c0dcb8a810c543c279a1ca3af892000d" target="_blank">508dee7</a>
+<strong>Repository version:</strong> <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/4e2053e06cf0d1e35a6a1548db33e02182b2d2c5" target="_blank">4e2053e</a>
 </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree508dee77c0dcb8a810c543c279a1ca3af892000dtargetblank508dee7a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefsshgitatlassianpetermacorgau7999ospaedcfciteseqtree4e2053e06cf0d1e35a6a1548db33e02182b2d2c5targetblank4e2053ea" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and
 connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/508dee77c0dcb8a810c543c279a1ca3af892000d" target="_blank">508dee7</a>.
+The results in this page were generated with repository version <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/tree/4e2053e06cf0d1e35a6a1548db33e02182b2d2c5" target="_blank">4e2053e</a>.
 See the <em>Past versions</em> tab to see a history of the changes made to the
 R Markdown and HTML files.
 </p>
@@ -660,9 +660,6 @@ Ignored files:
     Ignored:    renv/staging/
     Ignored:    wflow_background.R
 
-Unstaged changes:
-    Modified:   data/macrophage_subcluster_annotation_16.12.22.csv
-
 </code></pre>
 <p>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not included in
@@ -706,6 +703,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/4e2053e06cf0d1e35a6a1548db33e02182b2d2c5/analysis/11_COMBO.postprocess_macrophages.Rmd" target="_blank">4e2053e</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-22
+</td>
+<td>
+wflow_publish("analysis/11_COMBO.postprocess_macrophages.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/fd0c5aa071ef58477113740563da7ce183cc0f3f/docs/11_COMBO.postprocess_macrophages.html" target="_blank">fd0c5aa</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-20
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -885,7 +916,7 @@ Active assay: integrated (3000 features, 3000 variable features)
 <h1><span class="header-section-number">3</span> Sub-cluster annotation</h1>
 <div id="load-manual-annotations" class="section level2" number="3.1">
 <h2><span class="header-section-number">3.1</span> Load manual annotations</h2>
-<pre class="r"><code>labels &lt;- read_csv(here(&quot;data/macrophage_subcluster_annotation_16.12.22.csv&quot;))
+<pre class="r"><code>labels &lt;- read_csv(here(&quot;data/macrophage_subcluster_annotations_21.12.22.csv&quot;))
 
 seuInt@meta.data %&gt;%
   dplyr::select(-Annotation, -Broad) %&gt;%
@@ -950,6 +981,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/fd0c5aa071ef58477113740563da7ce183cc0f3f/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-5-1.png" target="_blank">fd0c5aa</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-20
+</td>
+</tr>
+<tr>
+<td>
 <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/16ace9e29de0c45f034829f2fc969d4afc871c3d/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-5-1.png" target="_blank">16ace9e</a>
 </td>
 <td>
@@ -1010,6 +1052,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/fd0c5aa071ef58477113740563da7ce183cc0f3f/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-6-1.png" target="_blank">fd0c5aa</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-20
+</td>
+</tr>
+<tr>
+<td>
 <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/16ace9e29de0c45f034829f2fc969d4afc871c3d/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-6-1.png" target="_blank">16ace9e</a>
 </td>
 <td>
@@ -1052,8 +1105,8 @@ Jovana Maksimovic
 <tbody>
 <tr class="odd">
 <td align="left">alveolar macs</td>
-<td align="right">14235</td>
-<td align="right">46.1</td>
+<td align="right">13223</td>
+<td align="right">42.9</td>
 </tr>
 <tr class="even">
 <td align="left">macro-CCL</td>
@@ -1101,11 +1154,16 @@ Jovana Maksimovic
 <td align="right">2.3</td>
 </tr>
 <tr class="odd">
+<td align="left">macro-vesicle</td>
+<td align="right">1012</td>
+<td align="right">3.3</td>
+</tr>
+<tr class="even">
 <td align="left">macro-viral</td>
 <td align="right">756</td>
 <td align="right">2.5</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">proliferating macrophages</td>
 <td align="right">1326</td>
 <td align="right">4.3</td>
@@ -1129,18 +1187,19 @@ colnames(dat) &lt;- colnames(cepoMarkers$stats)
 dat %&gt;% knitr::kable()</code></pre>
 <table>
 <colgroup>
-<col width="8%" />
-<col width="6%" />
-<col width="10%" />
-<col width="7%" />
-<col width="6%" />
-<col width="11%" />
 <col width="7%" />
 <col width="5%" />
+<col width="10%" />
+<col width="7%" />
+<col width="5%" />
+<col width="10%" />
 <col width="6%" />
+<col width="5%" />
+<col width="5%" />
 <col width="7%" />
 <col width="7%" />
-<col width="15%" />
+<col width="6%" />
+<col width="14%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -1154,6 +1213,7 @@ dat %&gt;% knitr::kable()</code></pre>
 <th align="left">macro.MT</th>
 <th align="left">macro.reg</th>
 <th align="left">macro.repair</th>
+<th align="left">macro.vesicle</th>
 <th align="left">macro.viral</th>
 <th align="left">proliferating.macrophages</th>
 </tr>
@@ -1170,6 +1230,7 @@ dat %&gt;% knitr::kable()</code></pre>
 <td align="left">MT1X</td>
 <td align="left">ATF4</td>
 <td align="left">CDKN1A</td>
+<td align="left">AZU1</td>
 <td align="left">IFI44L</td>
 <td align="left">PCLAF</td>
 </tr>
@@ -1184,11 +1245,12 @@ dat %&gt;% knitr::kable()</code></pre>
 <td align="left">MT2A</td>
 <td align="left">CXCR4</td>
 <td align="left">MDM2</td>
+<td align="left">HP</td>
 <td align="left">IFIT1</td>
 <td align="left">TK1</td>
 </tr>
 <tr class="odd">
-<td align="left">ITIH5</td>
+<td align="left">MME</td>
 <td align="left">SOD2</td>
 <td align="left">IDI1</td>
 <td align="left">GPD1</td>
@@ -1198,13 +1260,14 @@ dat %&gt;% knitr::kable()</code></pre>
 <td align="left">MT1G</td>
 <td align="left">KLF6</td>
 <td align="left">INHBA</td>
+<td align="left">PLAC8</td>
 <td align="left">RSAD2</td>
 <td align="left">MKI67</td>
 </tr>
 <tr class="even">
-<td align="left">MME</td>
+<td align="left">ITIH5</td>
 <td align="left">CCL20</td>
-<td align="left">INHBA</td>
+<td align="left">FDFT1</td>
 <td align="left">INHBA</td>
 <td align="left">FPR3</td>
 <td align="left">F13A1</td>
@@ -1212,232 +1275,249 @@ dat %&gt;% knitr::kable()</code></pre>
 <td align="left">MT1F</td>
 <td align="left">CYP27A1</td>
 <td align="left">IL1RN</td>
+<td align="left">ITIH5</td>
 <td align="left">MX1</td>
 <td align="left">BIRC5</td>
 </tr>
 <tr class="odd">
-<td align="left">MCEMP1</td>
+<td align="left">AQP3</td>
 <td align="left">CCL4L2</td>
-<td align="left">FDFT1</td>
+<td align="left">INHBA</td>
 <td align="left">ITIH5</td>
 <td align="left">TMEM176B</td>
 <td align="left">SLC40A1</td>
-<td align="left">CES1</td>
 <td align="left">MT1E</td>
-<td align="left">MLPH</td>
+<td align="left">MT1E</td>
+<td align="left">ARL4C</td>
 <td align="left">ABHD5</td>
+<td align="left">IGF1</td>
 <td align="left">IFIT2</td>
 <td align="left">TYMS</td>
 </tr>
 <tr class="even">
-<td align="left">ACKR3</td>
+<td align="left">MCEMP1</td>
 <td align="left">MARCKS</td>
 <td align="left">CYP51A1</td>
 <td align="left">MLPH</td>
-<td align="left">FGL2</td>
+<td align="left">C15orf48</td>
 <td align="left">STAB1</td>
-<td align="left">MT1E</td>
+<td align="left">CXCR4</td>
 <td align="left">MT1M</td>
-<td align="left">RBP4</td>
-<td align="left">AQP3</td>
+<td align="left">MLPH</td>
+<td align="left">GPD1</td>
+<td align="left">DEFB1</td>
 <td align="left">NT5C3A</td>
 <td align="left">GGH</td>
 </tr>
 <tr class="odd">
-<td align="left">PCOLCE2</td>
+<td align="left">MLPH</td>
 <td align="left">TNIP3</td>
 <td align="left">PCOLCE2</td>
 <td align="left">PCOLCE2</td>
-<td align="left">C15orf48</td>
+<td align="left">FGL2</td>
 <td align="left">FOLR2</td>
-<td align="left">SCD</td>
-<td align="left">MT1H</td>
 <td align="left">CES1</td>
-<td align="left">GPD1</td>
+<td align="left">MT1H</td>
+<td align="left">RBP4</td>
+<td align="left">AQP3</td>
+<td align="left">ACKR3</td>
 <td align="left">HERC5</td>
 <td align="left">CENPM</td>
 </tr>
 <tr class="even">
-<td align="left">AQP3</td>
+<td align="left">PCOLCE2</td>
 <td align="left">CCL3</td>
 <td align="left">GPD1</td>
-<td align="left">DEFB1</td>
+<td align="left">PHLDA3</td>
 <td align="left">TMEM176A</td>
 <td align="left">RNASE1</td>
-<td align="left">CXCR4</td>
+<td align="left">SCD</td>
 <td align="left">GPD1</td>
-<td align="left">ARL4C</td>
+<td align="left">CES1</td>
+<td align="left">MCEMP1</td>
 <td align="left">MCEMP1</td>
 <td align="left">IFIT3</td>
 <td align="left">GTSE1</td>
 </tr>
 <tr class="odd">
-<td align="left">MLPH</td>
+<td align="left">LPL</td>
 <td align="left">MIR3945HG</td>
+<td align="left">RGCC</td>
 <td align="left">AQP3</td>
-<td align="left">MCEMP1</td>
 <td align="left">SOCS3</td>
 <td align="left">TMEM176B</td>
 <td align="left">GCHFR</td>
 <td align="left">DEFB1</td>
-<td align="left">ITIH5</td>
-<td align="left">PHLDA3</td>
-<td align="left">CXCL10</td>
+<td align="left">NEAT1</td>
+<td align="left">EVL</td>
+<td align="left">TCF7L2</td>
+<td align="left">ISG15</td>
 <td align="left">TOP2A</td>
 </tr>
 <tr class="even">
-<td align="left">LPL</td>
-<td align="left">CXCL8</td>
-<td align="left">ITIH5</td>
+<td align="left">ACKR3</td>
+<td align="left">TNFAIP2</td>
 <td align="left">AQP3</td>
+<td align="left">MCEMP1</td>
 <td align="left">PMP22</td>
 <td align="left">RNASE6</td>
-<td align="left">ACO1</td>
-<td align="left">HP</td>
-<td align="left">NEAT1</td>
-<td align="left">TCF7L2</td>
-<td align="left">ISG15</td>
+<td align="left">A2M</td>
+<td align="left">AQP3</td>
+<td align="left">CA2</td>
+<td align="left">PHLDA3</td>
+<td align="left">RETN</td>
+<td align="left">CXCL10</td>
 <td align="left">CENPF</td>
 </tr>
 <tr class="odd">
-<td align="left">HP</td>
-<td align="left">ICAM1</td>
-<td align="left">RGCC</td>
 <td align="left">PHLDA3</td>
+<td align="left">ICAM1</td>
+<td align="left">ITIH5</td>
+<td align="left">DEFB1</td>
 <td align="left">ZFP36L1</td>
 <td align="left">LGMN</td>
 <td align="left">MME</td>
 <td align="left">MLPH</td>
-<td align="left">PPP1R15A</td>
-<td align="left">EVL</td>
+<td align="left">EMB</td>
+<td align="left">FCN1</td>
+<td align="left">INHBA</td>
 <td align="left">IFITM3</td>
 <td align="left">ASPM</td>
 </tr>
 <tr class="even">
 <td align="left">SVIL</td>
-<td align="left">TNFAIP2</td>
-<td align="left">MCEMP1</td>
+<td align="left">CXCL8</td>
+<td align="left">TUBA1A</td>
 <td align="left">FAM89A</td>
-<td align="left">IER3</td>
+<td align="left">PLA2G7</td>
 <td align="left">FPR3</td>
-<td align="left">MGST1</td>
-<td align="left">AQP3</td>
-<td align="left">MME</td>
-<td align="left">FCN1</td>
+<td align="left">ACO1</td>
+<td align="left">CCND3</td>
+<td align="left">PPP1R15A</td>
+<td align="left">TCF7L2</td>
+<td align="left">MS4A6A</td>
 <td align="left">TNFSF10</td>
 <td align="left">RRM2</td>
 </tr>
 <tr class="odd">
-<td align="left">PHLDA3</td>
-<td align="left">CCL23</td>
-<td align="left">TCF7L2</td>
+<td align="left">ABCG1</td>
+<td align="left">TNFAIP3</td>
+<td align="left">MCEMP1</td>
 <td align="left">SVIL</td>
 <td align="left">PLEKHO1</td>
 <td align="left">TMEM176A</td>
-<td align="left">A2M</td>
+<td align="left">MT1X</td>
 <td align="left">ITIH5</td>
+<td align="left">MME</td>
 <td align="left">CA2</td>
-<td align="left">TREM2</td>
-<td align="left">ITIH5</td>
+<td align="left">FAM89A</td>
+<td align="left">IL1RN</td>
 <td align="left">CDK1</td>
 </tr>
 <tr class="even">
-<td align="left">FAM89A</td>
-<td align="left">TNFAIP3</td>
-<td align="left">TUBA1A</td>
-<td align="left">CCND3</td>
+<td align="left">FABP4</td>
+<td align="left">CD83</td>
+<td align="left">TCF7L2</td>
+<td align="left">MME</td>
 <td align="left">EMP1</td>
 <td align="left">GPR183</td>
-<td align="left">ABCG1</td>
-<td align="left">CCND3</td>
+<td align="left">MGST1</td>
+<td align="left">HP</td>
 <td align="left">BCL2A1</td>
-<td align="left">CDC42EP3</td>
-<td align="left">IL1RN</td>
-<td align="left">PTTG1</td>
-</tr>
-<tr class="odd">
-<td align="left">CCND3</td>
-<td align="left">CD83</td>
-<td align="left">SVIL</td>
-<td align="left">MME</td>
-<td align="left">PLA2G7</td>
-<td align="left">GAL3ST4</td>
-<td align="left">CCL23</td>
-<td align="left">MCEMP1</td>
-<td align="left">FAM89A</td>
-<td align="left">CA2</td>
+<td align="left">TREM2</td>
+<td align="left">PCOLCE2</td>
 <td align="left">GPD1</td>
 <td align="left">UBE2C</td>
 </tr>
+<tr class="odd">
+<td align="left">CA2</td>
+<td align="left">CCL23</td>
+<td align="left">SVIL</td>
+<td align="left">CCND3</td>
+<td align="left">FCGR2B</td>
+<td align="left">GAL3ST4</td>
+<td align="left">CCL18</td>
+<td align="left">MCEMP1</td>
+<td align="left">ITIH5</td>
+<td align="left">CDC42EP3</td>
+<td align="left">FOLR3</td>
+<td align="left">ITIH5</td>
+<td align="left">PTTG1</td>
+</tr>
 <tr class="even">
-<td align="left">RETN</td>
+<td align="left">CCND3</td>
 <td align="left">BCL2A1</td>
 <td align="left">FAM89A</td>
-<td align="left">HP</td>
-<td align="left">FCGR2B</td>
-<td align="left">GAS6</td>
-<td align="left">MT1X</td>
+<td align="left">CES1</td>
+<td align="left">IER3</td>
+<td align="left">MAFB</td>
+<td align="left">ABCG1</td>
 <td align="left">RETN</td>
-<td align="left">EMB</td>
-<td align="left">PCNA</td>
-<td align="left">RETN</td>
+<td align="left">NAMPT</td>
+<td align="left">TGM2</td>
+<td align="left">S100A13</td>
+<td align="left">GBP1</td>
 <td align="left">TPX2</td>
 </tr>
 <tr class="odd">
-<td align="left">QSOX1</td>
+<td align="left">FAM89A</td>
 <td align="left">ACSL1</td>
 <td align="left">PPARG</td>
-<td align="left">CES1</td>
-<td align="left">BASP1</td>
-<td align="left">MAFB</td>
+<td align="left">SERPING1</td>
+<td align="left">RASSF2</td>
+<td align="left">ZFP36L1</td>
 <td align="left">CDC42EP3</td>
 <td align="left">PCOLCE2</td>
-<td align="left">PHLDA3</td>
-<td align="left">TGM2</td>
-<td align="left">INHBA</td>
+<td align="left">FAM89A</td>
+<td align="left">CD9</td>
+<td align="left">ACO1</td>
+<td align="left">UBE2S</td>
 <td align="left">CCNB2</td>
 </tr>
 <tr class="even">
-<td align="left">FABP4</td>
-<td align="left">CXCL5</td>
-<td align="left">HP</td>
-<td align="left">QSOX1</td>
-<td align="left">RASSF2</td>
-<td align="left">ZFP36L1</td>
-<td align="left">CCL18</td>
-<td align="left">CES1</td>
-<td align="left">MGST1</td>
-<td align="left">MME</td>
-<td align="left">QSOX1</td>
-<td align="left">NUCB2</td>
-</tr>
-<tr class="odd">
-<td align="left">ABCG1</td>
+<td align="left">EVL</td>
 <td align="left">C15orf48</td>
 <td align="left">MLPH</td>
-<td align="left">SERPING1</td>
-<td align="left">S100A8</td>
+<td align="left">QSOX1</td>
+<td align="left">BASP1</td>
+<td align="left">GAS6</td>
+<td align="left">CCL23</td>
+<td align="left">CES1</td>
+<td align="left">PHLDA3</td>
+<td align="left">PCNA</td>
+<td align="left">CCND3</td>
+<td align="left">MIR3945HG</td>
+<td align="left">CDKN3</td>
+</tr>
+<tr class="odd">
+<td align="left">TGM2</td>
+<td align="left">CXCL5</td>
+<td align="left">SCD</td>
+<td align="left">FABP4</td>
+<td align="left">CD14</td>
 <td align="left">CLEC10A</td>
 <td align="left">SERPING1</td>
 <td align="left">RAC2</td>
-<td align="left">NAMPT</td>
-<td align="left">RGCC</td>
-<td align="left">IGF1</td>
+<td align="left">ABHD5</td>
+<td align="left">MME</td>
+<td align="left">SVIL</td>
+<td align="left">RETN</td>
 <td align="left">HMMR</td>
 </tr>
 <tr class="even">
-<td align="left">PPARG</td>
+<td align="left">QSOX1</td>
 <td align="left">NAMPT</td>
-<td align="left">IGF1</td>
-<td align="left">ACO1</td>
-<td align="left">CD14</td>
+<td align="left">CKS1B</td>
+<td align="left">PPARG</td>
+<td align="left">CLEC10A</td>
 <td align="left">MAMDC2</td>
 <td align="left">PDK4</td>
-<td align="left">ACKR3</td>
-<td align="left">ABHD5</td>
-<td align="left">FOLR3</td>
-<td align="left">GBP1</td>
-<td align="left">SMC4</td>
+<td align="left">EVL</td>
+<td align="left">MAFB</td>
+<td align="left">RGCC</td>
+<td align="left">SPN</td>
+<td align="left">QSOX1</td>
+<td align="left">NUCB2</td>
 </tr>
 </tbody>
 </table>
@@ -1501,6 +1581,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/fd0c5aa071ef58477113740563da7ce183cc0f3f/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-9-1.png" target="_blank">fd0c5aa</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-20
+</td>
+</tr>
+<tr>
+<td>
 <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/16ace9e29de0c45f034829f2fc969d4afc871c3d/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-9-1.png" target="_blank">16ace9e</a>
 </td>
 <td>
@@ -1549,6 +1640,43 @@ p &lt;- DotPlot(seuInt,
 
 p</code></pre>
 <p><img src="figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-1">
+Past versions of unnamed-chunk-10-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/fd0c5aa071ef58477113740563da7ce183cc0f3f/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-10-1.png" target="_blank">fd0c5aa</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-20
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="load-protein-data" class="section level1" number="4">
@@ -1572,8 +1700,8 @@ Active assay: RNA (15578 features, 0 variable features)
 <pre class="r"><code>rm(seuAdt)
 gc()</code></pre>
 <pre><code>             used   (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells    9805026  523.7   14699877   785.1   14699877   785.1
-Vcells 1104284185 8425.1 2481889737 18935.4 2388821294 18225.3</code></pre>
+Ncells    9805147  523.7   14699991   785.1   14699991   785.1
+Vcells 1104347840 8425.6 2465556850 18810.8 2388884949 18225.8</code></pre>
 </div>
 <div id="load-protein-annotations" class="section level2" number="4.2">
 <h2><span class="header-section-number">4.2</span> Load protein annotations</h2>
@@ -1624,6 +1752,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/fd0c5aa071ef58477113740563da7ce183cc0f3f/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-14-1.png" target="_blank">fd0c5aa</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-20
+</td>
+</tr>
 <tr>
 <td>
 <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/16ace9e29de0c45f034829f2fc969d4afc871c3d/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-14-1.png" target="_blank">16ace9e</a>
@@ -1690,6 +1829,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/fd0c5aa071ef58477113740563da7ce183cc0f3f/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-15-1.png" target="_blank">fd0c5aa</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-20
+</td>
+</tr>
+<tr>
+<td>
 <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/16ace9e29de0c45f034829f2fc969d4afc871c3d/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-15-1.png" target="_blank">16ace9e</a>
 </td>
 <td>
@@ -1746,6 +1896,43 @@ dat |&gt;
 
 wrap_heatmap(f2d)</code></pre>
 <p><img src="figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-16-1">
+Past versions of unnamed-chunk-16-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-16-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/fd0c5aa071ef58477113740563da7ce183cc0f3f/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-16-1.png" target="_blank">fd0c5aa</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-20
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="proportions-analysis" class="section level1" number="5">
@@ -1931,18 +2118,18 @@ props$Proportions %&gt;% knitr::kable()</code></pre>
 <tbody>
 <tr class="odd">
 <td align="left">alveolar macs</td>
-<td align="right">0.5566239</td>
-<td align="right">0.4515093</td>
-<td align="right">0.4607198</td>
-<td align="right">0.4629552</td>
-<td align="right">0.3303213</td>
-<td align="right">0.3632653</td>
-<td align="right">0.4266023</td>
-<td align="right">0.5591532</td>
-<td align="right">0.4853265</td>
-<td align="right">0.5505030</td>
-<td align="right">0.3051712</td>
-<td align="right">0.4080489</td>
+<td align="right">0.5037393</td>
+<td align="right">0.4351317</td>
+<td align="right">0.4106037</td>
+<td align="right">0.4151553</td>
+<td align="right">0.3202811</td>
+<td align="right">0.3489796</td>
+<td align="right">0.3997243</td>
+<td align="right">0.5236613</td>
+<td align="right">0.4640499</td>
+<td align="right">0.5283702</td>
+<td align="right">0.2993445</td>
+<td align="right">0.3968416</td>
 </tr>
 <tr class="even">
 <td align="left">macro-CCL</td>
@@ -2080,6 +2267,21 @@ props$Proportions %&gt;% knitr::kable()</code></pre>
 <td align="right">0.0152827</td>
 </tr>
 <tr class="odd">
+<td align="left">macro-vesicle</td>
+<td align="right">0.0528846</td>
+<td align="right">0.0163776</td>
+<td align="right">0.0501161</td>
+<td align="right">0.0477998</td>
+<td align="right">0.0100402</td>
+<td align="right">0.0142857</td>
+<td align="right">0.0268780</td>
+<td align="right">0.0354919</td>
+<td align="right">0.0212766</td>
+<td align="right">0.0221328</td>
+<td align="right">0.0058267</td>
+<td align="right">0.0112073</td>
+</tr>
+<tr class="even">
 <td align="left">macro-viral</td>
 <td align="right">0.0373932</td>
 <td align="right">0.0327553</td>
@@ -2094,7 +2296,7 @@ props$Proportions %&gt;% knitr::kable()</code></pre>
 <td align="right">0.0320466</td>
 <td align="right">0.0168110</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">proliferating macrophages</td>
 <td align="right">0.0112179</td>
 <td align="right">0.0536288</td>
@@ -2149,6 +2351,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/fd0c5aa071ef58477113740563da7ce183cc0f3f/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-19-1.png" target="_blank">fd0c5aa</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-20
+</td>
+</tr>
 <tr>
 <td>
 <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/16ace9e29de0c45f034829f2fc969d4afc871c3d/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-19-1.png" target="_blank">16ace9e</a>
@@ -2217,6 +2430,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/fd0c5aa071ef58477113740563da7ce183cc0f3f/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-20-1.png" target="_blank">fd0c5aa</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-20
+</td>
+</tr>
 <tr>
 <td>
 <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/16ace9e29de0c45f034829f2fc969d4afc871c3d/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-20-1.png" target="_blank">16ace9e</a>
@@ -2290,6 +2514,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/fd0c5aa071ef58477113740563da7ce183cc0f3f/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-21-1.png" target="_blank">fd0c5aa</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-20
+</td>
+</tr>
+<tr>
+<td>
 <a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/63f8ee8a3eea9d94fc3126cc4879becfb9e3b8ac/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-21-1.png" target="_blank">63f8ee8</a>
 </td>
 <td>
@@ -2347,6 +2582,43 @@ if(!file.exists(out)){
   plot_annotation(tag_levels = &quot;A&quot;) &amp;
   theme(plot.tag = element_text(size = 14, face = &quot;bold&quot;))</code></pre>
 <p><img src="figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-23-1.png" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-23-1">
+Past versions of unnamed-chunk-23-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-23-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="ssh://git@atlassian.petermac.org.au:7999/os/paed-cf-cite-seq/blob/fd0c5aa071ef58477113740563da7ce183cc0f3f/docs/figure/11_COMBO.postprocess_macrophages.Rmd/unnamed-chunk-23-1.png" target="_blank">fd0c5aa</a>
+</td>
+<td>
+Jovana Maksimovic
+</td>
+<td>
+2022-12-20
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="session-info" class="section level1 appendix" number="8">
 <h1><span class="header-section-number">8</span> Session info</h1>
@@ -2365,7 +2637,7 @@ The analysis and this document were prepared using the following software (click
  collate  en_AU.UTF-8
  ctype    en_AU.UTF-8
  tz       Australia/Melbourne
- date     2022-12-20
+ date     2022-12-22
  pandoc   2.17.1.1 @ /usr/lib/rstudio-server/bin/quarto/bin/ (via rmarkdown)
 
 ─ Packages ───────────────────────────────────────────────────────────────────
