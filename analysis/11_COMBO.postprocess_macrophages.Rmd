@@ -54,7 +54,7 @@ seuInt
 ## Load manual annotations
 
 ```{r}
-labels <- read_csv(here("data/macrophage_subcluster_annotation_16.12.22.csv"))
+labels <- read_csv(here("data/macrophage_subcluster_annotations_21.12.22.csv"))
 
 seuInt@meta.data %>%
   dplyr::select(-Annotation, -Broad) %>%
