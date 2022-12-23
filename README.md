@@ -1,4 +1,4 @@
-# Multimodal single-cell analysis of bronchoalveolar lavage from children with cystic fibrosis reveals novel cell phenotypes
+# Single-cell atlas of bronchoalveolar lavage from preschool cystic fibrosis reveals new cell phenotypes
 
 This repository contains code and output for the analysis described in the pre-print: [*"Single-cell atlas of bronchoalveolar lavage from preschool cystic fibrosis reveals new cell phenotypes"*](https://www.biorxiv.org/content/10.1101/2022.06.17.496207v2).
 
